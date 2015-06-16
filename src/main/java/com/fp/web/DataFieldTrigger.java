@@ -22,6 +22,8 @@ public class DataFieldTrigger implements Trigger {
 		PreparedStatement prep = conn
 				.prepareStatement("update datafield set version = version + 1 where datagroupid = ?");
 
+		//denis:: I can't see how this works at all.. or even if it does..
+
 		prep.setInt(1, datagroupid);
 		prep.execute();
 
