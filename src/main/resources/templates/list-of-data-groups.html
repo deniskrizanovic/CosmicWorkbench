@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="utf-8">
+</meta>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+</meta>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</meta>
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+</meta>
+<meta name="author" content="">
+</meta>
+
+<title>LIST OF DATA GROUPS</title>
+
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	th:href="@{/resources/css/bootstrap.min.css}">
+</link>
+<!-- Bootstrap theme -->
+<link href="css/bootstrap-theme.min.css"
+	th:href="@{/resources/css/bootstrap-theme.min.css}" rel="stylesheet">
+</link>
+<link rel="stylesheet" href="css/bootstrap.vertical-tabs.css"
+	th:href="@{/resources/css/bootstrap.vertical-tabs.css}">
+</link>
+
+<!-- Custom styles for this template -->
+<link href="css/theme.css" th:href="@{/resources/css/theme.css}"
+	rel="stylesheet">
+</link>
+
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<!--[if lt IE 9]><script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+<script src="js/ie-emulation-modes-warning.js"></script>
+
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<!--[if lt IE 9]><script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+<script src="js/ie-emulation-modes-warning.js"></script>
+
+
+
+<script type="text/javascript">
+	function OnClose()
+
+	{
+
+	//	if (window.opener != null)
+
+	//	{
+	//		if (!window.opener.closed) {
+				window.opener.HideModalDiv();
+	//		}
+
+	//	}
+
+	}
+
+	window.onunload = OnClose;
+</script>
+
+
+<script>
+	function clickFunc(name) {
+
+		document.getElementById("option").value = name;
+
+		var name = document.datagroupcaptureform.datagroupname.value;
+
+	
+
+		document.datagroupcaptureform.action = "/create-new-functional-model?datagroupname="
+				+ name;
+		document.datagroupcaptureform.submit();
+	
+	}
+
+	function getDataFieldList(name) {
+		document.datagroupcaptureform.method = "post";
+		document.datagroupcaptureform.action = "/get-data-attribute-list?datagroupname="
+				+ name;
+		document.datagroupcaptureform.submit();
+		
+	}
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body role="document">
+
+	<div class="container">
+
+		<p th:text="*{err != null} ? ${err} : ''"></p>
+		<div class="row">
+			<div class="col-md-12">
+				<div id="bkg_div">
+					<form name="datagroupcaptureform" class="form-horizontal">
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-4 control-label">Data
+								Group: :</label>
+							<div class="col-sm-8">
+								<select name="datagroupname" class="form-control">
+									<option th:each="datagroup : ${datagrouplist}"
+										th:value="${datagroup.name}" th:text="${datagroup.name}"></option>
+									<!--  <option th:each="datagroup : ${datagrouplist}" 
+          th:value="${datagroup.name}" 
+          th:text="${datagroup.name}" th:onchange="'javascript:getDataFieldList(\'' +${datagroup.name}+ '\');'" th:onclick="'javascript:getDataFieldList(\'' +${datagroup.name}+ '\');'"></option> -->
+								</select>
+							</div>
+						</div>
+						<!-- 
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-4 control-label">Type :</label>
+    <div class="col-sm-8">
+      <select class="form-control">
+  <option>E|x|R|W</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+</select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-4 control-label">Notes :</label>
+    <div class="col-sm-8">
+   <textarea placeholder="Store some notes about this Functional Process here… " rows="2" class="form-control"></textarea>
+    </div>
+  </div>
+  
+   -->
+						<!-- 
+    <div class="form-group">
+    <label for="inputPassword3" class="col-sm-4 control-label" th:text="*{datagroup != null} ? ${datagroup.name} : ''"></label>
+    <div class="col-sm-8">
+      <ul class="datamodellist" th:each="datafield : ${datafieldlist}" >
+      <li><div class="checkbox">
+  <label>
+    <input type="checkbox" th:value="${datafield.dataFieldId}" name="datafields"
+          th:text="${datafield.name}"> </input>
+ 
+   </label>
+</div></li>
+        </ul>
+    </div>
+  </div>
+  
+   -->
+
+						<input type="hidden" id="option" name="option"> </input>
+						<div class="form-group" style="padding-top: 20px;">
+							<div class="col-sm-offset-4 col-sm-8">
+								<button class="btn btn-danger" type="submit"
+									th:onclick="'javascript:clickFunc(0);'">Delete</button>
+								<button class="btn btn-default" type="submit"
+									th:onclick="'javascript:clickFunc(1);'">Save</button>
+
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- /container -->
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/docs.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="js/ie10-viewport-bug-workaround.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+
+<meta charset="utf-8">
+</meta>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+</meta>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</meta>
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+</meta>
+<meta name="author" content="">
+</meta>
+
+<title>DASHBOARD</title>
+
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	th:href="@{/resources/css/bootstrap.min.css}">
+</link>
+<!-- Bootstrap theme -->
+<link href="css/bootstrap-theme.min.css"
+	th:href="@{/resources/css/bootstrap-theme.min.css}" rel="stylesheet">
+</link>
+<link rel="stylesheet" href="css/bootstrap.vertical-tabs.css"
+	th:href="@{/resources/css/bootstrap.vertical-tabs.css}">
+</link>
+
+<!-- Custom styles for this template -->
+<link href="css/theme.css" th:href="@{/resources/css/theme.css}"
+	rel="stylesheet">
+</link>
+
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<!--[if lt IE 9]><script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+<script src="js/ie-emulation-modes-warning.js"></script>
+
+<script>
+	function clickFunc(name) {
+	
+		var user = document.getElementById("username").value;
+		
+		document.getElementById("name").value = name;
+		
+		if (user == '' || user == null)
+		{
+			alert("Username is mandatory");
+		}
+		else
+		{
+			if (name == '0') {
+				document.indexform.action = "/show-system-context";
+				document.indexform.submit();
+			
+			} else {
+				document.indexform.action = "/system-context-ATPExample?name=" + name;
+				document.indexform.submit();
+			}
+		}
+	}
+</script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body role="document">
+
+	<div class="container">
+		<h1>Dashboard/Landing Page</h1>
+		<div id="border_div">
+			<form name="indexform" method="post" class="form-horizontal">
+				<div class="row">
+					<div class="col-md-12">
+
+						<div class="frm_div">
+
+
+							<div class="form-group">
+
+								<label for="username" class="col-sm-3 control-label">User
+									Id</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" id="username" name="username"
+										placeholder="Enter your userid here"> </input>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<ul class="systemlist"
+							th:each="systemcontext : ${systemcontextlist}">
+							<li th:text="${systemcontext.name}"
+								th:onclick="'javascript:clickFunc(\'' +${systemcontext.name} + '\');'"></li>
+						</ul>
+						<ul class="systemlist">
+							<li th:onclick="'javascript:clickFunc(0);'">Create System
+								Context</li>
+						</ul>
+
+						<div class="clearfix"></div>
+					</div>
+				</div>
+				
+			
+				<input type="hidden" id="name" name="name"></input>
+			</form>
+		</div>
+	</div>
+
+	<!-- /container -->
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/docs.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="js/ie10-viewport-bug-workaround.js"></script>
+</body>
+</html>
