@@ -91,4 +91,4 @@
 --
 --
 
-Select * from SYSTEMCONTEXT''
+Select * from SYSTEMCONTEXT;
