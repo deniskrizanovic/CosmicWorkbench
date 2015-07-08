@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	  xmlns:th="http://www.thymeleaf.org"
+		>
 <head>
 <meta charset="utf-8">
 </meta>
@@ -30,7 +30,7 @@
 </link>
 
 <!-- Custom styles for this template -->
-<link href="css/theme.css" th:href="@{/resources/css/theme.css}"
+	<link href="css/theme1.css" th:href="@{/resources/css/theme1.css}"
 	rel="stylesheet">
 </link>
 
@@ -50,11 +50,11 @@
 
 	}
 
-	function showModalPopUp1(param3, param4, param5, param6)
+	function showModalPopUp1(param3, param4, param5, param6, s1)
 
 	{
 
-		LoadModalDiv1(param3, param4, param5, param6);
+		LoadModalDiv1(param3, param4, param5, param6, s1);
 
 	}
 
@@ -68,7 +68,7 @@
 
 	}
 
-	function LoadModalDiv1(param3, param4, param5, param6)
+	function LoadModalDiv1(param3, param4, param5, param6, s1)
 
 	{
 
@@ -79,6 +79,8 @@
 		document.getElementById("datagroupid").innerHTML = param3;
 		
 		document.getElementById("datafielddiv").innerHTML = param6;
+		
+		document.getElementById("datalist1").innerHTML = s1;
 
 		document.getElementById("grade").value = param4;
 
@@ -167,7 +169,7 @@
 
 	}
 
-	function getGrade(param1, param2, param3, param4, param5) {
+	function getGrade(param1, param2, param3, param4, param5, param8, param9) {
 		document.getElementById("functionalsubprocessid").value = param1;
 
 		document.getElementById("datagroupname").value = param3;
@@ -182,23 +184,40 @@
 		
 		var param6 = '';
 		
-		while (true)
-			{
+	//	print_r(datafieldlist);
 		
-			    j = j + 1;
-			    
-			 
-				
-			
-			    if ( j == i)
-			    	{
-			    	 break;
-			    	}
-			}
+		var s1 = '';
+	
+		for(var p in datafieldlist){ 
 		
-		showModalPopUp1(param3, param4, param5, param6);
+			if (datafieldlist[p].dataGroupId == param8)
+				{					
+				    if (param9.indexOf(datafieldlist[p].dataFieldId) == -1)
+				    	{
+					s1 = s1 + '<li><div class="checkbox"><label><input type="checkbox" value="';
+					s1 = s1 + datafieldlist[p].dataFieldId;
+					s1 = s1 + '" name="datafields">';
+					s1 = s1 + datafieldlist[p].name; 
+					s1 = s1 + '</input></label></div></li>';
+				    	}
+				    else
+				    	{
+				    	s1 = s1 + '<li><div class="checkbox"><label><input type="checkbox" value="';
+						s1 = s1 + datafieldlist[p].dataFieldId;
+						s1 = s1 + '" checked="true" name="datafields">';
+						s1 = s1 + datafieldlist[p].name; 
+						s1 = s1 + '</input></label></div></li>';
+				    	}
+					
+				}
+		
+ 
+         } 		 
+		showModalPopUp1(param3, param4, param5, param6, s1);
 
 	}
+	
+	/*
 	
 	function addToCheckBoxListControl(textValue, valueValue)
 	{
@@ -218,6 +237,26 @@
 	 tableCell.appendChild(labelRef);
 	}
 	
+	*/
+	
+	function print_r(theObj){ 
+	       if(theObj.constructor == Array || theObj.constructor == Object){ 
+	          document.write("<ul>") 
+	          for(var p in theObj){ 
+	             if(theObj[p].constructor == Array || theObj[p].constructor == Object){ 
+	                document.write("<li>["+p+"] => "+typeof(theObj)+"</li>"); 
+	                document.write("<ul>") 
+	                print_r(theObj[p]); 
+	                document.write("</ul>") 
+	             } else { 
+	                document.write("<li>["+p+"] => "+theObj[p]+"</li>"); 
+	                document.write("<li>["+p+"] => "+theObj[p].dataGroupId+"</li>");
+	             } 
+	          } 
+	          document.write("</ul>") 
+	       } 
+	    } 
+	
 </script>
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -232,7 +271,8 @@
 	<form name="functionalmodelform" method="post" class="form-horizontal">
 		<div class="container">
 
-			<p th:text="*{err != null} ? ${err} : ''"></p>
+			<p style="color: red" th:text="*{err != null} ? ${err} : ''"></p>
+
 			<div class="row">
 				<div class="col-md-12">
 					<h1>Define Functional Model</h1>
@@ -252,9 +292,11 @@
 							<ul class="nav nav-tabs tabs-left"
 								th:each="functionalprocesstmp : ${functionalprocesslist}">
 
-								<li><a href="#" data-toggle="tab"
+								<li th:class="*{functionalprocesstmp.functionalProcessId == session.functionalprocessname} ? 'active' : ''">
+									<a href="#" data-toggle="tab"
 									th:text="${functionalprocesstmp.name}"
-									th:onclick="'javascript:getFunctionalModelData(\'' +${functionalprocesstmp.name} + '\');'"></a></li>
+									   th:onclick="'javascript:getFunctionalModelData(\'' +${functionalprocesstmp.functionalProcessId} + '\');'"></a>
+								</li>
 
 
 							</ul>
@@ -273,7 +315,7 @@
 								<div class="tab-pane active" id="data1"
 									style="padding: 25px 5px;">
 
-						
+
 									<div class="table-responsive">
 
 
@@ -300,7 +342,7 @@
 													<td th:text="${functionalsubprocess.name}"></td>
 													<td
 														th:each="functionalmodel : ${functionalsubprocess.functionalModel}"
-														th:onclick="'javascript:getGrade(' +${functionalmodel.functionalSubProcessId} + ',' + ${functionalmodel.functionalModelId} + ',\'' + ${functionalmodel.dataGroupName} + '\',\'' + ${functionalmodel.grade} + '\',\'' + ${functionalmodel.notes} + '\');'"
+														th:onclick="'javascript:getGrade(' +${functionalmodel.functionalSubProcessId} + ',' + ${functionalmodel.functionalModelId} + ',\'' + ${functionalmodel.displaydataGroupName} + '\',\'' + ${functionalmodel.grade} + '\',\'' + ${functionalmodel.notes} + '\',' + ${functionalmodel.dataGroupId} + ',\'' + ${functionalmodel.datafieldList} + '\');'"
 														th:text="${functionalmodel.grade}"></td>
 												</tr>
 												<tr>
@@ -338,11 +380,11 @@
 		<!-- /container -->
 
 		<div id="divBackground"
-			style="position: fixed; z-index: 999; height: 100%; width: 100%; top: 0; left: 0; background-color: Black; filter: alpha(opacity =                                                                                       100); opacity: 1.0; -moz-opacity: 0.8; display: none">
+			 style="position: fixed; z-index: 999; height: 100%; width: 100%; top: 0; left: 0; background-color: Black; filter: alpha(opacity =                                                                                         100); opacity: 1.0; -moz-opacity: 0.8; display: none">
 
 			<div class="container">
 
-				<p th:text="*{err != null} ? ${err} : ''"></p>
+				<p style="color: red" th:text="*{err != null} ? ${err} : ''"></p>
 				<div class="row">
 					<div class="col-md-12">
 						<div id="bkg_div">
@@ -360,10 +402,12 @@
 							<input type="hidden" id="option" name="option"> </input>
 							<div class="form-group" style="padding-top: 20px;">
 								<div class="col-sm-offset-4 col-sm-8">
-									<button class="btn btn-danger" type="submit"
-										th:onclick="'javascript:popupClick(0);'">Delete</button>
+
 									<button class="btn btn-default" type="submit"
 										th:onclick="'javascript:popupClick(1);'">Save</button>
+									<button class="btn btn-danger" type="submit"
+											th:onclick="'javascript:popupClick(0);'">Delete
+									</button>
 
 								</div>
 							</div>
@@ -377,7 +421,7 @@
 		</div>
 
 		<div id="divBackground1"
-			style="position: fixed; z-index: 999; height: 100%; width: 100%; top: 0; left: 0; background-color: Black; filter: alpha(opacity =                                                                                       100); opacity: 1.0; -moz-opacity: 0.8; display: none">
+			 style="position: fixed; z-index: 999; height: 100%; width: 100%; top: 0; left: 0; background-color: Black; filter: alpha(opacity =                                                                                         100); opacity: 1.0; -moz-opacity: 0.8; display: none">
 
 			<div class="container">
 				<div class="row">
@@ -388,10 +432,10 @@
 								<label for="grade" class="col-sm-4 control-label">Type :</label>
 								<div class="col-sm-8">
 									<select name="grade" id="grade" class="form-control">
-										<option th:value="E" th:text="'Entry'"></option>
-										<option th:value="x" th:text="'Exit'"></option>
-										<option th:value="R" th:text="'Read'"></option>
-										<option th:value="W" th:text="'Write'"></option>
+										<option th:value="E" th:text="'E'"></option>
+										<option th:value="x" th:text="'x'"></option>
+										<option th:value="R" th:text="'R'"></option>
+										<option th:value="W" th:text="'W'"></option>
 									</select>
 								</div>
 							</div>
@@ -408,18 +452,24 @@
 								</label>
 
 								<div class="col-sm-8" id="datafielddiv"></div>
-								<div class="col-sm-8">
-									<ul class="datamodellist"
-										th:each="datafield : ${datafieldlist}">
-										<li><div class="checkbox">
-												<label> <input type="checkbox"
-													th:value="${datafield.dataFieldId}" name="datafields"
-													th:text="${datafield.name}"> </input>
 
-												</label>
-											</div></li>
-									</ul>
-									<ul class="datamodellist">
+
+								<div class="col-sm-8">
+
+									<!--
+                                        <ul class="datamodellist"
+                                            th:each="datafield : ${datafieldlist}">
+                                            <li><div class="checkbox">
+                                                    <label> <input type="checkbox"
+                                                        th:value="${datafield.dataFieldId}" name="datafields"
+                                                        th:text="${datafield.name}"> </input>
+
+                                                    </label>
+                                                </div></li>
+                                        </ul>
+
+                                        -->
+									<ul class="datamodellist" id="datalist1">
 
 									</ul>
 
@@ -429,10 +479,12 @@
 
 							<div class="form-group" style="padding-top: 20px;">
 								<div class="col-sm-offset-4 col-sm-8">
-									<button class="btn btn-danger" type="submit"
-										th:onclick="'javascript:popupClick1(2);'">Delete</button>
+
 									<button class="btn btn-default" type="submit"
 										th:onclick="'javascript:popupClick1(3);'">Save</button>
+									<button class="btn btn-danger" type="submit"
+											th:onclick="'javascript:popupClick1(2);'">Delete
+									</button>
 
 								</div>
 							</div>

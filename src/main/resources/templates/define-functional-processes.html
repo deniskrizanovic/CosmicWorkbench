@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+      xmlns:th="http://www.thymeleaf.org"
+        >
 <head>
     <meta charset="utf-8">  </meta>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> </meta>
@@ -46,11 +46,11 @@
 		
 		var note = document.getElementById("functionalprocessnotes").value;
 		
-		if (note == '' || note == null)
-		{
-			alert("Notes is mandatory");
-			return false;
-		}
+	//	if (note == '' || note == null)
+	//	{
+	//		alert("Notes is mandatory");
+	//		return false;
+	//	}
 		
 		document.getElementById("option").value = name;
 		
@@ -72,7 +72,7 @@
 	}
 	
 	function getFunctionalProcessData(name) {
-		if (name == 1 || name == '1')
+		if (name == 0 || name == '0')
 		{
 			document.getElementById("option").value = '2';
 			document.functionalprocessform.method = "post";
@@ -83,6 +83,7 @@
 		{
 			document.getElementById("option").value = '3';
 			document.getElementById("functionalprocessname").value = name;
+			document.getElementById("functionalprocessid").value = name;
 			document.functionalprocessform.method = "post";
 			document.functionalprocessform.action = "/show-functional-processes?functionalprocessname="+name;
 		    document.functionalprocessform.submit();
@@ -101,8 +102,8 @@
   <body role="document">
 
 		<div class="container">
-		
-			<p th:text="*{err != null} ? ${err} : ''"></p>
+
+            <p style="color:red" th:text="*{err != null} ? ${err} : ''"></p>
 			
 			
         	<div class="row">
@@ -122,12 +123,14 @@
 			<li>
 							
 								<a href="#" data-toggle="tab" th:text="${functionalprocesstmp.name}"
-								th:onclick="'javascript:getFunctionalProcessData(\'' +${functionalprocesstmp.name} + '\');'"></a></li>
+                                   th:onclick="'javascript:getFunctionalProcessData(\'' +${functionalprocesstmp.functionalProcessId} + '\');'"></a>
+            </li>
 								
 								
            </ul>
            <ul class="nav nav-tabs tabs-left">
-           <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(1);'">New Func Process</a></li>
+               <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(0);'">New Func
+                   Process</a></li>
         	</ul>
         </div>
 
@@ -141,6 +144,9 @@
     <label class="col-sm-4 control-label" for="functionalprocessname">Name</label>
     <div class="col-sm-8">
       <input type="text" id="functionalprocessname" name="functionalprocessname" th:readonly="*{functionalprocess != null} ? ${true} : ${false}" th:value="*{functionalprocess != null} ? ${functionalprocess.name} : ''" class="form-control"> </input>
+        <input type="hidden" id="functionalprocessid" name="functionalprocessid"
+               th:value="*{functionalprocess != null} ? ${functionalprocess.functionalProcessId} : ''"
+               class="form-control"> </input>
     </div>
   </div>
   <div class="form-group">
@@ -170,9 +176,12 @@
     <input type="hidden" id="option" name="option"> </input>
   <div class="form-group">
     <div class="col-sm-offset-4 col-sm-8">
-    <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(0);'">Delete</button>
-    <button class="btn btn-default" type="submit" th:onclick="*{functionalprocess != null} ? 'javascript:clickFunc(4);' : 'javascript:clickFunc(1);'">Save</button>
-    
+
+        <button class="btn btn-default" type="submit"
+                th:onclick="*{functionalprocess != null} ? 'javascript:clickFunc(4);' : 'javascript:clickFunc(1);'">Save
+        </button>
+        <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(0);'">Delete</button>
+
 
     </div>
   </div>

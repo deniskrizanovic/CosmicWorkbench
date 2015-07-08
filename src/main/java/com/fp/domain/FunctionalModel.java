@@ -17,6 +17,8 @@ public class FunctionalModel {
 	private long dataGroupId;
 	
 	private String dataGroupName;
+
+	private String displaydataGroupName;
 	
 	private long datafieldId;
 	
@@ -25,10 +27,20 @@ public class FunctionalModel {
 	private String notes;
 
 	private String grade;
+
+	private String datafieldList;
 	
 	private List<FunctionalModelFunctionalSubProcess> functionalModelFunctionalSubProcess;
 	
 	private int score;
+
+	public String getDisplaydataGroupName() {
+		return displaydataGroupName;
+	}
+
+	public void setDisplaydataGroupName(String displaydataGroupName) {
+		this.displaydataGroupName = displaydataGroupName;
+	}
 
 	public int getVersion() {
 		return version;
@@ -66,6 +78,14 @@ public class FunctionalModel {
 		return functionalProcessId;
 	}
 
+	public String getDatafieldList() {
+		return datafieldList;
+	}
+
+	public void setDatafieldList(String datafieldList) {
+		this.datafieldList = datafieldList;
+	}
+	
 	public void setFunctionalProcessId(long functionalProcessId) {
 		this.functionalProcessId = functionalProcessId;
 	}
@@ -135,5 +155,6 @@ public class FunctionalModel {
 			List<FunctionalModelFunctionalSubProcess> functionalModelFunctionalSubProcess) {
 		this.functionalModelFunctionalSubProcess = functionalModelFunctionalSubProcess;
 	}
+
 
 }

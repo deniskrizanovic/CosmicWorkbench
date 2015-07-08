@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	  xmlns:th="http://www.thymeleaf.org"
+		>
 <head>
 <meta charset="utf-8">
 </meta>
@@ -99,7 +99,7 @@
 
 	<div class="container">
 
-		<p th:text="*{err != null} ? ${err} : ''"></p>
+		<p style="color:red" th:text="*{err != null} ? ${err} : ''"></p>
 		<div class="row">
 			<div class="col-md-12">
 				<div id="bkg_div">
@@ -159,10 +159,12 @@
 						<input type="hidden" id="option" name="option"> </input>
 						<div class="form-group" style="padding-top: 20px;">
 							<div class="col-sm-offset-4 col-sm-8">
-								<button class="btn btn-danger" type="submit"
-									th:onclick="'javascript:clickFunc(0);'">Delete</button>
+
 								<button class="btn btn-default" type="submit"
 									th:onclick="'javascript:clickFunc(1);'">Save</button>
+								<button class="btn btn-danger" type="submit"
+										th:onclick="'javascript:clickFunc(0);'">Delete
+								</button>
 
 							</div>
 						</div>

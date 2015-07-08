@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	  xmlns:th="http://www.thymeleaf.org"
+		>
 <head>
 
 <meta charset="utf-8">
@@ -101,7 +101,7 @@
 						<ul class="systemlist"
 							th:each="systemcontext : ${systemcontextlist}">
 							<li th:text="${systemcontext.name}"
-								th:onclick="'javascript:clickFunc(\'' +${systemcontext.name} + '\');'"></li>
+								th:onclick="'javascript:clickFunc(' +${systemcontext.systemContextId} + ');'"></li>
 						</ul>
 						<ul class="systemlist">
 							<li th:onclick="'javascript:clickFunc(0);'">Create System
