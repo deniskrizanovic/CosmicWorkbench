@@ -14,11 +14,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		registry.addViewController("/").setViewName("index");
 
 		registry.addViewController("/index").setViewName("index");
-		registry.addViewController("/system-context-ATPExample").setViewName("system-context-ATPExample");
-		registry.addViewController("/create-new-system-context").setViewName(
-				"create-new-system-context");
-		registry.addViewController("/show-system-context").setViewName(
-				"create-new-system-context");
+		registry.addViewController("/system-context").setViewName("system-context");
+		registry.addViewController("/create-new-system-context").setViewName("create-new-system-context");
+		registry.addViewController("/show-system-context").setViewName("create-new-system-context");
 		registry.addViewController("/define-data-groups").setViewName("define-data-groups");
 		registry.addViewController("/disp-data-groups").setViewName("define-data-groups");
 		registry.addViewController("/show-data-groups").setViewName("define-data-groups");
@@ -36,8 +34,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations(
-				"/resources/");
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
 
 }
