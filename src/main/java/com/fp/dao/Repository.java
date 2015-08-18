@@ -19,9 +19,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-/**
- * Created by dkrizano on 17/08/2015.
- */
+
 @org.springframework.stereotype.Repository
 public class Repository {
 
@@ -42,8 +40,7 @@ public class Repository {
                                 SystemContext sc = new SystemContext();
                                 sc.setName(rs.getString("name"));
                                 sc.setNotes(rs.getString("notes"));
-                                sc.setSystemContextId(rs
-                                        .getLong("systemcontextid"));
+                                sc.setSystemContextId(rs.getLong("systemcontextid"));
                                 return sc;
                             }
                         });
@@ -67,22 +64,24 @@ public class Repository {
 
 
     public SystemContext getSystemContextByName(String contextname) {
-        return this.jdbcTemplate
-                .queryForObject(
+
+        final SystemContext context = new SystemContext();
+
+        this.jdbcTemplate
+                .query(
                         "select systemcontextid, version, name, notes, diagram from systemcontext where not deleteflag and name = '"
                                 + contextname.replace("'", "''")
                                 + "'",
                         new RowMapper<SystemContext>() {
-                            public SystemContext mapRow(
-                                    ResultSet rs, int rowNum)
-                                    throws SQLException {
-                                SystemContext actor = new SystemContext();
-                                actor.setSystemContextId(rs.getLong("systemcontextid"));
-                                actor.setName(rs.getString("name"));
-                                actor.setNotes(rs.getString("notes"));
-                                return actor;
+                            public SystemContext mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                context.setSystemContextId(rs.getLong("systemcontextid"));
+                                context.setName(rs.getString("name"));
+                                context.setNotes(rs.getString("notes"));
+                                return context;
                             }
                         });
+
+        return context;
     }
 
 
@@ -170,4 +169,13 @@ public class Repository {
     }
 
 
+    public void deleteSystemContext(String contextname) {
+
+        if (contextname != null) {
+            this.jdbcTemplate
+                    .update(" update systemcontext set deleteflag = true where name = '"
+                            + contextname + "'");
+
+        }
+    }
 }

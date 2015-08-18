@@ -92,3 +92,5 @@
 -- these are all commented out because
 
 select * from dual;
+
+CREATE TRIGGER IF NOT EXISTS tr_system_context_versions Before INSERT ON SYSTEMCONTEXT FOR EACH ROW CALL "com.fp.dao.SystemContextTrigger";

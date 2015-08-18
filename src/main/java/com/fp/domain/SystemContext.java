@@ -44,6 +44,17 @@ public class SystemContext {
 		this.notes = notes;
 	}
 
+	@Override
+	public String toString() {
+		return "SystemContext{" +
+				"systemContextId=" + systemContextId +
+				", version=" + version +
+				", name='" + name + '\'' +
+				", notes='" + notes + '\'' +
+				", diagram='" + diagram + '\'' +
+				'}';
+	}
+
 	public String getDiagram() {
 		return diagram;
 	}

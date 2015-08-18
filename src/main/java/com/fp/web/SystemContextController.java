@@ -4,7 +4,6 @@ import com.fp.dao.Repository;
 import com.fp.domain.SystemContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +14,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Controller
-public class HomeController {
+public class SystemContextController {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -40,7 +37,7 @@ public class HomeController {
 
 
     @RequestMapping("/")
-    public String showSystemContext(Model model, HttpServletRequest request, HttpSession session) {
+    public String showSystemContext(Model model, HttpSession session) {
 
         if (session.getAttribute("username") != null) {
             model.addAttribute("username", session.getAttribute("username"));
@@ -89,8 +86,8 @@ public class HomeController {
 
         if (contextName != null) { // it looks like we are using the contextname to figure out what state we're in.
 
-            if (createNewContext(request)) {
-
+//            if (createNewContext(request)) {
+//
                 try {
 
                     session.setAttribute("systemcontextname", contextName);
@@ -107,19 +104,20 @@ public class HomeController {
                 }
 
                 return "system-context";
-            } else {
-
-                repository.updateSystemContext(contextName);
-
-                session.setAttribute("systemcontextname", contextName);
-
-                model.addAttribute("systemContext", this.systemContext);
-
-                return "create-new-system-context";
-            }
+//            } else {
+//
+//                repository.updateSystemContext(contextName);
+//
+//                session.setAttribute("systemcontextname", contextName);
+//
+//                model.addAttribute("systemcontext", this.systemContext);
+//
+//                return "create-new-system-context";
+//            }
         } else {
 
-            model.addAttribute("systemContext", this.systemContext);
+            System.out.println("I'm here I bet!");
+            model.addAttribute("systemcontext", this.systemContext);
             return "/";
 
         }
@@ -143,31 +141,29 @@ public class HomeController {
         return "create-new-system-context";
     }
 
+    /**
+     * this method is used during the create-system-context page which takes the name of the system context and if it exists,
+     * actually becomes a modify system context screen!
+     *
+     * @param model
+     * @param request
+     * @return
+     */
+
     @RequestMapping("/getdata")
-    public String getData(Model model, HttpServletRequest request, HttpSession session) {
+    public String getData(Model model, HttpServletRequest request) {
 
-        String contextname = request.getParameter("contextname");
+        String contextName = request.getParameter("contextname");
 
-        if (contextname != null) { //this just seems to protect against a null.
+        if (contextName != null) { //this just seems to protect against a null.
 
-            List<SystemContext> systemContextList = this.jdbcTemplate
-                    .query("select systemcontextid, version, name, notes, diagram from systemcontext where not deleteflag and name = '"
-                                    + contextname.replace("'", "''") + "'",
-                            new RowMapper<SystemContext>() {
-                                public SystemContext mapRow(ResultSet rs,
-                                                            int rowNum) throws SQLException {
-                                    SystemContext systemContexttmp = new SystemContext();
-                                    systemContexttmp.setName(rs.getString("name"));
-                                    systemContexttmp.setNotes(rs.getString("notes"));
-                                    return systemContexttmp;
-                                }
-                            });
+            SystemContext ctx = repository.getSystemContextByName(contextName);
 
-            if (systemContextList.size() > 0) {
-                this.systemContext = systemContextList.get(0);
+            if (ctx.getName() != null) {
+                this.systemContext = ctx;
             } else {
                 this.systemContext = new SystemContext();
-                this.systemContext.setName(contextname);
+                this.systemContext.setName(contextName);
             }
 
             model.addAttribute("systemcontext", this.systemContext);
@@ -179,16 +175,11 @@ public class HomeController {
     }
 
     @RequestMapping("/delete-system-context")
-    public String deleteSystemContext(Model model, HttpServletRequest request) {
+    public String deleteSystemContext(HttpServletRequest request) {
 
-        String contextname = request.getParameter("contextname");
+        String contextName = request.getParameter("contextname");
 
-        if (contextname != null) {
-            this.jdbcTemplate
-                    .update(" update systemcontext set deleteflag = true where name = '"
-                            + contextname + "'");
-
-        }
+        repository.deleteSystemContext(contextName);
 
         return "create-new-system-context";
     }

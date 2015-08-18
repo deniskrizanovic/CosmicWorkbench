@@ -1,11 +1,12 @@
-package com.fp.web;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+package com.fp.dao;
 
 import org.h2.api.Trigger;
 
-public class FunctionalSubProcessTrigger implements Trigger {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class DataFieldTrigger implements Trigger {
 
 	@Override
 	public void init(Connection conn, String schemaName, String triggerName,
@@ -15,6 +16,14 @@ public class FunctionalSubProcessTrigger implements Trigger {
 	@Override
 	public void fire(Connection conn, Object[] oldRow, Object[] newRow)
 			throws SQLException {
+
+		int datagroupid = 0;
+
+		PreparedStatement prep = conn
+				.prepareStatement("update datafield set version = version + 1 where datagroupid = ?");
+
+		prep.setInt(1, datagroupid);
+		prep.execute();
 
 	}
 
