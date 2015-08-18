@@ -104,7 +104,7 @@ public class SystemContextController {
                 }
 
                 return "system-context";
-//            } else {
+//            } else { //temporarily commented out..
 //
 //                repository.updateSystemContext(contextName);
 //
