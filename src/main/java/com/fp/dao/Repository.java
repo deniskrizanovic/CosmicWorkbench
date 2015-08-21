@@ -4,6 +4,7 @@ import com.fp.domain.SystemContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
@@ -17,17 +18,21 @@ import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @org.springframework.stereotype.Repository
 public class Repository {
 
     private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
 
@@ -85,21 +90,31 @@ public class Repository {
     }
 
 
-    public void insertNewSystemContext(String username, String contextname, String notes, MultipartFile file) throws IOException {
+    public void insertNewSystemContext(String systemContextId, String username, String contextname, String notes, MultipartFile file) throws IOException {
 
 
-        int version = 0;
-        this.jdbcTemplate
-                .update(" insert into systemcontext ( version, name, notes, userid ) values ( "
-                        + version
-                        + ",'"
-                        + contextname.replace("'", "''")
-                        + "','"
-                        + notes.replace("'", "''")
-                        + "','"
-                        + username
-                        + ""
-                        + "')");
+        int version = 0; //todo this can be a default value in the db
+        String sql = " insert into systemcontext (systemContextId, version, name, notes, userid )" +
+                " values ( seq_SystemContext.nextval, :version, :contextName, :notes, :username)";
+
+        String sqlAllOthertimes = " insert into systemcontext (systemContextId, version, name, notes, userid )" +
+                " values ( :seq, :version, :contextName, :notes, :username)";
+
+        Map namedParameters = new HashMap();
+        namedParameters.put("version", version);
+        namedParameters.put("contextName", contextname.replace("'", "''")); //todo might not need these, as spring might do it.
+        namedParameters.put("notes", notes.replace("'", "''"));
+        namedParameters.put("username", username);
+
+        if (!systemContextId.equals("0")) {
+
+            System.out.println("I'm doing it a second time");
+            sql = sqlAllOthertimes;
+            namedParameters.put("seq", systemContextId);
+        }
+
+
+        this.namedJdbcTemplate.update(sql, namedParameters);
 
 
         SystemContext systemContext = getSystemContextByName(contextname); //todo the question is, why isn't a SystemContext object just passed in, and then persisted?

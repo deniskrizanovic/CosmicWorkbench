@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class SystemContextController {
@@ -80,14 +82,27 @@ public class SystemContextController {
     @RequestMapping(value = "/create-new-system-context", method = {RequestMethod.GET, RequestMethod.POST})
     public String createSystemContext(Model model, MultipartHttpServletRequest request, HttpSession session) {
 
+        Set<String> params = request.getParameterMap().keySet();
+        for (Iterator<String> iterator = params.iterator(); iterator.hasNext(); ) {
+            String next = iterator.next();
+
+            System.out.println("key=" + next + " value= " + request.getParameter(next));
+
+        }
+
+        String systemContextId = request.getParameter("systemcontextid");
         String contextName = request.getParameter("contextname");
         String notes = request.getParameter("notes");
         MultipartFile file = request.getFile("diagram");
 
+        System.out.println("systemContextId = " + systemContextId);
+
         if (contextName != null) { // it looks like we are using the contextname to figure out what state we're in.
 
-//            if (createNewContext(request)) {
-//
+            if (createNewContext(request)) {
+
+                System.out.println("In the create");
+
                 try {
 
                     session.setAttribute("systemcontextname", contextName);
@@ -97,14 +112,14 @@ public class SystemContextController {
 
                     String username = (String) session.getAttribute("username");
 
-                    repository.insertNewSystemContext(username, contextName, notes, file);
+                    repository.insertNewSystemContext(systemContextId, username, contextName, notes, file);
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 return "system-context";
-//            } else { //temporarily commented out..
+            } else { //temporarily commented out..
 //
 //                repository.updateSystemContext(contextName);
 //
@@ -113,7 +128,7 @@ public class SystemContextController {
 //                model.addAttribute("systemcontext", this.systemContext);
 //
 //                return "create-new-system-context";
-//            }
+            }
         } else {
 
             System.out.println("I'm here I bet!");
@@ -121,10 +136,14 @@ public class SystemContextController {
             return "/";
 
         }
+        return "/";
+
     }
 
     private boolean createNewContext(MultipartHttpServletRequest request) {
-        return request.getParameter("option").equals("1");
+
+
+        return request.getParameter("action").equals("create");
     }
 
     @RequestMapping(value = "/show-system-context", method = {RequestMethod.GET, RequestMethod.POST})
@@ -138,7 +157,7 @@ public class SystemContextController {
 
         model.addAttribute("systemContext", this.systemContext);
 
-        return "create-new-system-context";
+        return "/create-new-system-context";
     }
 
     /**
@@ -164,11 +183,14 @@ public class SystemContextController {
             } else {
                 this.systemContext = new SystemContext();
                 this.systemContext.setName(contextName);
+                //return "modify-system-context";
             }
 
             model.addAttribute("systemcontext", this.systemContext);
 
         }
+
+        System.out.println("this is the systemcontext that lives in the model  = " + systemContext);
 
         return "create-new-system-context";
 
