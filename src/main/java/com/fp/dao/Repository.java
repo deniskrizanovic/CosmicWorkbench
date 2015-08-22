@@ -105,15 +105,13 @@ public class Repository
     {
 
 
-        int version = 0; //todo this can be a default value in the db
-        String sql = " insert into systemcontext (systemContextId, version, name, notes, userid )" +
-                " values ( seq_SystemContext.nextval, :version, :contextName, :notes, :username)";
+        String sql = " insert into systemcontext (systemContextId, name, notes, userid )" +
+                " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
 
-        String sqlAllOthertimes = " insert into systemcontext (systemContextId, version, name, notes, userid )" +
-                " values ( :seq, :version, :contextName, :notes, :username)";
+        String sqlAllOthertimes = " insert into systemcontext (systemContextId, name, notes, userid )" +
+                " values ( :seq, :contextName, :notes, :username)";
 
         Map namedParameters = new HashMap();
-        namedParameters.put("version", version);
         namedParameters.put("contextName", contextname.replace("'", "''")); //todo might not need these, as spring might do it.
         namedParameters.put("notes", notes.replace("'", "''"));
         namedParameters.put("username", username);
