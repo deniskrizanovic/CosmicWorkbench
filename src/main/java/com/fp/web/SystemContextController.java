@@ -12,9 +12,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class SystemContextController
@@ -61,7 +59,7 @@ public class SystemContextController
         model.addAttribute("username", username);
         model.addAttribute("systemcontextid", id);
 
-        session.setAttribute("username", username);
+        session.setAttribute("username", username);  //todo not really sure why this is added to the model and to the session
         session.setAttribute("systemcontextid", id);
 
         systemContext = repository.getSystemContextDetailsById(id);
@@ -78,7 +76,7 @@ public class SystemContextController
 
 
     @RequestMapping(value = "/create-new-system-context", method = {RequestMethod.GET, RequestMethod.POST})
-    public String createSystemContext(Model model, MultipartHttpServletRequest request, HttpSession session)
+    public String createSystemContext(MultipartHttpServletRequest request, HttpSession session)
     {
 
         //writeRequest(request);
@@ -111,24 +109,6 @@ public class SystemContextController
 
     }
 
-    private void writeRequest(MultipartHttpServletRequest request)
-    {
-        Set<String> params = request.getParameterMap().keySet();
-        for (Iterator<String> iterator = params.iterator(); iterator.hasNext(); )
-        {
-            String next = iterator.next();
-
-            System.out.println("key=" + next + " value= " + request.getParameter(next));
-
-        }
-    }
-
-    private boolean createNewContext(MultipartHttpServletRequest request)
-    {
-
-
-        return request.getParameter("action").equals("create");
-    }
 
     @RequestMapping(value = "/show-system-context", method = {RequestMethod.GET, RequestMethod.POST})
     public String showCreateSystemContext(Model model, HttpServletRequest request, HttpSession session)
@@ -172,14 +152,12 @@ public class SystemContextController
             {
                 this.systemContext = new SystemContext();
                 this.systemContext.setName(contextName);
-                //return "modify-system-context";
             }
 
             model.addAttribute("systemcontext", this.systemContext);
 
         }
 
-        System.out.println("this is the systemcontext that lives in the model  = " + systemContext);
 
         return "create-new-system-context";
 

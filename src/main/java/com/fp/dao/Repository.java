@@ -100,26 +100,24 @@ public class Repository
         return context;
     }
 
-
-    public void insertNewSystemContext(String systemContextId, String username, String contextname, String notes, MultipartFile file) throws IOException
+    //todo the question is, why isn't a SystemContext object just passed in, and then persisted?
+    public void insertNewSystemContext(String systemContextId, String username, String contextname, String notes, MultipartFile uploadedFile) throws IOException
     {
 
 
         String sql = " insert into systemcontext (systemContextId, name, notes, userid )" +
-                " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
+                     " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
 
         String sqlAllOthertimes = " insert into systemcontext (systemContextId, name, notes, userid )" +
-                " values ( :seq, :contextName, :notes, :username)";
+                                  " values ( :seq, :contextName, :notes, :username)";
 
         Map namedParameters = new HashMap();
         namedParameters.put("contextName", contextname.replace("'", "''")); //todo might not need these, as spring might do it.
         namedParameters.put("notes", notes.replace("'", "''"));
         namedParameters.put("username", username);
 
-        if (!systemContextId.equals("0"))
+        if (creatingANewContext(systemContextId))
         {
-
-            System.out.println("I'm doing it a second time");
             sql = sqlAllOthertimes;
             namedParameters.put("seq", systemContextId);
         }
@@ -127,44 +125,74 @@ public class Repository
 
         this.namedJdbcTemplate.update(sql, namedParameters);
 
+        doFileUpload(contextname, uploadedFile);
 
-        SystemContext systemContext = getSystemContextByName(contextname); //todo the question is, why isn't a SystemContext object just passed in, and then persisted?
+
+    }
+
+    private void doFileUpload(String contextname, MultipartFile uploadedFile) throws IOException
+    {
+        //this is to get back the id that was created.
+        SystemContext systemContext = getSystemContextByName(contextname);
 
         if (systemContext != null)
         { //todo not sure why this if statement is useful here?
 
-            if (thereIsAFileToUpload(file))
+            if (thereIsANewFileToUpload(uploadedFile))
             {
+                 //todo this is one of those times we probably need to do transactions.
+                uploadFileToDatabase(uploadedFile, systemContext);
 
-                File workingFile = null;
-                InputStream imageIs = null;
-                LobHandler lobHandler = new DefaultLobHandler();
-
-                if (thereIsAFileToUpload(file))
-                {
-
-                    workingFile = new File(file.getOriginalFilename());
-                    file.transferTo(new File(System.getProperty("java.io.tmpdir") + "/" + workingFile));
-                    imageIs = new FileInputStream(System.getProperty("java.io.tmpdir") + "/" + workingFile);
-                }
-
-                this.jdbcTemplate.update(
-                        " update systemcontext set diagram = ? where systemcontextid = "
-                                + systemContext.getSystemContextId(),
-                        new Object[]{new SqlLobValue(imageIs, (int) workingFile.length(), lobHandler)},
-                        new int[]{Types.BLOB});
-
+            }
+            else //we need to copy the blob from the previous version, which is always 1
+            {
+                copyPreviousVersionOfFileToNewRecord(systemContext);
             }
         }
     }
 
+    private void copyPreviousVersionOfFileToNewRecord(SystemContext systemContext)
+    {
+        Map updatedDiagramParams = new HashMap();
+        updatedDiagramParams.put("systemContextId", systemContext.getSystemContextId());
 
-    public boolean thereIsAFileToUpload(MultipartFile file)
+        this.namedJdbcTemplate.update("update systemcontext " +
+                "set diagram = (select diagram from systemcontext where systemcontextid = :systemContextId and version = 1)" +
+                "where version = 0 and systemcontextid = :systemContextId", updatedDiagramParams);
+    }
+
+    private void uploadFileToDatabase(MultipartFile uploadedFile, SystemContext systemContext) throws IOException
+    {
+        System.out.println("uploadedFile = " + uploadedFile.getSize());
+
+        File workingFile = new File(System.getProperty("java.io.tmpdir") + "/" + uploadedFile.getOriginalFilename());
+
+        uploadedFile.transferTo(workingFile);
+
+        InputStream imageIs = new FileInputStream(workingFile);   //todo should this be tomcat's work directory?
+        LobHandler lobHandler = new DefaultLobHandler();
+
+
+
+        this.jdbcTemplate.update(
+                "update systemcontext set diagram = ? where version = 0 and systemcontextid = "
+                        + systemContext.getSystemContextId(),
+                new Object[]{new SqlLobValue(imageIs, (int) workingFile.length(), lobHandler)},
+                new int[]{Types.BLOB});
+    }
+
+    private boolean creatingANewContext(String systemContextId)
+    {
+        return !systemContextId.equals("0");
+    }
+
+
+    public boolean thereIsANewFileToUpload(MultipartFile file)
     {
         return file != null && !file.isEmpty();
     }
 
-
+    //This looks like it cascades delete flags to all tables if the system context is deleted.
     public void updateSystemContext(String contextname)
     {
         this.jdbcTemplate
