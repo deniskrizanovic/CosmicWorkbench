@@ -62,8 +62,9 @@
 
         function clickFunc1(name) {
 
+            alert("clickFunc1:" + name)
             document.getElementById("delete").value = name;
-            document.getElementById("option").value = '5';
+            document.getElementById("option").value = 'deletingDataAttribute';
 
             document.datagroupform.action = "/create-new-data-group";
 
@@ -73,15 +74,14 @@
 
         function getDataGroupData(name) {
 
-            if (name == 0 || name == '0') {
-                alert("2")
+            if (name == 'new') {
+                alert(name)
                 document.getElementById("option").value = '2';
                 document.datagroupform.method = "post";
                 document.datagroupform.action = "/disp-data-groups";
                 document.datagroupform.submit();
             }
             else {
-                alert("it's 3")
                 document.getElementById("option").value = '3';
                 document.getElementById("datagroupname").value = name;
                 document.getElementById("datagroupid").value = name;
@@ -128,7 +128,7 @@
 
                     </ul>
                     <ul class="nav nav-tabs tabs-left">
-                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getDataGroupData(0);'">New Data Group</a></li>
+                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getDataGroupData(\'new\');'">New Data Group</a></li>
                     </ul>
                 </div>
                 <div class="col-xs-8 bluebg">
@@ -142,7 +142,7 @@
 
                                 <div class="col-sm-8">
                                     <input type="text" id="datagroupname" name="datagroupname" th:value="*{datagroup != null} ? ${datagroup.name} : ''" class="form-control"> </input>
-                                    <input type="text" id="datagroupid" name="datagroupid" th:value="*{datagroup != null} ? ${datagroup.dataGroupId} : ''" class="form-control"> </input>
+                                    <input type="hidden" id="datagroupid" name="datagroupid" th:value="*{datagroup != null} ? ${datagroup.dataGroupId} : ''" class="form-control"> </input>
                                 </div>
                                 <div>
                                 </div>
@@ -163,7 +163,7 @@
                                             <div style="float: left;">
                                                 <img src="/resources/close.png"  th:onclick="'javascript:clickFunc1(' + ${datafieldtmp.dataFieldId} + ');'" id="img1"> </img>
                                             </div>
-                                            <div th:text="${datafieldtmp.name}">
+                                            <div th:text="  ${datafieldtmp.name}">
                                             </div>
                                         </li>
                                     </ul>
@@ -180,7 +180,7 @@
                                     <button class="btn btn-default" type="submit" th:onclick="'javascript:clickFunc(\'save\');'">
                                         Save
                                     </button>
-                                    <button class="btn btn-danger" type="submit"  th:onclick="'javascript:clickFunc(0);'">Delete
+                                    <button class="btn btn-danger" type="submit"  th:onclick="'javascript:clickFunc(\'delete\');'">Delete
                                     </button>
                                 </div>
                             </div>

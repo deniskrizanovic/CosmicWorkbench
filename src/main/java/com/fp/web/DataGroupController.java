@@ -76,19 +76,19 @@ public class DataGroupController
 
         List<DataField> datafieldlist = null;
 
-        List<DataGroup> actors = null;
+        List<DataGroup> dataGroups = null;
 
         if (session.getAttribute("systemcontextid") != null)
         {
             Long systemContextId = (Long) session.getAttribute("systemcontextid");
-            actors = dataGroupRepository.getDataGroupsForSystemContext(systemContextId);
+            dataGroups = dataGroupRepository.getDataGroupsForSystemContext(systemContextId);
 
-            model.addAttribute("datagrouplist", actors);
+            model.addAttribute("datagrouplist", dataGroups);
 
-            if (actors.size() > 0)
+            if (dataGroups.size() > 0)
             {
-                dataGroupId = actors.get(0).getDataGroupId();
-                this.dataGroup = actors.get(0);
+                dataGroupId = dataGroups.get(0).getDataGroupId();
+                this.dataGroup = dataGroups.get(0);
             } else
             {
                 this.dataGroup = null;
@@ -138,7 +138,7 @@ public class DataGroupController
 
                 return "define-data-groups";
 
-            } else if (request.getParameter("option") != null && request.getParameter("option").equals("0"))
+            } else if (amIDeletingADataGroup(request))
             {
 
                 this.jdbcTemplate
@@ -154,20 +154,12 @@ public class DataGroupController
                                 + systemContextId);
 
                 return dispDataGroup(model, session);
-            } else if (request.getParameter("option") != null && request.getParameter("option").equals("2"))
+
+            } else if (amIDeletingDataAttribute(request))
             {
 
-                return "define-data-groups";
-
-            } else if (request.getParameter("option") != null && request.getParameter("option").equals("3"))
-            {
-
-                // request.getParameter("dataGroupName"));
-                // dataGroupName = request.getParameter("dataGroupName");
-                return "define-data-groups";
-
-            } else if (request.getParameter("option") != null && request.getParameter("option").equals("5"))
-            {
+                //todo can't get here yet till I fix the datafield table
+                System.out.println("I'm deleting an attribute");
 
                 long dataFieldId = 0l;
 
@@ -180,6 +172,11 @@ public class DataGroupController
                         .update(" update datafield set deleteflag = true where version = 0 and datafieldid = "
                                 + dataFieldId);
 
+            }
+            else
+            {
+                System.out.println("I don't think I ever get here. option=" + request.getParameter("option"));
+                return "define-data-groups";
             }
 
         }
@@ -200,6 +197,16 @@ public class DataGroupController
 
     }
 
+    private boolean amIDeletingADataGroup(HttpServletRequest request)
+    {
+        return request.getParameter("option") != null && request.getParameter("option").equals("delete");
+    }
+
+    private boolean amIDeletingDataAttribute(HttpServletRequest request)
+    {
+        return request.getParameter("option") != null && request.getParameter("option").equals("deletingDataAttribute");
+    }
+
 
     private DataGroup createNewDataGroup(String systemContextId, String dataGroupName, String dataGroupNotes, String datafieldname, long dataGroupId, String userName)
     {
@@ -210,7 +217,10 @@ public class DataGroupController
 
     private void addDataField(String datafieldname, long dataGroupId, String userName)
     {
-
+        if(datafieldname == null || datafieldname.equals(""))
+        {
+            return;
+        }
 
         this.jdbcTemplate
                 .update(" update datafield set version = version + 1 where datagroupid = "
