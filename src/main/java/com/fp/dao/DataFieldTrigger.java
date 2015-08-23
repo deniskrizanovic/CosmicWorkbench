@@ -14,16 +14,19 @@ public class DataFieldTrigger implements Trigger {
 	}
 
 	@Override
-	public void fire(Connection conn, Object[] oldRow, Object[] newRow)
-			throws SQLException {
+	public void fire(Connection conn, Object[] oldRow, Object[] newRow)throws SQLException {
 
-		int datagroupid = 0;
+		Long dataFieldId = (Long) newRow[1]; //
 
-		PreparedStatement prep = conn
-				.prepareStatement("update datafield set version = version + 1 where datagroupid = ?");
+		if (dataFieldId != 0)
+		{
 
-		prep.setInt(1, datagroupid);
-		prep.execute();
+			PreparedStatement stmt = conn.prepareStatement("update datafield " +
+					"set version = version+1  " +
+					"where dataFieldId = ?");
+			stmt.setLong(1, dataFieldId);
+			stmt.execute();
+		}
 
 	}
 

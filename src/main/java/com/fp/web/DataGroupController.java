@@ -112,7 +112,7 @@ public class DataGroupController
 
         String datagroupname = request.getParameter("datagroupname");
         String datagroupnotes = request.getParameter("datagroupnotes");
-        String datafieldname = request.getParameter("datafieldname");
+        String datafieldname = request.getParameter("newAttribute");
 
         String userName = (String) session.getAttribute("username");
 
@@ -211,45 +211,19 @@ public class DataGroupController
     private DataGroup createNewDataGroup(String systemContextId, String dataGroupName, String dataGroupNotes, String datafieldname, long dataGroupId, String userName)
     {
         dataGroup = dataGroupRepository.createDataGroup(systemContextId, dataGroupId, dataGroupName, dataGroupNotes, userName);
-        addDataField(datafieldname, dataGroup.getDataGroupId(), userName);
+        addDataField(datafieldname, dataGroup, userName);
         return dataGroup;
     }
 
-    private void addDataField(String datafieldname, long dataGroupId, String userName)
+    private void addDataField(String newAttribute, DataGroup dataGroup, String userName)
     {
-        if(datafieldname == null || datafieldname.equals(""))
+        if(newAttribute == null || newAttribute.equals(""))
         {
             return;
         }
 
-        this.jdbcTemplate
-                .update(" update datafield set version = version + 1 where datagroupid = "
-                        + dataGroupId);
+        dataGroupRepository.createDataFields(dataGroup, newAttribute, userName);
 
-        this.jdbcTemplate
-                .update(" insert into datafield ( version, datagroupid, name, userid ) select "
-                        + 0
-                        + ","
-                        + dataGroupId
-                        + ","
-                        + "name"
-                        + ","
-                        + "userid"
-                        + ""
-                        + " from datafield where version = 1 and not deleteflag and datagroupid = "
-                        + dataGroupId);
-
-        this.jdbcTemplate
-                .update(" insert into datafield ( version, datagroupid, name, userid ) values ( "
-                        + 0
-                        + ","
-                        + dataGroupId
-                        + ",'"
-                        + datafieldname.replace("'", "''")
-                        + "','"
-                        + userName
-                        + ""
-                        + "')");
     }
 
 

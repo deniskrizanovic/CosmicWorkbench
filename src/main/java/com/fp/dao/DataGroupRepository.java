@@ -131,4 +131,35 @@ public class DataGroupRepository
                             }
                         });
     }
+
+
+    public void createDataFields(DataGroup dataGroup, String newAttribute, String userName)
+    {
+        //datafields cannot operate with triggers on the tables as we need to version these
+        //as a set. Triggers work on a per-row concept.
+
+        Map boundVariables = new HashMap();
+        boundVariables.put("dataGroupId", dataGroup.getDataGroupId());
+        boundVariables.put("userName", userName);
+        boundVariables.put("newAttribute", newAttribute.replace("'", "''"));
+
+
+        String updateVersionOfExistingAttributes = " update datafield set version = version + 1 where datagroupid = :dataGroupId ";
+
+        String insertTheExisitngAttributesForTheCurrentVersion = "insert into datafield (datagroupid, name, userid ) " +
+                                                                 "select datagroupid, name, userid " +
+                                                                 "from datafield " +
+                                                                 "where version = 1 " +
+                                                                 "and not deleteflag " +
+                                                                 "and datagroupid =:dataGroupId" ;
+
+        String insertTheNewAttribute = " insert into datafield ( datagroupid, name, userid ) " +
+                                       "values (:dataGroupId, :newAttribute, : userName) ";
+
+
+
+        namedJdbcTemplate.update(updateVersionOfExistingAttributes, boundVariables);
+        namedJdbcTemplate.update(insertTheExisitngAttributesForTheCurrentVersion, boundVariables);
+        namedJdbcTemplate.update(insertTheNewAttribute, boundVariables);
+    }
 }

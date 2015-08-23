@@ -109,6 +109,9 @@ CREATE SEQUENCE IF NOT EXISTS seq_SystemContext;
 --DROP sequence seq_DataGroup if exists;
 CREATE SEQUENCE IF NOT EXISTS seq_DataGroup;
 
+--DROP sequence seq_DataGroup if exists;
+CREATE SEQUENCE IF NOT EXISTS seq_DataField;
+
 
 
 
