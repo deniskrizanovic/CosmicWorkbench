@@ -24,7 +24,7 @@ import java.util.Map;
 
 
 @org.springframework.stereotype.Repository
-public class Repository
+public class SystemContextRepository
 {
 
     private JdbcTemplate jdbcTemplate;
@@ -40,7 +40,7 @@ public class Repository
 
     public List<SystemContext> getSystemContexts()
     {
-        String sql = "select systemcontextid, version, name, notes, diagram from systemcontext where not deleteflag and version = 0";
+        String sql = "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0";
         return this.namedJdbcTemplate.query(sql,
                 new RowMapper<SystemContext>()
                 {
@@ -60,7 +60,7 @@ public class Repository
     {
         return this.jdbcTemplate
                 .queryForObject(
-                        "select systemcontextid, version, name, notes, diagram from systemcontext where not deleteflag and systemcontextid = "
+                        "select systemcontextid,name, notes from systemcontext where not deleteflag and version = 0 and systemcontextid = "
                                 + id + "", new RowMapper<SystemContext>()
                         {
                             public SystemContext mapRow(ResultSet rs, int rowNum)
@@ -83,7 +83,7 @@ public class Repository
 
         this.jdbcTemplate
                 .query(
-                        "select systemcontextid, version, name, notes, diagram from systemcontext where not deleteflag and name = '"
+                        "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0 and name = '"
                                 + contextname.replace("'", "''")
                                 + "'",
                         new RowMapper<SystemContext>()

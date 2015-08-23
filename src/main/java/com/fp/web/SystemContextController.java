@@ -1,6 +1,6 @@
 package com.fp.web;
 
-import com.fp.dao.Repository;
+import com.fp.dao.SystemContextRepository;
 import com.fp.domain.SystemContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,11 +19,11 @@ public class SystemContextController
 {
 
     private SystemContext systemContext;
-    private Repository repository;
+    private SystemContextRepository repository;
 
 
     @Autowired
-    public void setRepository(Repository repository)
+    public void setRepository(SystemContextRepository repository)
     {
         this.repository = repository;
     }

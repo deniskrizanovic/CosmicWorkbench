@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class SystemContextTrigger implements Trigger {
+public class DataGroupTrigger implements Trigger {
 
     @Override
     public void init(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) throws SQLException {
@@ -18,14 +18,14 @@ public class SystemContextTrigger implements Trigger {
         //this is a really shit way of doing this. Real databases are much smarter.
         //and I don't need to guess what each parameter is based on an array order.
 
-        Long systemContextId = (Long) newRow[1]; //
+        Long dataGroupId = (Long) newRow[1]; //
 
-        if (systemContextId != 0) {
+        if (dataGroupId != 0) {
 
-            PreparedStatement stmt = conn.prepareStatement("update systemcontext " +
-                    "set version = version+1\n " +
-                    "where systemcontextid = ?");
-            stmt.setLong(1, systemContextId);
+            PreparedStatement stmt = conn.prepareStatement("update datagroup " +
+                    "set version = version+1  " +
+                    "where dataGroupId = ?");
+            stmt.setLong(1, dataGroupId);
             stmt.execute();
 
         }
