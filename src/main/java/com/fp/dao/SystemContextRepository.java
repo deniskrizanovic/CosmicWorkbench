@@ -24,100 +24,75 @@ import java.util.Map;
 
 
 @org.springframework.stereotype.Repository
-public class SystemContextRepository
-{
+public class SystemContextRepository {
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Autowired
-    public void setDataSource(DataSource dataSource)
-    {
+    public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
 
-    public List<SystemContext> getSystemContexts()
-    {
+    public List<SystemContext> getSystemContexts() {
         String sql = "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0";
-        return this.namedJdbcTemplate.query(sql,
-                new RowMapper<SystemContext>()
-                {
-                    public SystemContext mapRow(ResultSet rs, int rowNum)
-                            throws SQLException
-                    {
-                        SystemContext sc = new SystemContext();
-                        sc.setName(rs.getString("name"));
-                        sc.setNotes(rs.getString("notes"));
-                        sc.setSystemContextId(rs.getLong("systemcontextid"));
-                        return sc;
-                    }
-                });
+        return this.namedJdbcTemplate.query(sql, getRowMapper());
     }
 
-    public SystemContext getSystemContextDetailsById(String id)
-    {
-        return this.jdbcTemplate
-                .queryForObject(
-                        "select systemcontextid,name, notes from systemcontext where not deleteflag and version = 0 and systemcontextid = "
-                                + id + "", new RowMapper<SystemContext>()
-                        {
-                            public SystemContext mapRow(ResultSet rs, int rowNum)
-                                    throws SQLException
-                            {
-                                SystemContext actor = new SystemContext();
-                                actor.setSystemContextId(rs.getLong("systemcontextid"));
-                                actor.setName(rs.getString("name"));
-                                actor.setNotes(rs.getString("notes"));
-                                return actor;
-                            }
-                        });
+    public SystemContext getSystemContextDetailsById(String id) {
+
+        String sql = "select systemcontextid,name, notes " +
+                "from systemcontext " +
+                "where not deleteflag " +
+                "and version = 0 " +
+                "and systemcontextid = " + id + "";
+
+
+        return this.jdbcTemplate.queryForObject(sql, getRowMapper());
+    }
+
+    public RowMapper<SystemContext> getRowMapper() {
+        return new RowMapper<SystemContext>() {
+            public SystemContext mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SystemContext actor = new SystemContext();
+                actor.setSystemContextId(rs.getLong("systemcontextid"));
+                actor.setName(rs.getString("name"));
+                actor.setNotes(rs.getString("notes"));
+                return actor;
+            }
+        };
     }
 
 
-    public SystemContext getSystemContextByName(String contextname)
-    {
+    public SystemContext getSystemContextByName(String contextname) {
 
         final SystemContext context = new SystemContext();
 
         this.jdbcTemplate
-                .query(
-                        "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0 and name = '"
-                                + contextname.replace("'", "''")
-                                + "'",
-                        new RowMapper<SystemContext>()
-                        {
-                            public SystemContext mapRow(ResultSet rs, int rowNum) throws SQLException
-                            {
-                                context.setSystemContextId(rs.getLong("systemcontextid"));
-                                context.setName(rs.getString("name"));
-                                context.setNotes(rs.getString("notes"));
-                                return context;
-                            }
-                        });
+                .query("select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0 and name = '"
+                        + contextname.replace("'", "''"), getRowMapper());
 
         return context;
     }
 
     //todo the question is, why isn't a SystemContext object just passed in, and then persisted?
-    public void insertNewSystemContext(String systemContextId, String username, String contextname, String notes, MultipartFile uploadedFile) throws IOException
-    {
+    public void insertNewSystemContext(String systemContextId, String username, String contextname, String notes, MultipartFile uploadedFile) throws IOException {
 
 
         String sql = " insert into systemcontext (systemContextId, name, notes, userid )" +
-                     " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
+                " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
 
         String sqlAllOthertimes = " insert into systemcontext (systemContextId, name, notes, userid )" +
-                                  " values ( :seq, :contextName, :notes, :username)";
+                " values ( :seq, :contextName, :notes, :username)";
 
         Map namedParameters = new HashMap();
         namedParameters.put("contextName", contextname.replace("'", "''")); //todo might not need these, as spring might do it.
         namedParameters.put("notes", notes.replace("'", "''"));
         namedParameters.put("username", username);
 
-        if (creatingANewContext(systemContextId))
-        {
+        if (creatingANewContext(systemContextId)) {
             sql = sqlAllOthertimes;
             namedParameters.put("seq", systemContextId);
         }
@@ -130,29 +105,24 @@ public class SystemContextRepository
 
     }
 
-    private void doFileUpload(String contextname, MultipartFile uploadedFile) throws IOException
-    {
+    private void doFileUpload(String contextname, MultipartFile uploadedFile) throws IOException {
         //this is to get back the id that was created.
         SystemContext systemContext = getSystemContextByName(contextname);
 
-        if (systemContext != null)
-        { //todo not sure why this if statement is useful here?
+        if (systemContext != null) { //todo not sure why this if statement is useful here?
 
-            if (thereIsANewFileToUpload(uploadedFile))
-            {
-                 //todo this is one of those times we probably need to do transactions.
+            if (thereIsANewFileToUpload(uploadedFile)) {
+                //todo this is one of those times we probably need to do transactions.
                 uploadFileToDatabase(uploadedFile, systemContext);
 
-            }
-            else //we need to copy the blob from the previous version, which is always 1
+            } else //we need to copy the blob from the previous version, which is always 1
             {
                 copyPreviousVersionOfFileToNewRecord(systemContext);
             }
         }
     }
 
-    private void copyPreviousVersionOfFileToNewRecord(SystemContext systemContext)
-    {
+    private void copyPreviousVersionOfFileToNewRecord(SystemContext systemContext) {
         Map updatedDiagramParams = new HashMap();
         updatedDiagramParams.put("systemContextId", systemContext.getSystemContextId());
 
@@ -161,8 +131,7 @@ public class SystemContextRepository
                 "where version = 0 and systemcontextid = :systemContextId", updatedDiagramParams);
     }
 
-    private void uploadFileToDatabase(MultipartFile uploadedFile, SystemContext systemContext) throws IOException
-    {
+    private void uploadFileToDatabase(MultipartFile uploadedFile, SystemContext systemContext) throws IOException {
         System.out.println("uploadedFile = " + uploadedFile.getSize());
 
         File workingFile = new File(System.getProperty("java.io.tmpdir") + "/" + uploadedFile.getOriginalFilename());
@@ -173,7 +142,6 @@ public class SystemContextRepository
         LobHandler lobHandler = new DefaultLobHandler();
 
 
-
         this.jdbcTemplate.update(
                 "update systemcontext set diagram = ? where version = 0 and systemcontextid = "
                         + systemContext.getSystemContextId(),
@@ -181,20 +149,17 @@ public class SystemContextRepository
                 new int[]{Types.BLOB});
     }
 
-    private boolean creatingANewContext(String systemContextId)
-    {
+    private boolean creatingANewContext(String systemContextId) {
         return !systemContextId.equals("0");
     }
 
 
-    public boolean thereIsANewFileToUpload(MultipartFile file)
-    {
+    public boolean thereIsANewFileToUpload(MultipartFile file) {
         return file != null && !file.isEmpty();
     }
 
     //This looks like it cascades delete flags to all tables if the system context is deleted.
-    public void updateSystemContext(String contextname)
-    {
+    public void updateSystemContext(String contextname) {
         this.jdbcTemplate
                 .update(" update functionalmodeldatafield set deleteflag = true where functionalmodelid in (select functionalmodelid from functionalmodel where systemcontextid in "
                         + " (select systemcontextid from systemcontext where name = '"
@@ -228,11 +193,9 @@ public class SystemContextRepository
     }
 
 
-    public void deleteSystemContext(String contextname)
-    {
+    public void deleteSystemContext(String contextname) {
 
-        if (contextname != null)
-        {
+        if (contextname != null) {
             this.jdbcTemplate
                     .update(" update systemcontext set deleteflag = true where name = '"
                             + contextname + "'");
