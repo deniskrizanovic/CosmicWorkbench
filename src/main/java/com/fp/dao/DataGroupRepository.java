@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -118,25 +119,17 @@ public class DataGroupRepository
                 .query("select datagroupid, version, name, notes from datagroup where not deleteflag and version = 0 and systemcontextid = "
                                 + systemContextId
                                 + " and name = '"
-                                + datagroupname.replace("'", "''") + "'",
-                        new RowMapper<DataGroup>()
-                        {
-                            public DataGroup mapRow(ResultSet rs, int rowNum) throws SQLException
-                            {
-                                DataGroup actor = new DataGroup();
-                                actor.setDataGroupId(rs.getLong("datagroupid"));
-                                actor.setName(rs.getString("name"));
-                                actor.setNotes(rs.getString("notes"));
-                                return actor;
-                            }
-                        });
+                        + datagroupname.replace("'", "''") + "'", getRowMapper());
     }
 
 
+    @Transactional
     public void createDataFields(DataGroup dataGroup, String newAttribute, String userName)
     {
         //datafields cannot operate with triggers on the tables as we need to version these
-        //as a set. Triggers work on a per-row concept.
+        //as a set. Triggers work on a per-row concept. This may invalidate the entire
+        //design that uses triggers.
+
 
         Map boundVariables = new HashMap();
         boundVariables.put("dataGroupId", dataGroup.getDataGroupId());
@@ -144,17 +137,17 @@ public class DataGroupRepository
         boundVariables.put("newAttribute", newAttribute.replace("'", "''"));
 
 
-        String updateVersionOfExistingAttributes = " update datafield set version = version + 1 where datagroupid = :dataGroupId ";
+        String updateVersionOfExistingAttributes = "update datafield set version = version + 1 where datagroupid = :dataGroupId ";
 
-        String insertTheExisitngAttributesForTheCurrentVersion = "insert into datafield (datagroupid, name, userid ) " +
-                                                                 "select datagroupid, name, userid " +
+        String insertTheExisitngAttributesForTheCurrentVersion = "insert into datafield (datafieldid, datagroupid, name, userid ) " +
+                "select datafieldid, datagroupid, name, userid " +
                                                                  "from datafield " +
                                                                  "where version = 1 " +
                                                                  "and not deleteflag " +
                                                                  "and datagroupid =:dataGroupId" ;
 
-        String insertTheNewAttribute = " insert into datafield ( datagroupid, name, userid ) " +
-                                       "values (:dataGroupId, :newAttribute, : userName) ";
+        String insertTheNewAttribute = "insert into datafield ( datafieldid, datagroupid, name, userid ) " +
+                "values (seq_DataField.nextval, :dataGroupId, :newAttribute, :userName)";
 
 
 

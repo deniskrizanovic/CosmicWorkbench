@@ -112,7 +112,7 @@ public class DataGroupController
 
         String datagroupname = request.getParameter("datagroupname");
         String datagroupnotes = request.getParameter("datagroupnotes");
-        String datafieldname = request.getParameter("newAttribute");
+        String datafieldname = request.getParameter("datafieldname");
 
         String userName = (String) session.getAttribute("username");
 
@@ -217,6 +217,8 @@ public class DataGroupController
 
     private void addDataField(String newAttribute, DataGroup dataGroup, String userName)
     {
+
+        System.out.println("adding data field::" + newAttribute + "::");
         if(newAttribute == null || newAttribute.equals(""))
         {
             return;
