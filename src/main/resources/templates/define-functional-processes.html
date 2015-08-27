@@ -178,7 +178,8 @@
     <div class="col-sm-offset-4 col-sm-8">
 
         <button class="btn btn-default" type="submit"
-                th:onclick="*{functionalprocess != null} ? 'javascript:clickFunc(4);' : 'javascript:clickFunc(1);'">Save
+                th:onclick="*{functionalprocess != null} ? 'javascript:clickFunc(4);' : 'javascript:clickFunc(\'save\');'">
+            Save
         </button>
         <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(0);'">Delete</button>
 

@@ -1,6 +1,7 @@
 package com.fp.web;
 
 import com.fp.dao.FunctionalProcessRepository;
+import com.fp.dao.SystemContextRepository;
 import com.fp.domain.FunctionalProcess;
 import com.fp.domain.FunctionalSubProcess;
 import com.fp.domain.SystemContext;
@@ -28,13 +29,20 @@ public class FunctionalProcessController {
 
     private FunctionalProcess functionalProcess;
 
-    private FunctionalProcessRepository repository;
+    private FunctionalProcessRepository functionalProcessRepository;
+
+    private SystemContextRepository systemContextRepository;
 
     private String err;
 
     @Autowired
-    public void setRepository(FunctionalProcessRepository repository) {
-        this.repository = repository;
+    public void setFunctionalProcessRepository(FunctionalProcessRepository functionalProcessRepository) {
+        this.functionalProcessRepository = functionalProcessRepository;
+    }
+
+    @Autowired
+    public void setSystemContextRepository(SystemContextRepository systemContextRepository) {
+        this.systemContextRepository = systemContextRepository;
     }
 
     @Autowired
@@ -48,7 +56,7 @@ public class FunctionalProcessController {
 
         if (session.getAttribute("systemcontextid") != null) {
             Long name = (Long) session.getAttribute("systemcontextid");
-            List<FunctionalProcess> actors = repository.getListOfFunctionalProcessesForContext(name);
+            List<FunctionalProcess> actors = functionalProcessRepository.getListOfFunctionalProcessesForContext(name);
 
             model.addAttribute("functionalprocesslist", actors);
         }
@@ -72,7 +80,7 @@ public class FunctionalProcessController {
 
 
             Long systemcontextid = (Long) session.getAttribute("systemcontextid");
-            actors = repository.getListOfFunctionalProcessesForContext(systemcontextid);
+            actors = functionalProcessRepository.getListOfFunctionalProcessesForContext(systemcontextid);
 
             model.addAttribute("functionalprocesslist", actors);
 
@@ -84,7 +92,7 @@ public class FunctionalProcessController {
                 this.functionalProcess = null;
             }
 
-            functionalsubprocesslist = repository.getListofSubProcesses(functionalProcessId);
+            functionalsubprocesslist = functionalProcessRepository.getListofSubProcesses(functionalProcessId);
 
             model.addAttribute("functionalsubprocesslist", functionalsubprocesslist);
         }
@@ -98,57 +106,29 @@ public class FunctionalProcessController {
     @RequestMapping(value = "/create-new-functional-process", method = {RequestMethod.GET, RequestMethod.POST})
     public String createSystemContext(Model model, HttpServletRequest request, HttpSession session) {
 
-        Long contextname = (Long) session.getAttribute("systemcontextid");
+        //todo there should be some defensive coding here.
+
+        Long systemContextId = (Long) session.getAttribute("systemcontextid");
 
         String functionalprocessname = request.getParameter("functionalprocessname");
         String functionalprocessnotes = request.getParameter("functionalprocessnotes");
         String functionalsubprocessname = request.getParameter("functionalsubprocessname");
 
         int version = 0;
-        long systemContextId = 0l;
         long functionalProcessId = 0l;
 
-        if (contextname != null) {
+        if (systemContextId != null) {
 
-            this.systemContext = this.jdbcTemplate
-                    .queryForObject(
-                            "select systemcontextid, version, name, notes, diagram from systemcontext where not deleteflag and systemcontextid = '"
-                                    + contextname + "'",
-                            new RowMapper<SystemContext>() {
-                                public SystemContext mapRow(ResultSet rs,
-                                                            int rowNum) throws SQLException {
-                                    SystemContext systemContexttmp = new SystemContext();
-                                    systemContexttmp.setSystemContextId(rs.getLong("systemcontextid"));
-                                    systemContexttmp.setName(rs.getString("name"));
-                                    systemContexttmp.setNotes(rs.getString("notes"));
-                                    return systemContexttmp;
-                                }
-                            });
+            this.systemContext = systemContextRepository.getSystemContextDetailsById(String.valueOf(systemContextId));
 
             if (this.systemContext != null && this.systemContext.getSystemContextId() != 0l) {
-                systemContextId = this.systemContext.getSystemContextId();
+                systemContextId = this.systemContext.getSystemContextId(); //don't I already have this?
             }
 
             if (systemContextId != 0l) {
-                if (request.getParameter("option") != null && request.getParameter("option").equals("1")) {
+                if (isSave(request)) {
 
-                    Long name = (Long) session.getAttribute("systemcontextid");
-
-                    List<FunctionalProcess> functionalProcessList = this.jdbcTemplate
-                            .query("select functionalprocessid, version, name, notes from functionalprocess where not deleteflag and systemcontextid = "
-                                    + name
-                                    + " and name = '"
-                                    + functionalprocessname.replace("'", "''")
-                                    + "'", new RowMapper<FunctionalProcess>() {
-                                public FunctionalProcess mapRow(ResultSet rs,
-                                                                int rowNum) throws SQLException {
-                                    FunctionalProcess actor = new FunctionalProcess();
-                                    actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
-                                    actor.setName(rs.getString("name"));
-                                    actor.setNotes(rs.getString("notes"));
-                                    return actor;
-                                }
-                            });
+                    List<FunctionalProcess> functionalProcessList = functionalProcessRepository.getListOfFunctionalProcessesForContext(systemContextId);
 
                     if (functionalProcessList.size() > 0) {
                         err = "Data group already exist";
@@ -173,7 +153,7 @@ public class FunctionalProcessController {
                     this.functionalProcess = this.jdbcTemplate
                             .queryForObject(
                                     "select functionalprocessid, version, name, notes from functionalprocess where not deleteflag and systemcontextid = "
-                                            + name
+                                            + systemContextId
                                             + " and name = '"
                                             + functionalprocessname.replace(
                                             "'", "''") + "'",
@@ -459,6 +439,10 @@ public class FunctionalProcessController {
             return getFunctionalProcess(model, request, session);
         }
 
+    }
+
+    public boolean isSave(HttpServletRequest request) {
+        return request.getParameter("option") != null && request.getParameter("option").equals("save");
     }
 
     @RequestMapping(value = "/show-functional-processes", method = {RequestMethod.GET, RequestMethod.POST})
