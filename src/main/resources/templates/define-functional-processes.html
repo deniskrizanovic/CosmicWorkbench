@@ -142,8 +142,8 @@
                                     <label class="col-sm-4 control-label" for="functionalprocessname">Name</label>
 
                                     <div class="col-sm-8">
-                                        <input type="text" id="functionalprocessname" name="functionalprocessname" th:readonly="*{functionalprocess != null} ? ${true} : ${false}" th:value="*{functionalprocess != null} ? ${functionalprocess.name} : ''" class="form-control"> </input>
-                                        <input type="text" id="functionalprocessid" name="functionalprocessid"
+                                        <input type="text" id="functionalprocessname" name="functionalprocessname"  th:value="*{functionalprocess != null} ? ${functionalprocess.name} : ''" class="form-control"> </input>
+                                        <input type="hidden" id="functionalprocessid" name="functionalprocessid"
                                                th:value="*{functionalprocess != null} ? ${functionalprocess.functionalProcessId} : ''"
                                                class="form-control"> </input>
                                     </div>
@@ -152,7 +152,7 @@
                                     <label class="col-sm-4 control-label" for="functionalprocessnotes">Notes</label>
 
                                     <div class="col-sm-8">
-                                        <input type="text" id="functionalprocessnotes" name="functionalprocessnotes" th:readonly="*{functionalprocess != null} ? ${true} : ${false}" th:value="*{functionalprocess != null} ? ${functionalprocess.notes} : ''" class="form-control"> </input>
+                                        <input type="text" id="functionalprocessnotes" name="functionalprocessnotes"  th:value="*{functionalprocess != null} ? ${functionalprocess.notes} : ''" class="form-control"> </input>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -179,7 +179,7 @@
                                     <div class="col-sm-offset-4 col-sm-8">
 
                                         <button class="btn btn-default" type="submit"
-                                                th:onclick="*{functionalprocess != null} ? 'javascript:clickFunc(4);' : 'javascript:clickFunc(\'save\');'">
+                                                th:onclick="'javascript:clickFunc(\'save\');'">
                                             Save
                                         </button>
                                         <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(0);'">Delete</button>
@@ -189,14 +189,11 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="tab-pane" id="data2">Profile Tab.</div>
-                        <div class="tab-pane" id="data3">Messages Tab.</div>
-                        <div class="tab-pane" id="data4">Settings Tab.</div>
-                        <div class="tab-pane" id="data5">Settings Tab.</div>
+
                     </div>
                 </div>
 
-                <div class="clearfix"></div>
+
 
             </div>
 

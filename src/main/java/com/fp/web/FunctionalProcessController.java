@@ -144,9 +144,8 @@ public class FunctionalProcessController
                 String username = (String) session.getAttribute("username");
                 if (isSave(request))
                 {
-
-
-
+                     //todo an interesting test is if I try and create a fp by a name that already exists.
+                    //todo I think they fixed this by using a lookup in the systemcontext .. but what about data group?
                     if (fPAlreadyExists(functionalprocessname, systemContextId))
                     {
                         err = "Data group already exist";
@@ -200,7 +199,7 @@ public class FunctionalProcessController
                 {
 
                     return "define-functional-processes";
-                } else if (request.getParameter("option") != null && request.getParameter("option").equals("4"))
+                } else if (isAnUpdate(request))
                 {
 
                     Long name = (Long) session.getAttribute("systemcontextid");
@@ -219,11 +218,9 @@ public class FunctionalProcessController
                                                 throws SQLException
                                         {
                                             FunctionalProcess actor = new FunctionalProcess();
-                                            actor.setFunctionalProcessId(rs
-                                                    .getLong("functionalprocessid"));
+                                            actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
                                             actor.setName(rs.getString("name"));
-                                            actor.setNotes(rs
-                                                    .getString("notes"));
+                                            actor.setNotes(rs.getString("notes"));
                                             return actor;
                                         }
                                     });
@@ -253,7 +250,7 @@ public class FunctionalProcessController
                         //updateFunctionalModel(systemContextId, version, functionalProcessId, username, tempId);
 
                     }
-                } else if (request.getParameter("option") != null && request.getParameter("option").equals("5"))
+                } else if (request.getParameter("option") != null && request.getParameter("option").equals("delete"))
                 {
 
                     long functionalSubProcessId = 0l;
@@ -285,6 +282,11 @@ public class FunctionalProcessController
             return getFunctionalProcess(model, request, session);
         }
 
+    }
+
+    private boolean isAnUpdate(HttpServletRequest request)
+    {
+        return request.getParameter("option") != null && request.getParameter("option").equals("4");
     }
 
     private void updateFunctionalModel(Long systemContextId, int version, long functionalProcessId, String username, Long tempId)
