@@ -51,4 +51,31 @@ public class FunctionalProcess {
 	public void setFunctionalProcessId(long functionalProcessId) {
 		this.functionalProcessId = functionalProcessId;
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		FunctionalProcess that = (FunctionalProcess) o;
+
+		if (systemContextId != that.systemContextId) return false;
+		if (functionalProcessId != that.functionalProcessId) return false;
+		if (version != that.version) return false;
+		if (!name.equals(that.name)) return false;
+		return notes.equals(that.notes);
+
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = (int) (systemContextId ^ (systemContextId >>> 32));
+		result = 31 * result + (int) (functionalProcessId ^ (functionalProcessId >>> 32));
+		result = 31 * result + version;
+		result = 31 * result + name.hashCode();
+		result = 31 * result + notes.hashCode();
+		return result;
+	}
 }

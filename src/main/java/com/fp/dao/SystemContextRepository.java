@@ -38,10 +38,12 @@ public class SystemContextRepository {
 
     public List<SystemContext> getSystemContexts() {
         String sql = "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0";
-        return this.namedJdbcTemplate.query(sql, getRowMapper());
+        return this.namedJdbcTemplate.query(sql, getRowMapper(new SystemContext()));
     }
 
     public SystemContext getSystemContextDetailsById(String id) {
+
+        final SystemContext context = new SystemContext();
 
         String sql = "select systemcontextid,name, notes " +
                 "from systemcontext " +
@@ -49,18 +51,18 @@ public class SystemContextRepository {
                 "and version = 0 " +
                 "and systemcontextid = " + id + "";
 
+        this.jdbcTemplate.query(sql, getRowMapper(context));
 
-        return this.jdbcTemplate.queryForObject(sql, getRowMapper());
+        return context;
     }
 
-    public RowMapper<SystemContext> getRowMapper() {
+    public RowMapper<SystemContext> getRowMapper(final SystemContext sc) {
         return new RowMapper<SystemContext>() {
             public SystemContext mapRow(ResultSet rs, int rowNum) throws SQLException {
-                SystemContext actor = new SystemContext();
-                actor.setSystemContextId(rs.getLong("systemcontextid"));
-                actor.setName(rs.getString("name"));
-                actor.setNotes(rs.getString("notes"));
-                return actor;
+                sc.setSystemContextId(rs.getLong("systemcontextid"));
+                sc.setName(rs.getString("name"));
+                sc.setNotes(rs.getString("notes"));
+                return sc;
             }
         };
     }
@@ -70,9 +72,14 @@ public class SystemContextRepository {
 
         final SystemContext context = new SystemContext();
 
-        this.jdbcTemplate
-                .query("select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0 and name = '"
-                        + contextname.replace("'", "''"), getRowMapper());
+        String sql = "select systemcontextid, name, notes " +
+                     "from systemcontext " +
+                     "where not deleteflag " +
+                     "and version = 0 " +
+                     "and name = '" + contextname.replace("'", "''") + "'";
+
+
+        this.jdbcTemplate.query(sql, getRowMapper(context));
 
         return context;
     }
@@ -82,10 +89,10 @@ public class SystemContextRepository {
 
 
         String sql = " insert into systemcontext (systemContextId, name, notes, userid )" +
-                " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
+                     " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
 
         String sqlAllOthertimes = " insert into systemcontext (systemContextId, name, notes, userid )" +
-                " values ( :seq, :contextName, :notes, :username)";
+                                  " values ( :seq, :contextName, :notes, :username)";
 
         Map namedParameters = new HashMap();
         namedParameters.put("contextName", contextname.replace("'", "''")); //todo might not need these, as spring might do it.
