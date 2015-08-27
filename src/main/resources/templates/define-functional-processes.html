@@ -51,11 +51,6 @@
 
             var note = document.getElementById("functionalprocessnotes").value;
 
-            //	if (note == '' || note == null)
-            //	{
-            //		alert("Notes is mandatory");
-            //		return false;
-            //	}
 
             document.getElementById("option").value = name;
 
@@ -76,8 +71,8 @@
 
         }
 
-        function getFunctionalProcessData(name) {
-            if (name == 0 || name == '0') {
+        function getFunctionalProcessData(id) {
+            if (id == 0 || id == '0') {
                 document.getElementById("option").value = '2';
                 document.functionalprocessform.method = "post";
                 document.functionalprocessform.action = "/disp-functional-processes";
@@ -85,10 +80,9 @@
             }
             else {
                 document.getElementById("option").value = '3';
-                document.getElementById("functionalprocessname").value = name;
-                document.getElementById("functionalprocessid").value = name;
+                document.getElementById("functionalprocessid").value = id;
                 document.functionalprocessform.method = "post";
-                document.functionalprocessform.action = "/show-functional-processes?functionalprocessname=" + name;
+                document.functionalprocessform.action = "/show-functional-processes?functionalprocessid=" + id;
                 document.functionalprocessform.submit();
             }
 
