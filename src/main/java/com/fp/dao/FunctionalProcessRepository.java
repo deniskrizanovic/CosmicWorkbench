@@ -36,13 +36,12 @@ public class FunctionalProcessRepository {
                 "and version = 0 " +
                 "order by functionalprocessid";
 
-        return this.jdbcTemplate.query(sql, getFunctionalProcessRowMapper(new FunctionalProcess()));
+        return this.jdbcTemplate.query(sql, getFunctionalProcessListRowMapper());
     }
 
     public RowMapper<FunctionalProcess> getFunctionalProcessRowMapper(final FunctionalProcess fp) {
         return new RowMapper<FunctionalProcess>() {
-            public FunctionalProcess mapRow(ResultSet rs,
-                                            int rowNum) throws SQLException {
+            public FunctionalProcess mapRow(ResultSet rs, int rowNum) throws SQLException {
                 fp.setFunctionalProcessId(rs.getLong("functionalprocessid"));
                 fp.setName(rs.getString("name"));
                 fp.setNotes(rs.getString("notes"));
@@ -82,7 +81,22 @@ public class FunctionalProcessRepository {
         String sql = " insert into functionalprocess (functionalprocessid, systemcontextid, name, notes, userid ) " +
                 "values ( seq_FunctionalProcess.nextVal, :systemContextId, :name, :notes, :username )";
 
-        //I could get this by the sequences current value..maybe.
+
+
+        this.namedJdbcTemplate.update(sql, bindVariables);
+        return getFunctionalProcessByName(systemContextId, name);
+
+
+    }
+
+    public FunctionalProcess getFunctionalProcessByName(Long systemContextId, String name)
+    {
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("systemContextId", systemContextId);
+        bindVariables.put("name", name.replace("'", "''"));
+
+
         String returnFPsql = "select functionalprocessid, version, name, notes " +
                 "from functionalprocess " +
                 "where not deleteflag " +
@@ -90,10 +104,7 @@ public class FunctionalProcessRepository {
                 "and systemcontextid = :systemContextId " +
                 "and name = :name";
 
-        this.namedJdbcTemplate.update(sql, bindVariables);
         return this.namedJdbcTemplate.queryForObject(returnFPsql, bindVariables, getFunctionalProcessRowMapper(new FunctionalProcess()));
-
-
     }
 
 
@@ -150,4 +161,34 @@ public class FunctionalProcessRepository {
     }
 
 
+    public FunctionalProcess getFunctionalProcessById(Long systemContextId, String functionalprocessid)
+    {
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("systemContextId", systemContextId);
+        bindVariables.put("id", functionalprocessid);
+
+
+        String returnFPsql = "select functionalprocessid, version, name, notes " +
+                "from functionalprocess " +
+                "where not deleteflag " +
+                "and version = 0" +
+                "and systemcontextid = :systemContextId " +
+                "and functionalprocessid = :id";
+
+        return this.namedJdbcTemplate.queryForObject(returnFPsql, bindVariables, getFunctionalProcessRowMapper(new FunctionalProcess()));
+    }
+
+    public RowMapper<FunctionalProcess> getFunctionalProcessListRowMapper()
+    {
+        return new RowMapper<FunctionalProcess>() {
+            public FunctionalProcess mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FunctionalProcess fp = new FunctionalProcess();
+                fp.setFunctionalProcessId(rs.getLong("functionalprocessid"));
+                fp.setName(rs.getString("name"));
+                fp.setNotes(rs.getString("notes"));
+                return fp;
+            }
+        };
+    }
 }
