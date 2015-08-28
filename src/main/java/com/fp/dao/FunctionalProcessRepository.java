@@ -68,7 +68,7 @@ public class FunctionalProcessRepository {
                         });
     }
 
-    public FunctionalProcess createNewFunctionalProcess(Long systemContextId, String name, String notes, String username) {
+    public FunctionalProcess createNewFunctionalProcess(Long systemContextId, Long functionalProcessId, String name, String notes, String username) {
 
 
         Map bindVariables = new HashMap();
@@ -76,11 +76,22 @@ public class FunctionalProcessRepository {
         bindVariables.put("name", name.replace("'", "''"));
         bindVariables.put("notes", notes.replace("'", "''"));
         bindVariables.put("username", username);
+        bindVariables.put("functionalProcessId", functionalProcessId);
 
 
         String sql = " insert into functionalprocess (functionalprocessid, systemcontextid, name, notes, userid ) " +
                 "values ( seq_FunctionalProcess.nextVal, :systemContextId, :name, :notes, :username )";
 
+
+        String sqlForAnUpdate = " insert into functionalprocess (functionalprocessid, systemcontextid, name, notes, userid ) " +
+                "values ( :functionalProcessId, :systemContextId, :name, :notes, :username )";
+
+
+        boolean needsUpdating = functionalProcessNeedsUpdating(systemContextId, functionalProcessId, name.replace("'", "''"), notes.replace("'", "''"), username);
+        if (functionalProcessId > 0 && needsUpdating) {
+
+            sql = sqlForAnUpdate;
+        }
 
 
         this.namedJdbcTemplate.update(sql, bindVariables);
@@ -89,8 +100,17 @@ public class FunctionalProcessRepository {
 
     }
 
-    public FunctionalProcess getFunctionalProcessByName(Long systemContextId, String name)
-    {
+    private boolean functionalProcessNeedsUpdating(Long systemContextId, Long functionalProcessId, String name, String notes, String username) {
+
+        FunctionalProcess existing = getFunctionalProcessById(systemContextId, String.valueOf(functionalProcessId));
+        FunctionalProcess edited = new FunctionalProcess(systemContextId, functionalProcessId, name, notes);
+
+
+        return existing.equals(edited);
+
+    }
+
+    public FunctionalProcess getFunctionalProcessByName(Long systemContextId, String name) {
 
         Map bindVariables = new HashMap();
         bindVariables.put("systemContextId", systemContextId);
@@ -104,7 +124,20 @@ public class FunctionalProcessRepository {
                 "and systemcontextid = :systemContextId " +
                 "and name = :name";
 
-        return this.namedJdbcTemplate.queryForObject(returnFPsql, bindVariables, getFunctionalProcessRowMapper(new FunctionalProcess()));
+        List listOfFPs = this.namedJdbcTemplate.query(returnFPsql, bindVariables, getFunctionalProcessRowMapper(new FunctionalProcess()));
+
+        FunctionalProcess fp = new FunctionalProcess();
+
+        if (listOfFPs.size() > 0) {
+
+            fp = (FunctionalProcess) listOfFPs.get(0);
+
+        } else {
+            fp.setName(name);
+        }
+
+        return fp;
+
     }
 
 
@@ -161,8 +194,7 @@ public class FunctionalProcessRepository {
     }
 
 
-    public FunctionalProcess getFunctionalProcessById(Long systemContextId, String functionalprocessid)
-    {
+    public FunctionalProcess getFunctionalProcessById(Long systemContextId, String functionalprocessid) {
 
         Map bindVariables = new HashMap();
         bindVariables.put("systemContextId", systemContextId);
@@ -176,11 +208,20 @@ public class FunctionalProcessRepository {
                 "and systemcontextid = :systemContextId " +
                 "and functionalprocessid = :id";
 
-        return this.namedJdbcTemplate.queryForObject(returnFPsql, bindVariables, getFunctionalProcessRowMapper(new FunctionalProcess()));
+        List listOfFPs = this.namedJdbcTemplate.query(returnFPsql, bindVariables, getFunctionalProcessRowMapper(new FunctionalProcess()));
+
+        FunctionalProcess fp = new FunctionalProcess();
+
+        if (listOfFPs.size() > 0) {
+
+            fp = (FunctionalProcess) listOfFPs.get(0);
+        }
+        return fp;
+
+
     }
 
-    public RowMapper<FunctionalProcess> getFunctionalProcessListRowMapper()
-    {
+    public RowMapper<FunctionalProcess> getFunctionalProcessListRowMapper() {
         return new RowMapper<FunctionalProcess>() {
             public FunctionalProcess mapRow(ResultSet rs, int rowNum) throws SQLException {
                 FunctionalProcess fp = new FunctionalProcess();

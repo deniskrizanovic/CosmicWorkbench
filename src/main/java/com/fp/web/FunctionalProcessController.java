@@ -59,7 +59,6 @@ public class FunctionalProcessController
     public String dispFunctionalProcess(Model model, HttpServletRequest request, HttpSession session)
     {
 
-
         if (session.getAttribute("systemcontextid") != null)
         {
             Long name = (Long) session.getAttribute("systemcontextid");
@@ -67,7 +66,6 @@ public class FunctionalProcessController
 
             model.addAttribute("functionalprocesslist", actors);
         }
-
 
         return "/define-functional-processes";
     }
@@ -127,7 +125,7 @@ public class FunctionalProcessController
         String functionalsubprocessname = request.getParameter("functionalsubprocessname");
 
         int version = 0;
-        long functionalProcessId = 0l;
+        long functionalProcessId = Long.parseLong(request.getParameter("functionalprocessid"));
 
         if (systemContextId != null)
         {
@@ -144,16 +142,8 @@ public class FunctionalProcessController
                 String username = (String) session.getAttribute("username");
                 if (isSave(request))
                 {
-                     //todo an interesting test is if I try and create a fp by a name that already exists.
-                    //todo I think they fixed this by using a lookup in the systemcontext .. but what about data group?
-                    if (fPAlreadyExists(functionalprocessname, systemContextId))
-                    {
-                        err = "Data group already exist";
-                        model.addAttribute("err", err);
-                        return getFunctionalProcess(model, request, session);
-                    }
 
-                    funcProc = fpRepository.createNewFunctionalProcess(systemContextId, functionalprocessname, functionalprocessnotes, username);
+                    funcProc = fpRepository.createNewFunctionalProcess(systemContextId, functionalProcessId, functionalprocessname, functionalprocessnotes, username);
 
 
                     if (this.funcProc != null && this.funcProc.getFunctionalProcessId() != 0l)

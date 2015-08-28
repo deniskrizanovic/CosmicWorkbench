@@ -12,6 +12,17 @@ public class FunctionalProcess {
 
 	private String notes;
 
+    public FunctionalProcess() {
+    }
+
+    public FunctionalProcess(Long systemContextId, Long functionalProcessId, String name, String notes) {
+
+        this.systemContextId = systemContextId;
+        this.functionalProcessId = functionalProcessId;
+        this.name = name;
+        this.notes = notes;
+    }
+
 	public String getName() {
 		return name;
 	}
@@ -62,7 +73,6 @@ public class FunctionalProcess {
 
 		if (systemContextId != that.systemContextId) return false;
 		if (functionalProcessId != that.functionalProcessId) return false;
-		if (version != that.version) return false;
 		if (!name.equals(that.name)) return false;
 		return notes.equals(that.notes);
 
