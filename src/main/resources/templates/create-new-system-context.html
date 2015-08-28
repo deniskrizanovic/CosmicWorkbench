@@ -96,10 +96,7 @@
                         <label for="contextname" class="col-sm-4 control-label">Name :</label>
 
                         <div class="col-sm-8">
-                            <!-- just copy this bit below.. to see if we need it later. This condition logic is the same on every aspect of this page.
-                            <input type="text" class="form-control" id="contextname" name="contextname" th:onblur="'javascript:getData();'" th:readonly="*{systemcontext != null} ? (*{systemcontext.notes != null} ? ${true} : ${false}) : ${false}" th:value="*{systemcontext != null} ? (*{systemcontext.name != null} ? ${systemcontext.name} : '') : ''"> </input>-->
                             <input type="text" class="form-control" id="contextname" name="contextname" th:onblur="'javascript:getData();'" th:value="*{systemcontext != null} ? (*{systemcontext.name != null} ? ${systemcontext.name} : '') : ''"> </input>
-
                         </div>
                     </div>
                     <div class="form-group">

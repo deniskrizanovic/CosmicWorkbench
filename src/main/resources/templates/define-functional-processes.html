@@ -87,6 +87,19 @@
             }
 
         }
+
+        //this should probably be asynch
+	    function getData() {
+	    alert("in the function")
+		    var name = document.getElementById("functionalprocessname").value;
+		    alert("my name is:" + name);
+	        document.functionalprocessform.action = "/show-functional-processes?functionalprocessname=" + name;
+
+	        //alert("about to call my action::" + document.systemcontextform.action.value);
+	        document.functionalprocessform.submit();
+	}
+
+
     </script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -127,7 +140,7 @@
 
                     </ul>
                     <ul class="nav nav-tabs tabs-left">
-                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(0);'">New Func
+                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(0);'">New
                             Process</a></li>
                     </ul>
                 </div>
@@ -142,7 +155,10 @@
                                     <label class="col-sm-4 control-label" for="functionalprocessname">Name</label>
 
                                     <div class="col-sm-8">
-                                        <input type="text" id="functionalprocessname" name="functionalprocessname"  th:value="*{functionalprocess != null} ? ${functionalprocess.name} : ''" class="form-control"> </input>
+                                        <input type="text" id="functionalprocessname" name="functionalprocessname"
+                                               th:onBlur="*{functionalprocess == null}? 'javascript:getData();' "
+                                               th:value="*{functionalprocess != null} ? ${functionalprocess.name} : ''"
+                                               class="form-control"> </input>
                                         <input type="hidden" id="functionalprocessid" name="functionalprocessid"
                                                th:value="*{functionalprocess != null} ? ${functionalprocess.functionalProcessId} : ''"
                                                class="form-control"> </input>
@@ -152,23 +168,30 @@
                                     <label class="col-sm-4 control-label" for="functionalprocessnotes">Notes</label>
 
                                     <div class="col-sm-8">
-                                        <input type="text" id="functionalprocessnotes" name="functionalprocessnotes"  th:value="*{functionalprocess != null} ? ${functionalprocess.notes} : ''" class="form-control"> </input>
+                                        <input type="text" id="functionalprocessnotes" name="functionalprocessnotes"
+                                               th:value="*{functionalprocess != null} ? ${functionalprocess.notes} : ''"
+                                               class="form-control"> </input>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label" for="functionalsubprocessname">Process Steps:</label>
+                                    <label class="col-sm-4 control-label" for="functionalsubprocessname">Process
+                                        Steps:</label>
 
                                     <div class="col-sm-8">
-                                        <ul class="datalist" th:each="functionalsubprocesstmp : ${functionalsubprocesslist}">
+                                        <ul class="datalist"
+                                            th:each="functionalsubprocesstmp : ${functionalsubprocesslist}">
                                             <li>
                                                 <div style="float: left;">
-                                                    <img src="/resources/close.png" th:onclick="'javascript:clickFunc1(' + ${functionalsubprocesstmp.functionalSubProcessId} + ');'" id="img1"> </img>
+                                                    <img src="/resources/close.png"
+                                                         th:onclick="'javascript:clickFunc1(' + ${functionalsubprocesstmp.functionalSubProcessId} + ');'"
+                                                         id="img1"> </img>
                                                 </div>
                                                 <div th:text="${functionalsubprocesstmp.name}">
                                                 </div>
                                             </li>
                                         </ul>
-                                        <input type="text" id="functionalsubprocessname" name="functionalsubprocessname" class="form-control"> </input>
+                                        <input type="text" id="functionalsubprocessname" name="functionalsubprocessname"
+                                               class="form-control"> </input>
                                     </div>
                                 </div>
 
@@ -182,7 +205,9 @@
                                                 th:onclick="'javascript:clickFunc(\'save\');'">
                                             Save
                                         </button>
-                                        <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(\'delete\');'">Delete</button>
+                                        <button class="btn btn-danger" type="submit"
+                                                th:onclick="'javascript:clickFunc(\'delete\');'">Delete
+                                        </button>
 
 
                                     </div>
@@ -192,7 +217,6 @@
 
                     </div>
                 </div>
-
 
 
             </div>
