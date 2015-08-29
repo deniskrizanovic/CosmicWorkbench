@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -45,6 +46,7 @@ public class FunctionalProcessRepository {
                 fp.setFunctionalProcessId(rs.getLong("functionalprocessid"));
                 fp.setName(rs.getString("name"));
                 fp.setNotes(rs.getString("notes"));
+                fp.setSystemContextId(rs.getLong("systemcontextid"));
                 return fp;
             }
         };
@@ -68,6 +70,7 @@ public class FunctionalProcessRepository {
                         });
     }
 
+    @Transactional
     public FunctionalProcess createNewFunctionalProcess(Long systemContextId, Long functionalProcessId, String name, String notes, String username) {
 
 
@@ -90,12 +93,28 @@ public class FunctionalProcessRepository {
         boolean needsUpdating = functionalProcessNeedsUpdating(systemContextId, functionalProcessId, name.replace("'", "''"), notes.replace("'", "''"), username);
         if (functionalProcessId > 0 && needsUpdating) {
 
+            updatePreviousVersionRecords(systemContextId, functionalProcessId);
             sql = sqlForAnUpdate;
         }
 
 
         this.namedJdbcTemplate.update(sql, bindVariables);
         return getFunctionalProcessByName(systemContextId, name);
+
+
+    }
+
+    private void updatePreviousVersionRecords(Long systemContextId, Long functionalProcessId) {
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("systemContextId", systemContextId);
+        bindVariables.put("functionalProcessId", functionalProcessId);
+
+        String updateVersionOfExistingAttributes = "update functionalprocess set version = version + 1 " +
+                "where functionalProcessId = :functionalProcessId " +
+                "and systemContextId = :systemContextId";
+
+        namedJdbcTemplate.update(updateVersionOfExistingAttributes, bindVariables);
 
 
     }
@@ -117,10 +136,10 @@ public class FunctionalProcessRepository {
         bindVariables.put("name", name.replace("'", "''"));
 
 
-        String returnFPsql = "select functionalprocessid, version, name, notes " +
+        String returnFPsql = "select systemcontextid, functionalprocessid, version, name, notes " +
                 "from functionalprocess " +
                 "where not deleteflag " +
-                "and version = 0" +
+                "and version = 0 " +
                 "and systemcontextid = :systemContextId " +
                 "and name = :name";
 
@@ -140,37 +159,36 @@ public class FunctionalProcessRepository {
 
     }
 
+    @Transactional
+    public void createSubProcessSteps(String functionalsubprocessname, long functionalProcessId, Object username) {
 
-    public void createSubProcessSteps(String functionalsubprocessname, int version, long functionalProcessId, Object username) {
-        this.jdbcTemplate
-                .update(" update functionalsubprocess set version = version + 1 where functionalprocessid = "
-                        + functionalProcessId);
 
-        this.jdbcTemplate
-                .update(" insert into functionalsubprocess ( version, functionalprocessid, name, userid ) select "
-                        + version
-                        + ","
-                        + functionalProcessId
-                        + ","
-                        + "name"
-                        + ","
-                        + "userid"
-                        + ""
-                        + " from functionalsubprocess where version = 1 and not deleteflag and functionalProcessId = "
-                        + functionalProcessId);
+        Map bindVariables = new HashMap();
+        bindVariables.put("functionalsubprocessname", functionalsubprocessname.replace("'", "''"));
+        bindVariables.put("functionalProcessId", functionalProcessId);
+        bindVariables.put("username", username);
 
-        this.jdbcTemplate
-                .update(" insert into functionalsubprocess ( version, functionalprocessid, name, userid ) values ( "
-                        + version
-                        + ","
-                        + functionalProcessId
-                        + ",'"
-                        + functionalsubprocessname.replace("'",
-                        "''")
-                        + "','"
-                        + username
-                        + ""
-                        + "')");
+        String updatePreviousVersion = " update functionalsubprocess " +
+                "set version = version + 1 " +
+                "where functionalprocessid = :functionalProcessId";
+
+
+        String insertPreviousAttributes = " insert into functionalsubprocess (functionalprocessid, name, userid ) " +
+                "select functionalProcessId, name, userid " +
+                "from functionalsubprocess " +
+                "where version = 1 " +
+                "and not deleteflag " +
+                "and functionalProcessId = :functionalProcessId ";
+
+
+
+        String insertNewAttribute = " insert into functionalsubprocess (functionalprocessid, name, userid ) " +
+                "values ( :functionalProcessId, :functionalsubprocessname, :username)";
+
+
+        this.namedJdbcTemplate.update(updatePreviousVersion, bindVariables);
+        this.namedJdbcTemplate.update(insertPreviousAttributes, bindVariables);
+        this.namedJdbcTemplate.update(insertNewAttribute,bindVariables);
     }
 
     public List<FunctionalSubProcess> getSubProcessSteps(String functionalsubprocessname, long functionalProcessId) {
@@ -201,7 +219,7 @@ public class FunctionalProcessRepository {
         bindVariables.put("id", functionalprocessid);
 
 
-        String returnFPsql = "select functionalprocessid, version, name, notes " +
+        String returnFPsql = "select systemcontextid, functionalprocessid, version, name, notes " +
                 "from functionalprocess " +
                 "where not deleteflag " +
                 "and version = 0" +

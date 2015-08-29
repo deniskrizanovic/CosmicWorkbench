@@ -157,7 +157,7 @@ public class FunctionalProcessController
                     if (addNewSubProcessSteps(functionalsubprocessname, functionalProcessId))
                     {
 
-                        fpRepository.createSubProcessSteps(functionalsubprocessname, version, functionalProcessId, username);
+                        fpRepository.createSubProcessSteps(functionalsubprocessname, functionalProcessId, username);
 
                         List<FunctionalSubProcess> sub = fpRepository.getSubProcessSteps(functionalsubprocessname, functionalProcessId);
 
@@ -223,7 +223,7 @@ public class FunctionalProcessController
                     if (functionalProcessId != 0l && functionalsubprocessname != null && !functionalsubprocessname.isEmpty())
                     {
 
-                        fpRepository.createSubProcessSteps(functionalsubprocessname, version, functionalProcessId, username);
+                        fpRepository.createSubProcessSteps(functionalsubprocessname, functionalProcessId, username);
 
                         List<FunctionalSubProcess> sub = fpRepository.getSubProcessSteps(functionalsubprocessname, functionalProcessId);
 
@@ -240,7 +240,7 @@ public class FunctionalProcessController
                         //updateFunctionalModel(systemContextId, version, functionalProcessId, username, tempId);
 
                     }
-                } else if (request.getParameter("option") != null && request.getParameter("option").equals("delete"))
+                } else if (isDeleteOfSubProcessStep(request))
                 {
 
                     long functionalSubProcessId = 0l;
@@ -272,6 +272,10 @@ public class FunctionalProcessController
             return getFunctionalProcess(model, request, session);
         }
 
+    }
+
+    private boolean isDeleteOfSubProcessStep(HttpServletRequest request) {
+        return request.getParameter("option") != null && request.getParameter("option").equals("delete");
     }
 
     private boolean isAnUpdate(HttpServletRequest request)
