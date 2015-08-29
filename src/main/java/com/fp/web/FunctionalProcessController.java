@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
-import java.util.Iterator;
 import java.util.List;
 
 @Controller
@@ -259,23 +258,6 @@ public class FunctionalProcessController
                         + functionalProcessId);
     }
 
-    private boolean fPAlreadyExists(String functionalprocessname, Long systemContextId)
-    {
-
-        List<FunctionalProcess> functionalProcessList = fpRepository.getListOfFunctionalProcessesForContext(systemContextId);
-
-        for (Iterator<FunctionalProcess> iterator = functionalProcessList.iterator(); iterator.hasNext(); )
-        {
-            FunctionalProcess next = iterator.next();
-            if (next.getName().equals(functionalprocessname))
-            {
-                return true;
-            }
-
-        }
-
-        return functionalProcessList.contains(functionalprocessname);
-    }
 
     public void deleteFunctionalProcess(Long systemContextId, String functionalprocessname)
     {
