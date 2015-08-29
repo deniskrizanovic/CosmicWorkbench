@@ -7,7 +7,6 @@ import com.fp.domain.FunctionalSubProcess;
 import com.fp.domain.SystemContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -189,57 +186,7 @@ public class FunctionalProcessController
                 {
 
                     return "define-functional-processes";
-                } else if (isAnUpdate(request))
-                {
 
-                    Long name = (Long) session.getAttribute("systemcontextid");
-
-                    this.funcProc = this.jdbcTemplate
-                            .queryForObject(
-                                    "select functionalprocessid, version, name, notes from functionalprocess where not deleteflag and systemcontextid = "
-                                            + name
-                                            + " and name = '"
-                                            + functionalprocessname.replace(
-                                            "'", "''") + "'",
-                                    new RowMapper<FunctionalProcess>()
-                                    {
-                                        public FunctionalProcess mapRow(
-                                                ResultSet rs, int rowNum)
-                                                throws SQLException
-                                        {
-                                            FunctionalProcess actor = new FunctionalProcess();
-                                            actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
-                                            actor.setName(rs.getString("name"));
-                                            actor.setNotes(rs.getString("notes"));
-                                            return actor;
-                                        }
-                                    });
-
-                    if (this.funcProc != null && this.funcProc.getFunctionalProcessId() != 0l)
-                    {
-                        functionalProcessId = this.funcProc.getFunctionalProcessId();
-                    }
-
-                    if (functionalProcessId != 0l && functionalsubprocessname != null && !functionalsubprocessname.isEmpty())
-                    {
-
-                        fpRepository.createSubProcessSteps(functionalsubprocessname, functionalProcessId, username);
-
-                        List<FunctionalSubProcess> sub = fpRepository.getSubProcessSteps(functionalsubprocessname, functionalProcessId);
-
-                        Long tempId = 0l;
-
-                        if (sub.size() > 0)
-                        {
-                            int i = sub.size();
-                            tempId = sub.get(i - 1).getFunctionalSubProcessId();
-                        }
-
-
-                        //todo need to figure out what he's doing here
-                        //updateFunctionalModel(systemContextId, version, functionalProcessId, username, tempId);
-
-                    }
                 } else if (isDeleteOfSubProcessStep(request))
                 {
 
@@ -275,13 +222,9 @@ public class FunctionalProcessController
     }
 
     private boolean isDeleteOfSubProcessStep(HttpServletRequest request) {
-        return request.getParameter("option") != null && request.getParameter("option").equals("delete");
+        return request.getParameter("option") != null && request.getParameter("option").equals("delete.subprocess");
     }
 
-    private boolean isAnUpdate(HttpServletRequest request)
-    {
-        return request.getParameter("option") != null && request.getParameter("option").equals("4");
-    }
 
     private void updateFunctionalModel(Long systemContextId, int version, long functionalProcessId, String username, Long tempId)
     {

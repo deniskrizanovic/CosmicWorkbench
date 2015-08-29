@@ -60,10 +60,10 @@
 
         }
 
-        function clickFunc1(name) {
+        function clickFuncDeleteSubProcessStep(name) {
 
             document.getElementById("delete").value = name;
-            document.getElementById("option").value = '5';
+            document.getElementById("option").value = 'delete.subprocess';
 
             document.functionalprocessform.action = "/create-new-functional-process";
 
@@ -90,12 +90,9 @@
 
         //this should probably be asynch
 	    function getData() {
-	    alert("in the function")
 		    var name = document.getElementById("functionalprocessname").value;
-		    alert("my name is:" + name);
 	        document.functionalprocessform.action = "/show-functional-processes?functionalprocessname=" + name;
 
-	        //alert("about to call my action::" + document.systemcontextform.action.value);
 	        document.functionalprocessform.submit();
 	}
 
@@ -183,7 +180,7 @@
                                             <li>
                                                 <div style="float: left;">
                                                     <img src="/resources/close.png"
-                                                         th:onclick="'javascript:clickFunc1(' + ${functionalsubprocesstmp.functionalSubProcessId} + ');'"
+                                                         th:onclick="'javascript:clickFuncDeleteSubProcessStep(' + ${functionalsubprocesstmp.functionalSubProcessId} + ');'"
                                                          id="img1"> </img>
                                                 </div>
                                                 <div th:text="${functionalsubprocesstmp.name}">
