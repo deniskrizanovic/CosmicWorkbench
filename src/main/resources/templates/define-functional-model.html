@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:th="http://www.thymeleaf.org"
-		>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="utf-8">
 </meta>
@@ -10,12 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </meta>
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-<meta name="description" content="">
-</meta>
-<meta name="author" content="">
-</meta>
 
-<title>DEFINE FUNCTIONAL MODEL</title>
+
+<title>Define Functional Model</title>
 
 <!-- Bootstrap core CSS -->
 <link href="css/bootstrap.min.css" rel="stylesheet"
@@ -238,14 +233,14 @@
 	}
 	
 	*/
-	
+	//this is just a helper function I think?
 	function print_r(theObj){ 
 	       if(theObj.constructor == Array || theObj.constructor == Object){ 
-	          document.write("<ul>") 
+	          document.write("<ul>");
 	          for(var p in theObj){ 
 	             if(theObj[p].constructor == Array || theObj[p].constructor == Object){ 
 	                document.write("<li>["+p+"] => "+typeof(theObj)+"</li>"); 
-	                document.write("<ul>") 
+	                document.write("<ul>");
 	                print_r(theObj[p]); 
 	                document.write("</ul>") 
 	             } else { 
