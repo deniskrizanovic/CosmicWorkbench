@@ -11,7 +11,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @org.springframework.stereotype.Repository
 public class FunctionalModelRepository {
@@ -44,5 +46,33 @@ public class FunctionalModelRepository {
                                 return actor;
                             }
                         });
+    }
+
+
+    public List<FunctionalModel> getListOfFunctionalModelsForFunctionalProcess(long dataGroupId, long functionalProcessId, long systemContextId) {
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("systemContextId", systemContextId);
+        bindVariables.put("dataGroupId", dataGroupId);
+        bindVariables.put("functionalProcessId", functionalProcessId);
+
+
+        String sql = "select functionalmodelid " +
+                "from functionalmodel " +
+                "where not deleteflag " +
+                "and systemcontextid = :systemContextId " +
+                "and functionalprocessid = :functionalProcessId " +
+                "and datagroupid = :dataGroupId ";
+
+
+        List<FunctionalModel> models = this.namedJdbcTemplate.query(sql, bindVariables, new RowMapper<FunctionalModel>() {
+            public FunctionalModel mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FunctionalModel actor = new FunctionalModel();
+                actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
+                return actor;
+            }
+        });
+
+        return models;
     }
 }

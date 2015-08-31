@@ -1,5 +1,6 @@
 package com.fp.web;
 
+import com.fp.dao.DataGroupRepository;
 import com.fp.dao.FunctionalModelRepository;
 import com.fp.dao.FunctionalProcessRepository;
 import com.fp.domain.*;
@@ -37,6 +38,7 @@ public class FunctionalModelController {
     private int finalScore = 0;
     private FunctionalProcessRepository fpRepository;
     private FunctionalModelRepository fmRepository;
+    private DataGroupRepository dgRepository;
 
     @Autowired
     public void setFpRepository(FunctionalModelRepository fmRepository) {
@@ -47,6 +49,11 @@ public class FunctionalModelController {
     @Autowired
     public void setFpRepository(FunctionalProcessRepository fpRepository) {
         this.fpRepository = fpRepository;
+    }
+
+    @Autowired
+    public void setDataGroupRepository(DataGroupRepository repository) {
+        this.dgRepository = repository;
     }
 
     @Autowired
@@ -212,20 +219,7 @@ public class FunctionalModelController {
                 this.finalScore = this.finalScore + score.getScore();
             }
 
-            List<DataGroup> datagrouplist = this.jdbcTemplate
-                    .query("select datagroupid, version, name, notes from datagroup where systemcontextid = "
-                                    + systemContextId
-                                    + " and not deleteflag order by datagroupid",
-                            new RowMapper<DataGroup>() {
-                                public DataGroup mapRow(ResultSet rs, int rowNum)
-                                        throws SQLException {
-                                    DataGroup actor = new DataGroup();
-                                    actor.setDataGroupId(rs.getLong("datagroupid"));
-                                    actor.setName(rs.getString("name"));
-                                    actor.setNotes(rs.getString("notes"));
-                                    return actor;
-                                }
-                            });
+            List<DataGroup> datagrouplist = dgRepository.getDataGroupsForSystemContext(systemContextId);
 
             model.addAttribute("datagrouplist", datagrouplist);
 
@@ -317,26 +311,12 @@ public class FunctionalModelController {
 
             }
 
-            List<FunctionalModel> functionalModel = this.jdbcTemplate
-                    .query("select functionalmodelid from functionalmodel where not deleteflag and systemcontextid = "
-                            + systemContextId
-                            + " and functionalprocessid = "
-                            + functionalProcessId
-                            + " and datagroupid = "
-                            + dataGroupId, new RowMapper<FunctionalModel>() {
-                        public FunctionalModel mapRow(ResultSet rs, int rowNum)
-                                throws SQLException {
-                            FunctionalModel actor = new FunctionalModel();
-                            actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
-                            return actor;
-                        }
-                    });
+            List<FunctionalModel> functionalModel = fmRepository.getListOfFunctionalModelsForFunctionalProcess(dataGroupId, functionalProcessId, systemContextId);
 
-            if (request.getParameter("option") != null
-                    && request.getParameter("option").equals("1")) {
+            if (request.getParameter("option") != null && request.getParameter("option").equals("addDataGroupToModel")) {
 
                 if (functionalModel.size() > 0) {
-                    err = "Data group already exist";
+                    err = "Data group already exists in this functional model.. so why am I allowing you to select it?";
                     model.addAttribute("err", err);
 
                     // return getDataAttributeList(model, request, session);
@@ -362,21 +342,7 @@ public class FunctionalModelController {
 
             } else if (request.getParameter("option") != null && request.getParameter("option").equals("0")) {
 
-                List<FunctionalModel> functionalModeltmp = this.jdbcTemplate
-                        .query("select functionalmodelid from functionalmodel where not deleteflag and systemcontextid = "
-                                        + systemContextId
-                                        + " and functionalprocessid = "
-                                        + functionalProcessId
-                                        + " and datagroupid = "
-                                        + dataGroupId,
-                                new RowMapper<FunctionalModel>() {
-                                    public FunctionalModel mapRow(ResultSet rs,
-                                                                  int rowNum) throws SQLException {
-                                        FunctionalModel actor = new FunctionalModel();
-                                        actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
-                                        return actor;
-                                    }
-                                });
+                List<FunctionalModel> functionalModeltmp = fmRepository.getListOfFunctionalModelsForFunctionalProcess(dataGroupId, functionalProcessId, systemContextId);
 
                 if (functionalModeltmp.size() > 0) {
                     /*
@@ -458,6 +424,7 @@ public class FunctionalModelController {
         return showFunctionalModel(model, request, session);
 
     }
+
 
     @RequestMapping(value = "/show-functional-model", method = {RequestMethod.GET, RequestMethod.POST})
     public String getFunctionalModel(Model model, HttpServletRequest request, HttpSession session) {
@@ -588,8 +555,7 @@ public class FunctionalModelController {
             for (FunctionalSubProcess functionalSubProcess : functionalsubprocesslist) {
                 List<FunctionalModel> temp = new ArrayList<FunctionalModel>();
                 for (FunctionalModel functionalModel : functionalmodellist) {
-                    if (functionalSubProcess.getFunctionalSubProcessId() == functionalModel
-                            .getFunctionalSubProcessId()) {
+                    if (functionalSubProcess.getFunctionalSubProcessId() == functionalModel.getFunctionalSubProcessId()) {
 
                         FunctionalModel functionalmodel = new FunctionalModel();
                         functionalmodel = functionalModel;
@@ -659,20 +625,8 @@ public class FunctionalModelController {
 
             model.addAttribute("functionalsubprocesslist", functionalsubprocesslist);
 
-            List<DataGroup> datagrouplist = this.jdbcTemplate
-                    .query("select datagroupid, version, name, notes from datagroup where systemcontextid = "
-                                    + name
-                                    + " and not deleteflag order by datagroupid",
-                            new RowMapper<DataGroup>() {
-                                public DataGroup mapRow(ResultSet rs, int rowNum)
-                                        throws SQLException {
-                                    DataGroup actor = new DataGroup();
-                                    actor.setDataGroupId(rs.getLong("datagroupid"));
-                                    actor.setName(rs.getString("name"));
-                                    actor.setNotes(rs.getString("notes"));
-                                    return actor;
-                                }
-                            });
+            List<DataGroup> datagrouplist = dgRepository.getDataGroupsForSystemContext(name);
+
 
             model.addAttribute("datagrouplist", datagrouplist);
 
@@ -699,26 +653,13 @@ public class FunctionalModelController {
     }
 
     @RequestMapping("/list-of-data-groups")
-    public String getDataGroupList(Model model, HttpServletRequest request,
-                                   HttpSession session) {
+    public String getDataGroupList(Model model, HttpServletRequest request, HttpSession session) {
 
         List<DataGroup> actors = null;
 
         if (session.getAttribute("systemcontextid") != null) {
             Long name = (Long) session.getAttribute("systemcontextid");
-            actors = this.jdbcTemplate
-                    .query("select datagroupid, version, name, notes from datagroup where not deleteflag and systemcontextid = "
-                                    + name + " order by datagroupid",
-                            new RowMapper<DataGroup>() {
-                                public DataGroup mapRow(ResultSet rs, int rowNum)
-                                        throws SQLException {
-                                    DataGroup actor = new DataGroup();
-                                    actor.setDataGroupId(rs.getLong("datagroupid"));
-                                    actor.setName(rs.getString("name"));
-                                    actor.setNotes(rs.getString("notes"));
-                                    return actor;
-                                }
-                            });
+            actors = dgRepository.getDataGroupsForSystemContext(name);
 
             model.addAttribute("datagrouplist", actors);
 
@@ -728,27 +669,14 @@ public class FunctionalModelController {
 
     }
 
-    @RequestMapping(value = "/get-data-attribute-list", method = {
-            RequestMethod.GET, RequestMethod.POST})
-    public String getDataAttributeList(Model model, HttpServletRequest request,
-                                       HttpSession session) {
+    @RequestMapping(value = "/get-data-attribute-list", method = {RequestMethod.GET, RequestMethod.POST})
+    public String getDataAttributeList(Model model, HttpServletRequest request, HttpSession session) {
 
         if (session.getAttribute("systemcontextid") != null) {
             Long name = (Long) session.getAttribute("systemcontextid");
             String datagroupname = request.getParameter("datagroupname");
             session.setAttribute("datagroupname", datagroupname);
-            List<DataGroup> actors = this.jdbcTemplate
-                    .query("select datagroupid, version, name, notes from datagroup where not deleteflag and systemcontextid = "
-                            + name + "", new RowMapper<DataGroup>() {
-                        public DataGroup mapRow(ResultSet rs, int rowNum)
-                                throws SQLException {
-                            DataGroup actor = new DataGroup();
-                            actor.setDataGroupId(rs.getLong("datagroupid"));
-                            actor.setName(rs.getString("name"));
-                            actor.setNotes(rs.getString("notes"));
-                            return actor;
-                        }
-                    });
+            List<DataGroup> actors = dgRepository.getDataGroupsForSystemContext(name);
 
             model.addAttribute("datagrouplist", actors);
 
