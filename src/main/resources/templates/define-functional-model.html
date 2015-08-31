@@ -57,7 +57,7 @@
 
 	{
 
-		var bcgDiv = document.getElementById("dataGroupSelector");
+		var bcgDiv = document.getElementById("addDataGroupToModel");
 
 		bcgDiv.style.display = "block";
 
@@ -87,7 +87,7 @@
 
 	{
 
-		var bcgDiv = document.getElementById("dataGroupSelector");
+		var bcgDiv = document.getElementById("addDataGroupToModel");
 
 		bcgDiv.style.display = "none";
 
@@ -297,12 +297,9 @@
 							</ul>
 						</div>
 
-						<input type="hidden" id="option" name="option"> </input> <input
-							type="hidden" id="functionalsubprocessid"
-							name="functionalsubprocessid"> </input> <input type="hidden"
-							id="datagroupname" name="datagroupname"> </input><input
-							type="hidden" id="functionalmodelid" name="functionalmodelid">
-						</input>
+						<input type="hidden" id="option" name="option"> </input> <input type="hidden" id="functionalsubprocessid" name="functionalsubprocessid"> </input>
+						<input type="hidden" id="datagroupname" name="datagroupname"> </input>
+						<input type="hidden" id="functionalmodelid" name="functionalmodelid"> </input>
 
 						<div class="col-xs-8 bluebg">
 							<!-- Tab panes -->
@@ -356,10 +353,6 @@
 
 
 								</div>
-								<div class="tab-pane" id="data2">Profile Tab.</div>
-								<div class="tab-pane" id="data3">Messages Tab.</div>
-								<div class="tab-pane" id="data4">Settings Tab.</div>
-								<div class="tab-pane" id="data5">Settings Tab.</div>
 							</div>
 						</div>
 						<div class="clearfix"></div>
@@ -374,7 +367,7 @@
 		</div>
 		<!-- /container -->
 
-		<div id="dataGroupSelector"
+		<div id="addDataGroupToModel"
 			 style="position: fixed; z-index: 999; height: 100%; width: 100%; top: 0; left: 0; background-color: Black; filter: alpha(opacity =                                                                                         100); opacity: 1.0; -moz-opacity: 0.8; display: none">
 
 			<div class="container">
@@ -385,7 +378,8 @@
 						<div id="bkg_div">
 
 							<div class="form-group">
-								<label for="inputEmail3" class="col-sm-4 control-label">Data Group: :</label>
+								<label for="inputEmail3" class="col-sm-4 control-label">Data
+									Group: :</label>
 								<div class="col-sm-8">
 									<select name="datagroupname1" class="form-control">
 										<option th:each="datagroup : ${datagrouplist}"
@@ -398,8 +392,7 @@
 								<div class="col-sm-offset-4 col-sm-8">
 
 									<button class="btn btn-default" type="submit"
-											th:onclick="'javascript:popupClick(\'addDataGroupToModel\');'">Save
-									</button>
+										th:onclick="'javascript:popupClick(\'addDataGroupToModel\');'">Save</button>
 									<button class="btn btn-danger" type="submit"
 											th:onclick="'javascript:popupClick(0);'">Delete
 									</button>

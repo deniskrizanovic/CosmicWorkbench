@@ -68,8 +68,6 @@ public class FunctionalModelController {
 
         List<FunctionalProcess> functionalProcessList = null;
 
-
-
         Long funcProcId = 0l;
 
         List<Report> report = null;
@@ -121,28 +119,7 @@ public class FunctionalModelController {
 
             model.addAttribute("distinctfunctionalmodellist", distinctfunctionalmodellist);
 
-            functionalmodellist = this.jdbcTemplate
-                    .query("select a.functionalmodelid, a.functionalprocessid, c.functionalsubprocessid, c.name as functionalsubprocessname, a.datagroupid, b.name as datagroupname, a.grade, a.notes from functionalmodel a, datagroup b, functionalsubprocess c where a.datagroupid = b.datagroupid and a.functionalsubprocessid = c.functionalsubprocessid and a.systemcontextid = "
-                                    + systemContextId
-                                    + " and a.functionalprocessid = "
-                                    + this.functionalProcess.getFunctionalProcessId()
-                                    + " and not a.deleteflag order by a.datagroupid, a.functionalsubprocessid",
-                            new RowMapper<FunctionalModel>() {
-                                public FunctionalModel mapRow(ResultSet rs,
-                                                              int rowNum) throws SQLException {
-                                    FunctionalModel actor = new FunctionalModel();
-                                    actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
-                                    actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
-                                    actor.setFunctionalSubProcessName(rs.getString("functionalsubprocessname"));
-                                    actor.setFunctionalSubProcessId(rs.getLong("functionalsubprocessid"));
-                                    actor.setDataGroupName(rs.getString("datagroupname"));
-                                    actor.setDisplaydataGroupName(rs.getString("datagroupname").replace("'", "\\'"));
-                                    actor.setDataGroupId(rs.getLong("datagroupid"));
-                                    actor.setGrade(rs.getString("grade"));
-                                    actor.setNotes(rs.getString("notes").replace("'", "\\'"));
-                                    return actor;
-                                }
-                            });
+            functionalmodellist = fmRepository.getListOfFunctionalModels(systemContextId, funcProcId);
 
             model.addAttribute("functionalmodellist", functionalmodellist);
 
@@ -248,6 +225,7 @@ public class FunctionalModelController {
 
 
 
+
     @RequestMapping(value = "/create-new-functional-model", method = {RequestMethod.GET, RequestMethod.POST})
     public String createFunctionalModel(Model model, HttpServletRequest request, HttpSession session) {
 
@@ -258,62 +236,35 @@ public class FunctionalModelController {
             session.setAttribute("datagroupname", datagroupname);
         }
 
-        Long functionalprocessname = (Long) session.getAttribute("functionalprocessname");
+        Long fpId = (Long) session.getAttribute("functionalprocessname");  //todo this gets the process name, which seems to be overloaded in the html
 
-        int version = 0;
-        long dataGroupId = 0l;
-        long functionalProcessId = 0l;
         long systemContextId = (long) session.getAttribute("systemcontextid");
 
         if (systemContextId != 0l) {
 
-            List<DataGroup> dataGroupList = this.jdbcTemplate
-                    .query("select datagroupid, version, name, notes from datagroup where not deleteflag and systemcontextid = "
-                            + systemContextId
-                            + " and name = '"
-                            + datagroupname.replace("'", "''")
-                            + "'", new RowMapper<DataGroup>() {
-                        public DataGroup mapRow(ResultSet rs, int rowNum)
-                                throws SQLException {
-                            DataGroup actor = new DataGroup();
-                            actor.setDataGroupId(rs.getLong("datagroupid"));
-                            actor.setName(rs.getString("name"));
-                            actor.setNotes(rs.getString("notes"));
-                            return actor;
-                        }
-                    });
+            DataGroup dataGroup = dgRepository.getDataGroupByName(systemContextId, datagroupname.replace("'", "''"));
 
-            if (dataGroupList.size() > 0) {
+            long dataGroupId = 0l;
+            if (dataGroup != null) {
 
-                dataGroupId = dataGroupList.get(0).getDataGroupId();
+                dataGroupId = dataGroup.getDataGroupId();
 
             }
 
-            List<FunctionalProcess> functionalProcessList = this.jdbcTemplate
-                    .query("select functionalprocessid, version, name, notes from functionalprocess where not deleteflag and systemcontextid = "
-                                    + systemContextId
-                                    + " and functionalprocessid = "
-                                    + functionalprocessname + "",
-                            new RowMapper<FunctionalProcess>() {
-                                public FunctionalProcess mapRow(ResultSet rs,
-                                                                int rowNum) throws SQLException {
-                                    FunctionalProcess actor = new FunctionalProcess();
-                                    actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
-                                    actor.setName(rs.getString("name"));
-                                    actor.setNotes(rs.getString("notes"));
-                                    return actor;
-                                }
-                            });
+            FunctionalProcess functionalProcess = fpRepository.getFunctionalProcessById(systemContextId, String.valueOf(fpId));
 
-            if (functionalProcessList.size() > 0) {
+            long functionalProcessId = 0l;
+            if (functionalProcess != null) {
 
-                functionalProcessId = functionalProcessList.get(0).getFunctionalProcessId();
+                functionalProcessId = functionalProcess.getFunctionalProcessId();
 
             }
 
-            List<FunctionalModel> functionalModel = fmRepository.getListOfFunctionalModelsForFunctionalProcess(dataGroupId, functionalProcessId, systemContextId);
 
-            if (request.getParameter("option") != null && request.getParameter("option").equals("addDataGroupToModel")) {
+            Object username = session.getAttribute("username");
+            if (addingDataGroupToModel(request)) {
+
+                List<FunctionalModel> functionalModel = fmRepository.getListOfFunctionalModelsForFunctionalProcess(dataGroupId, functionalProcessId, systemContextId);
 
                 if (functionalModel.size() > 0) {
                     err = "Data group already exists in this functional model.. so why am I allowing you to select it?";
@@ -322,21 +273,7 @@ public class FunctionalModelController {
                     // return getDataAttributeList(model, request, session);
 
                 } else {
-                    this.jdbcTemplate
-                            .update(" insert into functionalmodel ( systemcontextid, functionalprocessid, datagroupid , functionalsubprocessid, version, grade, notes, score, userid ) select "
-                                    + systemContextId
-                                    + ","
-                                    + functionalProcessId
-                                    + ","
-                                    + dataGroupId
-                                    + ", a.functionalsubprocessid, "
-                                    + version
-                                    + ",'','',0,'"
-                                    + session.getAttribute("username")
-                                    + ""
-                                    + "'"
-                                    + " from functionalsubprocess a where a.version = 0 and a.functionalprocessid = "
-                                    + functionalProcessId);
+                    fmRepository.insertDataGroupIntoFunctionalModel(dataGroupId, functionalProcessId, systemContextId, username);
 
                 }
 
@@ -407,7 +344,7 @@ public class FunctionalModelController {
                                         + ","
                                         + datafieldid
                                         + ",0,'"
-                                        + session.getAttribute("username")
+                                        + username
                                         + "')");
                         len = len + 1;
                     }
@@ -423,6 +360,10 @@ public class FunctionalModelController {
 
         return showFunctionalModel(model, request, session);
 
+    }
+
+    private boolean addingDataGroupToModel(HttpServletRequest request) {
+        return request.getParameter("option") != null && request.getParameter("option").equals("addDataGroupToModel");
     }
 
 
@@ -511,28 +452,7 @@ public class FunctionalModelController {
 
             model.addAttribute("distinctfunctionalmodellist", distinctfunctionalmodellist);
 
-            functionalmodellist = this.jdbcTemplate
-                    .query("select a.functionalmodelid, a.functionalprocessid, c.functionalsubprocessid, c.name as functionalsubprocessname, a.datagroupid, b.name as datagroupname, a.grade, a.notes from functionalmodel a, datagroup b, functionalsubprocess c where a.datagroupid = b.datagroupid and a.functionalsubprocessid = c.functionalsubprocessid and a.systemcontextid = "
-                                    + systemContextId
-                                    + " and a.functionalprocessid = "
-                                    + this.functionalProcess.getFunctionalProcessId()
-                                    + " and not a.deleteflag order by a.datagroupid, a.functionalsubprocessid",
-                            new RowMapper<FunctionalModel>() {
-                                public FunctionalModel mapRow(ResultSet rs,
-                                                              int rowNum) throws SQLException {
-                                    FunctionalModel actor = new FunctionalModel();
-                                    actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
-                                    actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
-                                    actor.setFunctionalSubProcessName(rs.getString("functionalsubprocessname"));
-                                    actor.setFunctionalSubProcessId(rs.getLong("functionalsubprocessid"));
-                                    actor.setDataGroupName(rs.getString("datagroupname"));
-                                    actor.setDisplaydataGroupName(rs.getString("datagroupname").replace("'", "\\'"));
-                                    actor.setDataGroupId(rs.getLong("datagroupid"));
-                                    actor.setGrade(rs.getString("grade"));
-                                    actor.setNotes(rs.getString("notes").replace("'", "\\'"));
-                                    return actor;
-                                }
-                            });
+            functionalmodellist = fmRepository.getListOfFunctionalModels(systemContextId, this.functionalProcess.getFunctionalProcessId());
 
             model.addAttribute("functionalmodellist", functionalmodellist);
 
