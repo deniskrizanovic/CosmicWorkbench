@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    </meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    </meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </meta>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+
+    <title>Select Attributes to add to Functional Model</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet"
+          th:href="@{/resources/css/bootstrap.min.css}">
+    </link>
+    <!-- Bootstrap theme -->
+    <link href="css/bootstrap-theme.min.css"
+          th:href="@{/resources/css/bootstrap-theme.min.css}" rel="stylesheet">
+    </link>
+    <link rel="stylesheet" href="css/bootstrap.vertical-tabs.css"
+          th:href="@{/resources/css/bootstrap.vertical-tabs.css}">
+    </link>
+
+    <!-- Custom styles for this template -->
+    <link href="css/theme1.css" th:href="@{/resources/css/theme1.css}"
+          rel="stylesheet">
+    </link>
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]>
+    <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body role="document">
+
+<form name="addDataAttribues" method="post" class="form-horizontal">
+
+    <div class="container">
+
+        <p style="color: red" th:text="*{err != null} ? ${err} : ''"></p>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Add data attributes</h1>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container">
+
+        <p style="color: red" th:text="*{err != null} ? ${err} : ''"></p>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="bkg_div">
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Data Group: :</label>
+                        <div class="col-sm-8" >
+                            <select name="datagroupname1" class="form-control" style="display: none;">
+                                <option th:each="datagroup : ${datagrouplist}" th:value="${datagroup.name}"
+                                        th:text="${datagroup.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="bkg_div">
+
+                    <div class="form-group">
+                        <label for="grade" class="col-sm-4 control-label">Type :</label>
+
+                        <div class="col-sm-8">
+                            <select name="grade" id="grade" class="form-control">
+                                <option th:value="E" th:text="'Entry'"></option>
+                                <option th:value="X" th:text="'Exit'"></option>
+                                <option th:value="R" th:text="'Read'"></option>
+                                <option th:value="W" th:text="'Write'"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes" class="col-sm-4 control-label">Notes:</label>
+
+                        <div class="col-sm-8">
+                            <textarea name="notes" id="notes" rows="2" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-4 control-label">
+                            <div id="datagroupid"></div>
+                        </label>
+
+                        <div class="col-sm-8" id="datafielddiv"></div>
+                        <div class="col-sm-8">
+                            <ul class="datamodellist"
+                                th:each="datafield : ${datafieldlist}">
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" th:value="${datafield.dataFieldId}"
+                                                   name="datafields" th:text="${datafield.name}"> </input>
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                            <ul class="datamodellist" id="datalist1">
+
+
+                            </ul>
+
+
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="padding-top: 20px;">
+                        <div class="col-sm-offset-4 col-sm-8">
+
+                            <button class="btn btn-default" type="submit"
+                                    th:onclick="'javascript:popupClick1(\'saveNewAttributes\');'">Save
+                            </button>
+                            <button class="btn btn-danger" type="submit" th:onclick="'javascript:popupClick1(2);'">
+                                Delete
+                            </button>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

@@ -31,6 +31,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
         registry.addViewController("/grid-model-window").setViewName("grid-model-window");
         registry.addViewController("/define-functional-model").setViewName("define-functional-model");
+        registry.addViewController("/select-data-attributes").setViewName("select-data-attributes");
 
 
 	}

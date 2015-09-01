@@ -158,16 +158,16 @@ public class DataGroupRepository
     }
 
 
-    public List<DataField> getDataFieldsForADataGroup(DataGroup dg) {
+    public List<DataField> getDataFieldsForADataGroup(long dgId) {
 
         Map boundVariables = new HashMap();
-        //  boundVariables.put("dataGroupId", dg.getDataGroupId());
+          boundVariables.put("dgId", dgId);
 
         String sql = "select datafieldid, datagroupid, version, name " +
                 "from datafield " +
                 "where not deleteflag " +
                 "and version = 0 " +
-                "and datagroupid = 1";
+                "and datagroupid = :dgId";
 
 
         return this.namedJdbcTemplate.query(sql, boundVariables, new RowMapper<DataField>() {

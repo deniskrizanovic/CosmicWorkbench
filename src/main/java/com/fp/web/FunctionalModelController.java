@@ -187,9 +187,9 @@ public class FunctionalModelController {
 
             model.addAttribute("finalScore", this.finalScore);
 
-            List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(dataGroup);
-
-            model.addAttribute("datafieldlist", datafieldlist);
+//            List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(dataGroup.getDataGroupId());
+//
+//            model.addAttribute("datafieldlist", datafieldlist);
 
         }
 
@@ -509,7 +509,7 @@ public class FunctionalModelController {
 
             model.addAttribute("datagrouplist", datagrouplist);
 
-            List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(dataGroup);
+            List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(dataGroup.getDataGroupId());
 
             model.addAttribute("datafieldlist", datafieldlist);
 
@@ -536,7 +536,25 @@ public class FunctionalModelController {
 
     }
 
-    @RequestMapping(value = "/get-data-attribute-list", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/select-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
+    public String selectDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
+
+        String datagroupid = request.getParameter("dg");
+        String subprocessid = request.getParameter("sp");
+        Long name = (Long) session.getAttribute("systemcontextid");
+
+        List<DataGroup> datagrouplist = dgRepository.getDataGroupsForSystemContext(name);
+        model.addAttribute("datagrouplist", datagrouplist);
+
+        List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(Long.parseLong(datagroupid));
+        model.addAttribute("datafieldlist", datafieldlist);
+
+        System.out.println("debug!");
+        return "select-data-attributes"  ;
+    }
+
+
+        @RequestMapping(value = "/get-data-attribute-list", method = {RequestMethod.GET, RequestMethod.POST})
     public String getDataAttributeList(Model model, HttpServletRequest request, HttpSession session) {
 
         if (session.getAttribute("systemcontextid") != null) {

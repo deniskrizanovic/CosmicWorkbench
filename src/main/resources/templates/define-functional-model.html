@@ -162,6 +162,8 @@
 	function call() {
 		showModalPopUp();
 
+        document.systemcontextform.action = "/getdata?name="+name;
+        document.systemcontextform.submit();
 	}
 
 	function getGrade(param1, param2, param3, param4, param5, param8, param9) {
@@ -214,9 +216,12 @@
 
 	}
 
-	function openMyWindow()
+	function openMyWindow(datagroup, subprocess)
 	{
-	    alert("I am opening something");
+	    alert("I am opening something" + datagroup + "::" + subprocess);
+
+        document.functionalmodelform.action = "/select-data-attributes?dg=" + datagroup + "\u0026sp=" + subprocess;
+        document.functionalmodelform.submit();
 	}
 	
 	/*
@@ -342,7 +347,7 @@
                                                     <!--th:onclick="'javascript:getGrade(' +${functionalmodel.functionalSubProcessId} + ',' + ${functionalmodel.functionalModelId} + ',\'' + ${functionalmodel.displaydataGroupName} + '\',\'' + ${functionalmodel.grade} + '\',\'' + ${functionalmodel.notes} + '\',' + ${functionalmodel.dataGroupId} + ',\'' + ${functionalmodel.datafieldList} + '\');'"-->
                                                     <!--th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '" ></td>-->
                                                     <td th:each="functionalmodel : ${functionalsubprocess.functionalModel}"
-                                                        th:onclick="'javascript:openMyWindow()'"
+                                                        th:onclick="'javascript:openMyWindow( ' + ${functionalmodel.dataGroupId} + ',' + ${functionalsubprocess.functionalSubProcessId} + ');'"
                                                         th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '">
                                                     </td>
 
