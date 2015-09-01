@@ -1,5 +1,6 @@
 package com.fp.dao;
 
+import com.fp.domain.DataField;
 import com.fp.domain.DataGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -155,4 +156,31 @@ public class DataGroupRepository
         namedJdbcTemplate.update(insertTheExisitngAttributesForTheCurrentVersion, boundVariables);
         namedJdbcTemplate.update(insertTheNewAttribute, boundVariables);
     }
+
+
+    public List<DataField> getDataFieldsForADataGroup(DataGroup dg) {
+
+        Map boundVariables = new HashMap();
+        //  boundVariables.put("dataGroupId", dg.getDataGroupId());
+
+        String sql = "select datafieldid, datagroupid, version, name " +
+                "from datafield " +
+                "where not deleteflag " +
+                "and version = 0 " +
+                "and datagroupid = 1";
+
+
+        return this.namedJdbcTemplate.query(sql, boundVariables, new RowMapper<DataField>() {
+            public DataField mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataField datafield = new DataField();
+                datafield.setDataFieldId(rs.getLong("datafieldid"));
+                datafield.setDataGroupId(rs.getLong("datagroupid"));
+                datafield.setVersion(rs.getInt("version"));
+                datafield.setName(rs.getString("name"));
+                return datafield;
+            }
+        });
+    }
+
+
 }

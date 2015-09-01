@@ -2,6 +2,7 @@ package com.fp.dao;
 
 
 import com.fp.domain.FunctionalModel;
+import com.fp.domain.FunctionalModelDataField;
 import com.fp.domain.FunctionalProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,20 +32,22 @@ public class FunctionalModelRepository {
     //todo maybe before versioning was implemented?
     public List<FunctionalModel> getListOfDistinctFunctionalModels(long systemContextId, FunctionalProcess fp) {
 
-        System.out.println("using the distinct query");
         Map bindVariables = new HashMap();
         bindVariables.put("systemContextId", systemContextId);
         bindVariables.put("functionalProcessId", fp.getFunctionalProcessId());
 
 
-        String sql = "select max(a.functionalmodelid) as functionalmodelid, max(a.functionalprocessid) as functionalprocessid, " +
-                "max(c.functionalsubprocessid) as functionalsubprocessid, max(c.name) as functionalsubprocessname, " +
+        String sql = "select max(a.id) as functionalmodelid, max(a.functionalprocessid) as functionalprocessid, " +
+                "max(c.id) as functionalsubprocessid, max(c.name) as functionalsubprocessname, " +
                 "max(a.datagroupid) as datagroupid, max(b.name) as datagroupname " +
                 "from functionalmodel a, datagroup b, functionalsubprocess c " +
                 "where a.datagroupid = b.datagroupid " +
-                "and a.functionalsubprocessid = c.functionalsubprocessid " +
+                "and a.functionalsubprocessid = c.id " +
                 "and a.systemcontextid = :systemContextId " +
                 "and a.functionalprocessid = :functionalProcessId " +
+                "and a.version = 0 " +
+                "and b.version = 0 " +
+                "and c.version = 0 " +
                 "and not a.deleteflag " +
                 "group by a.datagroupid";
 
@@ -55,7 +58,7 @@ public class FunctionalModelRepository {
         return new RowMapper<FunctionalModel>() {
             public FunctionalModel mapRow(ResultSet rs, int rowNum) throws SQLException {
                 FunctionalModel actor = new FunctionalModel();
-                actor.setFunctionalModelId(rs.getLong("id"));
+                actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
                 actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
                 actor.setFunctionalSubProcessId(rs.getLong("functionalsubprocessid"));
                 actor.setDataGroupName(rs.getString("datagroupname"));
@@ -66,6 +69,14 @@ public class FunctionalModelRepository {
         };
     }
 
+
+    public void updateFunctionalModelWithTypeAndNotes(String notes, String grade, long functionalmodelid) {
+        this.jdbcTemplate
+                .update(" update functionalmodel set grade = '" + grade
+                        + "'" + ", notes = '" + notes.replace("'", "''") + "', "
+                        + " score = 1 where functionalmodelid = "
+                        + functionalmodelid);
+    }
 
     public List<FunctionalModel> getListOfFunctionalModels(long systemContextId, FunctionalProcess fp) {
 
@@ -181,6 +192,36 @@ public class FunctionalModelRepository {
                 return actor;
             }
         };
+    }
+
+
+    public List<FunctionalModelDataField> getDataFieldsForFunctionalModel(long systemContextId, FunctionalProcess fp) {
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("systemContextId", systemContextId);
+        bindVariables.put("fpId", fp.getFunctionalProcessId());
+
+
+        String sql = "select functionalmodelid, datafieldid " +
+                "from functionalmodeldatafield " +
+                "where functionalmodelid in " +
+                "(select a.functionalmodelid " +
+                "from functionalmodel a, datagroup b, functionalsubprocess c " +
+                "where a.datagroupid = b.datagroupid " +
+                "and a.functionalsubprocessid = c.id " +
+                "and a.systemcontextid = :systemContextId " +
+                "and a.functionalprocessid = :fpId " +
+                "and not a.deleteflag) " +
+                "order by functionalmodelid";
+
+        return this.namedJdbcTemplate.query(sql, bindVariables, new RowMapper<FunctionalModelDataField>() {
+            public FunctionalModelDataField mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FunctionalModelDataField actor = new FunctionalModelDataField();
+                actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
+                actor.setDatafieldId(rs.getLong("datafieldid"));
+                return actor;
+            }
+        });
     }
 
 }

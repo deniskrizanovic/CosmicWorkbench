@@ -123,22 +123,7 @@ public class FunctionalModelController {
 
             model.addAttribute("functionalmodellist", functionalmodellist);
 
-            functionalmodeldatafieldlist = this.jdbcTemplate
-                    .query("select functionalmodelid, datafieldid from functionalmodeldatafield where functionalmodelid in ( select a.functionalmodelid from functionalmodel a, datagroup b, functionalsubprocess c where a.datagroupid = b.datagroupid and a.functionalsubprocessid = c.functionalsubprocessid and a.systemcontextid = "
-                                    + systemContextId
-                                    + " and a.functionalprocessid = "
-                                    + this.functionalProcess.getFunctionalProcessId()
-                                    + " and not a.deleteflag) order by functionalmodelid",
-                            new RowMapper<FunctionalModelDataField>() {
-                                public FunctionalModelDataField mapRow(ResultSet rs,
-                                                                       int rowNum) throws SQLException {
-                                    FunctionalModelDataField actor = new FunctionalModelDataField();
-                                    actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
-
-                                    actor.setDatafieldId(rs.getLong("datafieldid"));
-                                    return actor;
-                                }
-                            });
+            functionalmodeldatafieldlist = fmRepository.getDataFieldsForFunctionalModel(systemContextId, functionalProcess);
 
 
             for (FunctionalSubProcess functionalSubProcess : functionalsubprocesslist) {
@@ -202,19 +187,7 @@ public class FunctionalModelController {
 
             model.addAttribute("finalScore", this.finalScore);
 
-            List<DataField> datafieldlist = this.jdbcTemplate
-                    .query("select datafieldid, datagroupid, version, name from datafield where not deleteflag and version = 0",
-                            new RowMapper<DataField>() {
-                                public DataField mapRow(ResultSet rs, int rowNum)
-                                        throws SQLException {
-                                    DataField datafield = new DataField();
-                                    datafield.setDataFieldId(rs.getLong("datafieldid"));
-                                    datafield.setDataGroupId(rs.getLong("datagroupid"));
-                                    datafield.setVersion(rs.getInt("version"));
-                                    datafield.setName(rs.getString("name"));
-                                    return datafield;
-                                }
-                            });
+            List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(dataGroup);
 
             model.addAttribute("datafieldlist", datafieldlist);
 
@@ -222,7 +195,6 @@ public class FunctionalModelController {
 
         return "define-functional-model";
     }
-
 
 
 
@@ -311,33 +283,33 @@ public class FunctionalModelController {
                         .update(" delete from functionalmodeldatafield where functionalmodelid = "
                                 + functionalmodelid);
 
-            } else if (request.getParameter("option") != null && request.getParameter("option").equals("3")) {
+            } else if (request.getParameter("option") != null && request.getParameter("option").equals("saveNewAttributes")) {
 
                 String notes = request.getParameter("notes");
                 String grade = request.getParameter("grade");
-                String[] checkbox = request.getParameterValues("datafields");
+                String[] dataAttributes = request.getParameterValues("datafields");
+                String[] test = request.getParameterValues("dataAttribute");
+
+
 
                 long functionalmodelid = Long.parseLong(request.getParameter("functionalmodelid"));
 
-                this.jdbcTemplate
-                        .update(" update functionalmodel set grade = '" + grade
-                                + "'" + ", notes = '" + notes.replace("'", "''") + "', "
-                                + " score = 1 where functionalmodelid = "
-                                + functionalmodelid);
+                fmRepository.updateFunctionalModelWithTypeAndNotes(notes, grade, functionalmodelid);
 
                 int len = 0;
 
                 long datafieldid = 0l;
 
-                if (checkbox != null) {
+                if (dataAttributes != null) {
                     //	String[] parts = checkbox.split(",");
 
+                    //todo this statmenet should be deleted.
                     this.jdbcTemplate
                             .update(" delete from functionalmodeldatafield where functionalmodelid = "
                                     + functionalmodelid);
 
-                    while (len < checkbox.length) {
-                        datafieldid = Long.parseLong(checkbox[len]);
+                    while (len < dataAttributes.length) {
+                        datafieldid = Long.parseLong(dataAttributes[len]);
                         this.jdbcTemplate
                                 .update(" insert into functionalmodeldatafield (functionalmodelid, datafieldid, version, userid) values ( "
                                         + functionalmodelid
@@ -361,6 +333,7 @@ public class FunctionalModelController {
         return showFunctionalModel(model, request, session);
 
     }
+
 
     private boolean addingDataGroupToModel(HttpServletRequest request) {
         return request.getParameter("option") != null && request.getParameter("option").equals("addDataGroupToModel");
@@ -456,21 +429,7 @@ public class FunctionalModelController {
 
             model.addAttribute("functionalmodellist", functionalmodellist);
 
-            functionalmodeldatafieldlist = this.jdbcTemplate
-                    .query("select functionalmodelid, datafieldid from functionalmodeldatafield where functionalmodelid in ( select a.functionalmodelid from functionalmodel a, datagroup b, functionalsubprocess c where a.datagroupid = b.datagroupid and a.functionalsubprocessid = c.functionalsubprocessid and a.systemcontextid = "
-                                    + systemContextId
-                                    + " and a.functionalprocessid = "
-                                    + this.functionalProcess.getFunctionalProcessId()
-                                    + " and not a.deleteflag) order by functionalmodelid",
-                            new RowMapper<FunctionalModelDataField>() {
-                                public FunctionalModelDataField mapRow(ResultSet rs,
-                                                                       int rowNum) throws SQLException {
-                                    FunctionalModelDataField actor = new FunctionalModelDataField();
-                                    actor.setFunctionalModelId(rs.getLong("functionalmodelid"));
-                                    actor.setDatafieldId(rs.getLong("datafieldid"));
-                                    return actor;
-                                }
-                            });
+            functionalmodeldatafieldlist = fmRepository.getDataFieldsForFunctionalModel(systemContextId, functionalProcess);
 
             for (FunctionalSubProcess functionalSubProcess : functionalsubprocesslist) {
                 List<FunctionalModel> temp = new ArrayList<FunctionalModel>();
@@ -550,19 +509,7 @@ public class FunctionalModelController {
 
             model.addAttribute("datagrouplist", datagrouplist);
 
-            List<DataField> datafieldlist = this.jdbcTemplate
-                    .query("select datafieldid, datagroupid, version, name from datafield where not deleteflag and version = 0",
-                            new RowMapper<DataField>() {
-                                public DataField mapRow(ResultSet rs, int rowNum)
-                                        throws SQLException {
-                                    DataField datafield = new DataField();
-                                    datafield.setDataFieldId(rs.getLong("datafieldid"));
-                                    datafield.setDataGroupId(rs.getLong("datagroupid"));
-                                    datafield.setVersion(rs.getInt("version"));
-                                    datafield.setName(rs.getString("name"));
-                                    return datafield;
-                                }
-                            });
+            List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(dataGroup);
 
             model.addAttribute("datafieldlist", datafieldlist);
 

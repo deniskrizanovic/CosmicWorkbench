@@ -54,20 +54,21 @@ public class FunctionalProcessRepository {
 
 
     public List<FunctionalSubProcess> getListofSubProcesses(long functionalProcessId) {
-        return this.jdbcTemplate
-                .query("select functionalsubprocessid, functionalprocessid, version, name from functionalsubprocess where not deleteflag and version = 0 and functionalprocessid = "
-                                + functionalProcessId,
-                        new RowMapper<FunctionalSubProcess>() {
-                            public FunctionalSubProcess mapRow(
-                                    ResultSet rs, int rowNum)
-                                    throws SQLException {
-                                FunctionalSubProcess actor = new FunctionalSubProcess();
-                                actor.setFunctionalSubProcessId(rs.getLong("functionalsubprocessid"));
-                                actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
-                                actor.setName(rs.getString("name"));
-                                return actor;
-                            }
-                        });
+        String sql = "select id, functionalprocessid, version, name " +
+                "from functionalsubprocess " +
+                "where not deleteflag " +
+                "and version = 0 " +
+                "and functionalprocessid = " + functionalProcessId;
+
+        return this.jdbcTemplate.query(sql, new RowMapper<FunctionalSubProcess>() {
+            public FunctionalSubProcess mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FunctionalSubProcess actor = new FunctionalSubProcess();
+                actor.setFunctionalSubProcessId(rs.getLong("id"));
+                actor.setFunctionalProcessId(rs.getLong("functionalprocessid"));
+                actor.setName(rs.getString("name"));
+                return actor;
+            }
+        });
     }
 
     @Transactional
@@ -188,7 +189,7 @@ public class FunctionalProcessRepository {
 
         this.namedJdbcTemplate.update(updatePreviousVersion, bindVariables);
         this.namedJdbcTemplate.update(insertPreviousAttributes, bindVariables);
-        this.namedJdbcTemplate.update(insertNewAttribute,bindVariables);
+        this.namedJdbcTemplate.update(insertNewAttribute, bindVariables);
     }
 
     public List<FunctionalSubProcess> getSubProcessSteps(String functionalsubprocessname, long functionalProcessId) {
