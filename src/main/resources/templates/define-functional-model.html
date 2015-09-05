@@ -216,11 +216,11 @@
 
 	}
 
-	function openMyWindow(datagroup, subprocess)
+	function openMyWindow(datagroup, subprocess, process)
 	{
 	    alert("I am opening something" + datagroup + "::" + subprocess);
 
-        document.functionalmodelform.action = "/select-data-attributes?dg=" + datagroup + "\u0026sp=" + subprocess;
+        document.functionalmodelform.action = "/select-data-attributes?dg=" + datagroup + "\u0026sp=" + subprocess + "\u0026p=" + process;
         document.functionalmodelform.submit();
 	}
 	
@@ -347,7 +347,7 @@
                                                     <!--th:onclick="'javascript:getGrade(' +${functionalmodel.functionalSubProcessId} + ',' + ${functionalmodel.functionalModelId} + ',\'' + ${functionalmodel.displaydataGroupName} + '\',\'' + ${functionalmodel.grade} + '\',\'' + ${functionalmodel.notes} + '\',' + ${functionalmodel.dataGroupId} + ',\'' + ${functionalmodel.datafieldList} + '\');'"-->
                                                     <!--th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '" ></td>-->
                                                     <td th:each="functionalmodel : ${functionalsubprocess.functionalModel}"
-                                                        th:onclick="'javascript:openMyWindow( ' + ${functionalmodel.dataGroupId} + ',' + ${functionalsubprocess.functionalSubProcessId} + ');'"
+                                                        th:onclick="'javascript:openMyWindow( ' + ${functionalmodel.dataGroupId} + ',' + ${functionalsubprocess.functionalSubProcessId} + ','+ ${functionalmodel.functionalProcessId} + ');'"
                                                         th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '">
                                                     </td>
 

@@ -3,7 +3,10 @@ package com.fp.web;
 import com.fp.dao.DataGroupRepository;
 import com.fp.dao.FunctionalModelRepository;
 import com.fp.dao.FunctionalProcessRepository;
+import com.fp.dao.Repository;
 import com.fp.domain.*;
+import com.fp.model.SizingContext;
+import com.fp.model.SubProcess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -18,6 +22,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -39,6 +44,17 @@ public class FunctionalModelController {
     private FunctionalProcessRepository fpRepository;
     private FunctionalModelRepository fmRepository;
     private DataGroupRepository dgRepository;
+    private Repository repository;
+    @Autowired
+    SizingContext sizingContext;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
     @Autowired
     public void setFpRepository(FunctionalModelRepository fmRepository) {
@@ -97,7 +113,7 @@ public class FunctionalModelController {
                 System.out.println("Why would I get here?");
                 //I get in here because I've changed the functional process I want to map
                 funcProcId = Long.parseLong(session.getAttribute("functionalprocessname") + "");
-                this.functionalProcess   = fpRepository.getFunctionalProcessById(systemContextId, String.valueOf(funcProcId));
+                this.functionalProcess = fpRepository.getFunctionalProcessById(systemContextId, String.valueOf(funcProcId));
 
             } else {
 
@@ -197,7 +213,6 @@ public class FunctionalModelController {
     }
 
 
-
     @RequestMapping(value = "/create-new-functional-model", method = {RequestMethod.GET, RequestMethod.POST})
     public String createFunctionalModel(Model model, HttpServletRequest request, HttpSession session) {
 
@@ -255,7 +270,7 @@ public class FunctionalModelController {
 
                 if (functionalModeltmp.size() > 0) {
                     /*
-					 * this.jdbcTemplate .update(
+                     * this.jdbcTemplate .update(
 					 * " delete from functionalmodel where systemcontextid = " +
 					 * systemContextId + " and functionalprocessid = " +
 					 * functionalProcessId + " and datagroupid = " +
@@ -289,7 +304,6 @@ public class FunctionalModelController {
                 String grade = request.getParameter("grade");
                 String[] dataAttributes = request.getParameterValues("datafields");
                 String[] test = request.getParameterValues("dataAttribute");
-
 
 
                 long functionalmodelid = Long.parseLong(request.getParameter("functionalmodelid"));
@@ -539,22 +553,43 @@ public class FunctionalModelController {
     @RequestMapping(value = "/select-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
     public String selectDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
 
-        String datagroupid = request.getParameter("dg");
-        String subprocessid = request.getParameter("sp");
         Long name = (Long) session.getAttribute("systemcontextid");
 
-        List<DataGroup> datagrouplist = dgRepository.getDataGroupsForSystemContext(name);
-        model.addAttribute("datagrouplist", datagrouplist);
+        sizingContext.setId(name.intValue());
 
-        List<DataField> datafieldlist = dgRepository.getDataFieldsForADataGroup(Long.parseLong(datagroupid));
-        model.addAttribute("datafieldlist", datafieldlist);
 
-        System.out.println("debug!");
-        return "select-data-attributes"  ;
+        model.addAttribute("sizingCtx", sizingContext);
+
+
+        return "select-data-attributes";
     }
 
 
-        @RequestMapping(value = "/get-data-attribute-list", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/save-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
+    public String saveDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
+
+        System.out.println("before anything");
+        int dgId = Integer.parseInt(request.getParameter("dg"));
+        int processId = Integer.parseInt(request.getParameter("p"));
+        int stepId = Integer.parseInt(request.getParameter("sp"));
+        String[] attribs = request.getParameterValues("attribId");
+        String username = (String) session.getAttribute("username");
+
+        Long name = (Long) session.getAttribute("systemcontextid");
+
+        sizingContext.setId(name.intValue());
+        SubProcess sp = sizingContext.getProcess(processId) .getStep(stepId);
+
+        sizingContext.getDataGroup(dgId).saveDataMovements(sp, Arrays.asList(attribs), username);
+        model.addAttribute("sizingCtx", sizingContext);
+
+
+        return "select-data-attributes";
+    }
+
+
+
+    @RequestMapping(value = "/get-data-attribute-list", method = {RequestMethod.GET, RequestMethod.POST})
     public String getDataAttributeList(Model model, HttpServletRequest request, HttpSession session) {
 
         if (session.getAttribute("systemcontextid") != null) {

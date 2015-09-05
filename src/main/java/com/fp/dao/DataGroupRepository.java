@@ -16,30 +16,24 @@ import java.util.List;
 import java.util.Map;
 
 @org.springframework.stereotype.Repository
-public class DataGroupRepository
-{
+public class DataGroupRepository {
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Autowired
-    public void setDataSource(DataSource dataSource)
-    {
+    public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public DataGroup createDataGroup(String systemContextId, Long dataGroupId, String datagroupName, String dataGroupNotes, String userName)
-    {
+    public DataGroup createDataGroup(String systemContextId, Long dataGroupId, String datagroupName, String dataGroupNotes, String userName) {
         String sql = " insert into datagroup ( datagroupid, systemcontextid, name, notes, userid ) " +
                 "values ( %s, :systemContextId, :datagroupName, :dataGroupNotes, :userName)";
 
-        if(dataGroupId > 0)
-        {
+        if (dataGroupId > 0) {
             sql = String.format(sql, dataGroupId);
-        }
-        else
-        {
+        } else {
             sql = String.format(sql, "seq_DataGroup.nextval");
         }
 
@@ -60,8 +54,7 @@ public class DataGroupRepository
 
     }
 
-    public DataGroup getDataGroupById(Long systemcontextid, String dataGroupId)
-    {
+    public DataGroup getDataGroupById(Long systemcontextid, String dataGroupId) {
         return jdbcTemplate
                 .queryForObject(
                         "select datagroupid, version, name, notes from datagroup where not deleteflag and version = 0 and systemcontextid = "
@@ -72,14 +65,13 @@ public class DataGroupRepository
     }
 
 
-    public DataGroup getDataGroupByName(Long systemContextId, String dataGroupName)
-    {
+    public DataGroup getDataGroupByName(Long systemContextId, String dataGroupName) {
         String sql = "select datagroupid, version, name, notes " +
-                     "from datagroup " +
-                     "where not deleteflag " +
-                     "and version = 0 " +
-                     "and systemcontextid = :systemContextId " +
-                     "and name = :dataGroupName";
+                "from datagroup " +
+                "where not deleteflag " +
+                "and version = 0 " +
+                "and systemcontextid = :systemContextId " +
+                "and name = :dataGroupName";
 
 
         Map boundVariables = new HashMap();
@@ -89,12 +81,9 @@ public class DataGroupRepository
         return namedJdbcTemplate.queryForObject(sql, boundVariables, getRowMapper());
     }
 
-    private RowMapper<DataGroup> getRowMapper()
-    {
-        return new RowMapper<DataGroup>()
-        {
-            public DataGroup mapRow(ResultSet rs,int rowNum) throws SQLException
-            {
+    private RowMapper<DataGroup> getRowMapper() {
+        return new RowMapper<DataGroup>() {
+            public DataGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
                 DataGroup actor = new DataGroup();
                 actor.setDataGroupId(rs.getLong("datagroupid"));
                 actor.setName(rs.getString("name"));
@@ -105,28 +94,27 @@ public class DataGroupRepository
     }
 
 
-    public List<DataGroup> getDataGroupsForSystemContext(Long systemcontextid)
-    {
+    public List<DataGroup> getDataGroupsForSystemContext(Long systemcontextid) {
         return this.jdbcTemplate
                 .query("select datagroupid, version, name, notes from datagroup where not deleteflag and version = 0 and systemcontextid = "
                         + systemcontextid + "", getRowMapper());
     }
 
 
-    private List<DataGroup> getListOfDataGroups(String systemContextId, String datagroupname)
-    {
+
+
+    private List<DataGroup> getListOfDataGroups(String systemContextId, String datagroupname) {
         System.out.println("getListOfDataGroups.systemContextId = " + systemContextId);
         return this.jdbcTemplate
                 .query("select datagroupid, version, name, notes from datagroup where not deleteflag and version = 0 and systemcontextid = "
-                                + systemContextId
-                                + " and name = '"
+                        + systemContextId
+                        + " and name = '"
                         + datagroupname.replace("'", "''") + "'", getRowMapper());
     }
 
 
     @Transactional
-    public void createDataFields(DataGroup dataGroup, String newAttribute, String userName)
-    {
+    public void createDataFields(DataGroup dataGroup, String newAttribute, String userName) {
         //datafields cannot operate with triggers on the tables as we need to version these
         //as a set. Triggers work on a per-row concept. This may invalidate the entire
         //design that uses triggers.
@@ -142,14 +130,13 @@ public class DataGroupRepository
 
         String insertTheExisitngAttributesForTheCurrentVersion = "insert into datafield (datafieldid, datagroupid, name, userid ) " +
                 "select datafieldid, datagroupid, name, userid " +
-                                                                 "from datafield " +
-                                                                 "where version = 1 " +
-                                                                 "and not deleteflag " +
-                                                                 "and datagroupid =:dataGroupId" ;
+                "from datafield " +
+                "where version = 1 " +
+                "and not deleteflag " +
+                "and datagroupid =:dataGroupId";
 
         String insertTheNewAttribute = "insert into datafield ( datafieldid, datagroupid, name, userid ) " +
                 "values (seq_DataField.nextval, :dataGroupId, :newAttribute, :userName)";
-
 
 
         namedJdbcTemplate.update(updateVersionOfExistingAttributes, boundVariables);
@@ -161,7 +148,7 @@ public class DataGroupRepository
     public List<DataField> getDataFieldsForADataGroup(long dgId) {
 
         Map boundVariables = new HashMap();
-          boundVariables.put("dgId", dgId);
+        boundVariables.put("dgId", dgId);
 
         String sql = "select datafieldid, datagroupid, version, name " +
                 "from datafield " +
@@ -181,6 +168,8 @@ public class DataGroupRepository
             }
         });
     }
+
+//=====================================================================================================
 
 
 }

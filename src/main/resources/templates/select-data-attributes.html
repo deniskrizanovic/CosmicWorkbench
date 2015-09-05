@@ -43,7 +43,7 @@
 
 <body role="document">
 
-<form name="addDataAttribues" method="post" class="form-horizontal">
+<form name="addDataAttribues" method="post" class="form-horizontal" action="/save-data-attributes">
 
     <div class="container">
 
@@ -63,13 +63,13 @@
 
         <div class="row">
             <div class="col-md-12">
-                <div id="bkg_div">
+                <div id="dataGroupSelection">
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Data Group: :</label>
                         <div class="col-sm-8" >
-                            <select name="datagroupname1" class="form-control" style="display: none;">
-                                <option th:each="datagroup : ${datagrouplist}" th:value="${datagroup.name}"
+                            <select name="dg" class="form-control" >
+                                <option th:each="datagroup : ${sizingCtx.datagroups}" th:value="${datagroup.id}"
                                         th:text="${datagroup.name}"></option>
                             </select>
                         </div>
@@ -83,13 +83,13 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div id="bkg_div">
+                <div id="dataMovementConfiguration">
 
                     <div class="form-group">
-                        <label for="grade" class="col-sm-4 control-label">Type :</label>
+                        <label for="type" class="col-sm-4 control-label">Type :</label>
 
                         <div class="col-sm-8">
-                            <select name="grade" id="grade" class="form-control">
+                            <select name="type" id="type" class="form-control">
                                 <option th:value="E" th:text="'Entry'"></option>
                                 <option th:value="X" th:text="'Exit'"></option>
                                 <option th:value="R" th:text="'Read'"></option>
@@ -104,47 +104,37 @@
                             <textarea name="notes" id="notes" rows="2" class="form-control"></textarea>
                         </div>
                     </div>
+                    <div>
+                        <input name="sp" th:value="${sizingCtx.getProcess(param.p).getStep(param.sp).getId()}"> </input>
+                        <input name="p" th:value="${sizingCtx.getProcess(param.p).getId()}"> </input>
+                    </div>
                     <div class="form-group">
-                        <label for="inputPassword3" class="col-sm-4 control-label">
+                        <label class="col-sm-4 control-label">
                             <div id="datagroupid"></div>
                         </label>
 
-                        <div class="col-sm-8" id="datafielddiv"></div>
                         <div class="col-sm-8">
                             <ul class="datamodellist"
-                                th:each="datafield : ${datafieldlist}">
+                                th:each="attr : ${sizingCtx.getDataGroup(param.dg).getAttributes()}">
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" th:value="${datafield.dataFieldId}"
-                                                   name="datafields" th:text="${datafield.name}"> </input>
+                                            <input type="checkbox" th:value="${attr.Id}"
+                                                   name="attribId" th:text="${attr.name}"> </input>
                                         </label>
                                     </div>
                                 </li>
                             </ul>
-                            <ul class="datamodellist" id="datalist1">
-
-
-                            </ul>
-
-
                         </div>
                     </div>
 
                     <div class="form-group" style="padding-top: 20px;">
                         <div class="col-sm-offset-4 col-sm-8">
 
-                            <button class="btn btn-default" type="submit"
-                                    th:onclick="'javascript:popupClick1(\'saveNewAttributes\');'">Save
-                            </button>
-                            <button class="btn btn-danger" type="submit" th:onclick="'javascript:popupClick1(2);'">
-                                Delete
-                            </button>
-
+                            <button class="btn btn-default" type="submit">Save</button>
+                            <button class="btn btn-danger" type="submit" th:onclick="'javascript:popupClick1(2);'">Delete</button>
                         </div>
                     </div>
-
-
                 </div>
             </div>
         </div>

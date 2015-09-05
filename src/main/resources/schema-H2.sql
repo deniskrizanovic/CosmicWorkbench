@@ -96,6 +96,17 @@ CREATE TABLE IF NOT EXISTS FUNCTIONALMODELDATAFIELD  (
 --
 --
 
+CREATE TABLE IF NOT EXISTS DataMovement  (
+	id BIGINT IDENTITY NOT NULL PRIMARY KEY ,
+	FUNCTIONALMODELDATAFIELDID BIGINT  ,
+	SubProcessId BIGINT  ,
+	DataGroupId BIGINT  ,
+	DataFieldId BIGINT  ,
+	version BIGINT default 0,
+	CreatedBy VARCHAR(100) NOT NULL ,
+	CreatedTime TIMESTAMP DEFAULT NOW()
+)   ;
+
 
 -- these are all commented out because
 
