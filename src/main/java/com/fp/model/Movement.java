@@ -37,27 +37,5 @@ public class Movement extends Persisted{
         this.attributes = attributes;
     }
 
-    public int getVersion() {
-        return version;
-    }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
 }
