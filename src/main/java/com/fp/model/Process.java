@@ -43,6 +43,12 @@ public class Process extends Persisted {
     }
 
     public List<SubProcess> getSteps() {
+
+        if(steps.isEmpty())
+        {
+            steps = repository.getSteps(this);
+        }
+
         return steps;
     }
 
@@ -52,13 +58,10 @@ public class Process extends Persisted {
 
 
     public SubProcess getStep(int Id) {
-        if (steps.isEmpty()) {
-            steps = repository.getSteps(this);
-        }
 
         SubProcess step = new SubProcess();
-        for (Iterator<SubProcess> iterator = steps.iterator(); iterator.hasNext(); ) {
-            SubProcess subProcess = iterator.next();
+        for (Iterator<SubProcess> i = getSteps().iterator(); i.hasNext(); ) {
+            SubProcess subProcess = i.next();
             if (subProcess.getId() == Id) {
                 step = subProcess;
             }

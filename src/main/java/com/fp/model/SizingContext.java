@@ -57,6 +57,10 @@ public class SizingContext extends Persisted {
     }
 
     public List<Process> getAllProcesses() {
+
+        if (processes.isEmpty()) {
+            processes = repository.getProcesses(this);
+        }
         return processes;
     }
 
@@ -66,12 +70,10 @@ public class SizingContext extends Persisted {
 
     public Process getProcess(int Id) {
 
-        if (processes.isEmpty()) {
-            repository.getProcesses(this);
-        }
+
 
         Process p = new Process();
-        for (Iterator<Process> i = processes.iterator(); i.hasNext(); ) {
+        for (Iterator<Process> i = getAllProcesses().iterator(); i.hasNext(); ) {
             Process process = i.next();
             if (process.getId() == Id)
                 p = process;

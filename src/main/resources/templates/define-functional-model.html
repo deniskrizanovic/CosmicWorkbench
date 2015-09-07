@@ -159,11 +159,11 @@
 		document.functionalmodelform.submit();
 	}
 
-	function call() {
-		showModalPopUp();
+	function call(process) {
+		//showModalPopUp();
 
-        document.systemcontextform.action = "/getdata?name="+name;
-        document.systemcontextform.submit();
+        document.functionalmodelform.action = "/add-datagroup-and-attributes?p=" + process;
+        document.functionalmodelform.submit();
 	}
 
 	function getGrade(param1, param2, param3, param4, param5, param8, param9) {
@@ -331,11 +331,9 @@
 														<div th:text="${functionalmodel.dataGroupName}"></div>
 													</th>
 													<th>
-                                                        <button type="button" class="btn btn-default" onclick="call()">+</button>
+                                                        <button type="button" class="btn btn-default" th:onclick="'javascript:call('+ ${12} + ');'">+</button>
 													</th>
 												</tr>
-
-
 											</thead>
 											<tbody>
 

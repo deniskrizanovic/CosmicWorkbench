@@ -551,17 +551,30 @@ public class FunctionalModelController {
 
     }
 
-    @RequestMapping(value = "/select-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/add-datagroup-and-attributes", method = {RequestMethod.GET, RequestMethod.POST})
+    public String addDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
+
+        Long name = (Long) session.getAttribute("systemcontextid");
+        sizingContext.setId(name.intValue());
+        model.addAttribute("sizingCtx", sizingContext);
+
+        FunctionalProcess fp = new FunctionalProcess();
+        fp.setFunctionalProcessId(12);
+        List<FunctionalModel> distinctfunctionalmodellist = fmRepository.getListOfDistinctFunctionalModels(name, fp);
+
+        model.addAttribute("distinctfunctionalmodellist", distinctfunctionalmodellist);
+
+        return "add-datagroup-and-attributes";
+    }
+
+
+
+        @RequestMapping(value = "/select-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
     public String selectDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
 
         Long name = (Long) session.getAttribute("systemcontextid");
-
         sizingContext.setId(name.intValue());
-
-
         model.addAttribute("sizingCtx", sizingContext);
-
-
         return "select-data-attributes";
     }
 
@@ -569,7 +582,6 @@ public class FunctionalModelController {
     @RequestMapping(value = "/save-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
     public String saveDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
 
-        System.out.println("before anything");
         int dgId = Integer.parseInt(request.getParameter("dg"));
         int processId = Integer.parseInt(request.getParameter("p"));
         int stepId = Integer.parseInt(request.getParameter("sp"));

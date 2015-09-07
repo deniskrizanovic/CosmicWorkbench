@@ -33,6 +33,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/define-functional-model").setViewName("define-functional-model");
         registry.addViewController("/select-data-attributes").setViewName("select-data-attributes");
         registry.addViewController("/save-data-attributes").setViewName("select-data-attributes");
+        registry.addViewController("/add-datagroup-and-attributes").setViewName("add-datagroup-and-attributes");
 
 
 	}

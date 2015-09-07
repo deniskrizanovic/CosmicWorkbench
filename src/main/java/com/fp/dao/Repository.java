@@ -47,10 +47,11 @@ public class Repository {
         dgDao.saveMovement(m);
     }
 
-    public void getProcesses(SizingContext sc) {
+    public List<Process> getProcesses(SizingContext sc) {
 
         List<Process> processes = pDao.getProcesses(sc);
-        sc.setProcesses(processes);
+
+        return processes;
     }
 
     public List<SubProcess> getSteps(Process process) {
