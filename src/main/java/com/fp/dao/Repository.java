@@ -6,16 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-/**
- * Created by denis on 4/09/15.
- */
 
 @org.springframework.stereotype.Repository
 public class Repository {
 
     private DataGroupDAO dgDao;
     private ProcessDAO pDao;
-
 
 
     @Autowired
@@ -28,6 +24,7 @@ public class Repository {
         this.pDao = pDao;
     }
 
+    //todo this pattern of almost having a fluent api needs to be consistent or removed.
     public SizingContext getDataGroups(SizingContext sc) {
 
         List<DataGroup> dataGroupList = dgDao.getDataGroups(sc);
@@ -45,12 +42,9 @@ public class Repository {
         return attribs;
     }
 
-    public void saveDataMovements(DataGroup dg, SubProcess sp, List<String> attributeIds, String type, String username) {
+    public void saveDataMovements(Movement m) {
 
-
-        dgDao.saveDataMovements(dg, sp, attributeIds, type, username);
-        getMovements(dg.getParent());
-
+        dgDao.saveMovement(m);
     }
 
     public void getProcesses(SizingContext sc) {
@@ -70,12 +64,7 @@ public class Repository {
     public List<Movement> getMovements(SizingContext sc) {
 
         List<Movement> movements = dgDao.getMovements(sc);
-        sc.setMovements(movements);
         return movements;
     }
 
-    public void getAttributesForMovement(SubProcess subProcess, DataGroup dataGroup) {
-
-        //dgDao.get
-    }
 }

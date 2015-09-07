@@ -78,14 +78,14 @@ public class DataGroupDAO {
     }
 
     @Transactional
-    public void saveDataMovements(DataGroup dg, SubProcess sp, List<String> attributeIds, String type, String userName) {
+    public void saveMovement(Movement m) {
 
         Map boundVariables = new HashMap();
-        boundVariables.put("dataGroupId", dg.getId());
-        boundVariables.put("stepId", sp.getId());
-        boundVariables.put("userName", userName);
-        boundVariables.put("type", type);
-        boundVariables.put("sizingCtxId", dg.getParent().getId());
+        boundVariables.put("dataGroupId", m.getDataGroup().getId());
+        boundVariables.put("stepId", m.getSubProcess().getId());
+        boundVariables.put("userName", m.getCreatedBy());
+        boundVariables.put("type", m.getType());
+        boundVariables.put("sizingCtxId", m.getParent().getId());
 
         String updateVersionOfExistingAttributes = "update DataMovement set version = version + 1 " +
                 "where datagroupid = :dataGroupId " +
@@ -93,10 +93,10 @@ public class DataGroupDAO {
 
         namedJdbcTemplate.update(updateVersionOfExistingAttributes, boundVariables);
 
-        for (Iterator<String> iterator = attributeIds.iterator(); iterator.hasNext(); ) {
-            String attribId = iterator.next();
+        for (Iterator<DataAttribute> i = m.getAttributes().iterator(); i.hasNext(); ) {
+            DataAttribute attrib = i.next();
 
-            boundVariables.put("attrib", attribId);
+            boundVariables.put("attrib", attrib.getId());
 
             String insertTheNewAttribute = "insert into DataMovement ( id, datagroupid, datafieldid, createdby, subprocessid, sizingContextId, type ) " +
                     "values (seq_DataField.nextval, :dataGroupId, :attrib, :userName, :stepId, :sizingCtxId, :type)";
@@ -120,7 +120,8 @@ public class DataGroupDAO {
                 "and m.SizingContextId = :sizingCtxId " +
                 "order by m.subProcessId, m.DataGroupId";
 
-        //because I need to do some grouping as I iterate over the resultset, I can't use the mappers
+        //because I need to do some grouping as I iterate over the resultset, I think it's better
+        //to not use the mappers, and do it old-school resultset style.
         SqlRowSet rs = namedJdbcTemplate.queryForRowSet(sql, boundVariables);
 
         int previousDataGroupId = 0;
@@ -165,31 +166,6 @@ public class DataGroupDAO {
 
     private boolean iteratedOverToANewMovement(int previousDataGroupId, int previousSubProcessId, int currentSubProcessId, int currentDataGroupId) {
         return currentDataGroupId != previousDataGroupId || currentSubProcessId != previousSubProcessId;
-    }
-
-    private RowMapper<Movement> getRowMapper(final SizingContext sc) {
-
-
-        return new RowMapper<Movement>() {
-            @Override
-            public Movement mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-                DataGroup dataGroup = sc.getDataGroup(rs.getInt("DataGroupId"));
-                DataAttribute attrib = getAttributeById(rs.getInt("dataFieldId"), dataGroup);
-
-                Movement m = new Movement();
-                m.setId(rs.getInt("id"));
-                m.setSubProcess((sc.getProcess(rs.getInt("functionalprocessid"))).getStep(rs.getInt("subprocessid")));
-
-                m.setDataGroup(dataGroup);
-                m.setType(rs.getString("type"));
-                m.getAttributes();
-
-                return m;
-
-
-            }
-        };
     }
 
 

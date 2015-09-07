@@ -10,6 +10,7 @@ public class Movement extends Persisted {
     SubProcess subProcess;
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
+    private SizingContext parent;
 
     public String getType() {
         return type;
@@ -28,16 +29,6 @@ public class Movement extends Persisted {
     }
 
     public List<DataAttribute> getAttributes() {
-
-        if(attributes.isEmpty())
-        {
-            if(subProcess == null || dataGroup == null)
-            {
-                System.out.println("these should not be null!");
-            }
-
-            dataGroup.getRepository().getAttributesForMovement(subProcess, dataGroup);
-        }
 
         return attributes;
     }
@@ -69,5 +60,37 @@ public class Movement extends Persisted {
 
     public void addAttribute(DataAttribute attrib) {
       attributes.add(attrib);
+    }
+
+    public boolean isEntry()
+    {
+        return type.equals("E");
+
+    }
+
+    public boolean isExit()
+    {
+        return type.equals("X");
+
+    }
+
+    public boolean isRead()
+    {
+        return type.equals("R");
+
+    }
+
+    public boolean isWrite()
+    {
+        return type.equals("W");
+
+    }
+
+    public SizingContext getParent() {
+        return parent;
+    }
+
+    public void setParent(SizingContext parent) {
+        this.parent = parent;
     }
 }

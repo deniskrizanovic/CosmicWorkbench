@@ -31,7 +31,7 @@ public class SizingContext extends Persisted {
 
     public DataGroup getDataGroup(int id) {
         DataGroup dg = new DataGroup();
-        for (Iterator<DataGroup> i = datagroups.iterator(); i.hasNext(); ) {
+        for (Iterator<DataGroup> i = getDatagroups().iterator(); i.hasNext(); ) {
             DataGroup next = i.next();
             if (next.getId() == id) {
                 dg = next;
@@ -81,17 +81,19 @@ public class SizingContext extends Persisted {
         return p;
     }
 
-    public void saveDataMovements(DataGroup dg, SubProcess sp, List<String> attribs, String type, String username) {
+    public void saveMovement(Movement m) {
 
-        repository.saveDataMovements(dg, sp, attribs, type, username);
-
+        m.setParent(this);
+        repository.saveDataMovements(m);
+        movements.clear();
+        getDataMovements();
     }
 
     public List<Movement> getDataMovements()
     {
            if(movements.isEmpty())
            {
-               repository.getMovements(this);
+               movements = repository.getMovements(this);
            }
 
         return movements;
@@ -114,6 +116,17 @@ public class SizingContext extends Persisted {
         this.movements = movements;
     }
 
-    public void addMovement(Movement movement) {
+    public Movement getMovement(int subProcessId, int dataGroupId)
+    {
+        Movement m = new Movement();
+        for (Iterator<Movement> i = getDataMovements().iterator(); i.hasNext(); ) {
+            m = i.next();
+            if(m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId){
+                return m;
+            }
+        }
+        return m;
+
     }
+
 }

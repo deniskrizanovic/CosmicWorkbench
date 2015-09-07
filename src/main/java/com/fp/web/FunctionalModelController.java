@@ -5,6 +5,8 @@ import com.fp.dao.FunctionalModelRepository;
 import com.fp.dao.FunctionalProcessRepository;
 import com.fp.dao.Repository;
 import com.fp.domain.*;
+import com.fp.model.ModelBuilder;
+import com.fp.model.Movement;
 import com.fp.model.SizingContext;
 import com.fp.model.SubProcess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -472,7 +473,7 @@ public class FunctionalModelController {
                 }
 
             }
-			
+
 			/*
 
 			for (FunctionalSubProcess functionalSubProcess : functionalsubprocesslist) {
@@ -580,15 +581,16 @@ public class FunctionalModelController {
         Long name = (Long) session.getAttribute("systemcontextid");
 
         sizingContext.setId(name.intValue());
-        SubProcess sp = sizingContext.getProcess(processId) .getStep(stepId);
+        SubProcess sp = sizingContext.getProcess(processId).getStep(stepId);
 
-        sizingContext.getDataGroup(dgId).saveDataMovements(sp, Arrays.asList(attribs), type, username);
+        com.fp.model.DataGroup dg = sizingContext.getDataGroup(dgId);
+        Movement dm = ModelBuilder.buildMovement(dg, sp, attribs, type, username);
+        sizingContext.saveMovement(dm);
         model.addAttribute("sizingCtx", sizingContext);
 
 
         return "select-data-attributes";
     }
-
 
 
     @RequestMapping(value = "/get-data-attribute-list", method = {RequestMethod.GET, RequestMethod.POST})

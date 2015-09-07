@@ -57,8 +57,4 @@ public class DataGroup extends Persisted{
     }
 
 
-    public void saveDataMovements(SubProcess sp, List<String> attributeIds, String type, String username) {
-
-        repository.saveDataMovements(this, sp, attributeIds, type, username);
-    }
 }

@@ -66,12 +66,21 @@
                 <div id="dataGroupSelection">
 
                     <div class="form-group">
+
+                        <div>
+                            <input type="hidden" name="sp" th:value="${sizingCtx.getProcess(param.p).getStep(param.sp).getId()}"> </input>
+                            <input type="hidden" name="p" th:value="${sizingCtx.getProcess(param.p).getId()}"> </input>
+                            <input type="hidden" name="dg" th:value="${sizingCtx.getDataGroup(param.dg).getId()}"> </input>
+                        </div>
+
+
                         <label class="col-sm-4 control-label">Data Group: :</label>
                         <div class="col-sm-8" >
-                            <select name="dg" class="form-control" >
-                                <option th:each="datagroup : ${sizingCtx.datagroups}" th:value="${datagroup.id}"
-                                        th:text="${datagroup.name}"></option>
-                            </select>
+
+                            <input readonly="readonly" th:value="${sizingCtx.getDataGroup(param.dg).getName()}"> </input>
+                            <!--<select name="dg" class="form-control" >-->
+                                <!--<option th:each="datagroup : ${sizingCtx.datagroups}" th:value="${datagroup.id}" th:text="${datagroup.name}"></option>-->
+                            <!--</select>-->
                         </div>
                     </div>
                 </div>
@@ -90,10 +99,10 @@
 
                         <div class="col-sm-8">
                             <select name="type" id="type" class="form-control">
-                                <option th:value="E" th:text="'Entry'"></option>
-                                <option th:value="X" th:text="'Exit'"></option>
-                                <option th:value="R" th:text="'Read'"></option>
-                                <option th:value="W" th:text="'Write'"></option>
+                                <option th:value="E" th:text="'Entry'" th:selected="${sizingCtx.getMovement(param.sp,param.dg).isEntry()}"></option>
+                                <option th:value="X" th:text="'Exit'" th:selected="${sizingCtx.getMovement(param.sp,param.dg).isExit()}"></option>
+                                <option th:value="R" th:text="'Read'" th:selected="${sizingCtx.getMovement(param.sp,param.dg).isRead()}"></option>
+                                <option th:value="W" th:text="'Write'" th:selected="${sizingCtx.getMovement(param.sp,param.dg).isWrite()}"></option>
                             </select>
                         </div>
                     </div>
@@ -104,10 +113,7 @@
                             <textarea name="notes" id="notes" rows="2" class="form-control"></textarea>
                         </div>
                     </div>
-                    <div>
-                        <input name="sp" th:value="${sizingCtx.getProcess(param.p).getStep(param.sp).getId()}"> </input>
-                        <input name="p" th:value="${sizingCtx.getProcess(param.p).getId()}"> </input>
-                    </div>
+
                     <div class="form-group">
                         <label class="col-sm-4 control-label">
                             <div id="datagroupid"></div>
