@@ -17,6 +17,7 @@ public class Repository {
     private ProcessDAO pDao;
 
 
+
     @Autowired
     public void setDgDao(DataGroupDAO dgDao) {
         this.dgDao = dgDao;
@@ -44,10 +45,11 @@ public class Repository {
         return attribs;
     }
 
-    public void saveDataMovements(DataGroup dg, SubProcess sp, List<String> attributeIds, String username) {
+    public void saveDataMovements(DataGroup dg, SubProcess sp, List<String> attributeIds, String type, String username) {
 
 
-        dgDao.saveDataMovements(dg, sp, attributeIds, username);
+        dgDao.saveDataMovements(dg, sp, attributeIds, type, username);
+        getMovements(dg.getParent());
 
     }
 
@@ -63,5 +65,17 @@ public class Repository {
 
         return steps;
 
+    }
+
+    public List<Movement> getMovements(SizingContext sc) {
+
+        List<Movement> movements = dgDao.getMovements(sc);
+        sc.setMovements(movements);
+        return movements;
+    }
+
+    public void getAttributesForMovement(SubProcess subProcess, DataGroup dataGroup) {
+
+        //dgDao.get
     }
 }

@@ -574,13 +574,15 @@ public class FunctionalModelController {
         int stepId = Integer.parseInt(request.getParameter("sp"));
         String[] attribs = request.getParameterValues("attribId");
         String username = (String) session.getAttribute("username");
+        String type = request.getParameter("type");
+
 
         Long name = (Long) session.getAttribute("systemcontextid");
 
         sizingContext.setId(name.intValue());
         SubProcess sp = sizingContext.getProcess(processId) .getStep(stepId);
 
-        sizingContext.getDataGroup(dgId).saveDataMovements(sp, Arrays.asList(attribs), username);
+        sizingContext.getDataGroup(dgId).saveDataMovements(sp, Arrays.asList(attribs), type, username);
         model.addAttribute("sizingCtx", sizingContext);
 
 

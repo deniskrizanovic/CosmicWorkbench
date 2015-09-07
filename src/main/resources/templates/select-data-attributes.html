@@ -119,7 +119,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" th:value="${attr.Id}" th:checked="${}}"
+                                            <input type="checkbox" th:value="${attr.Id}" th:checked="${sizingCtx.isExistingMovement(param.dg, param.sp, attr.id)}"
                                                    name="attribId" th:text="${attr.name}"> </input>
                                         </label>
                                     </div>

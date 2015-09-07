@@ -16,6 +16,7 @@ public class Process extends Persisted {
     String description;
     String notes;
     List<SubProcess> steps = new ArrayList<>();
+    private SizingContext parent;
 
     public String getName() {
         return name;
@@ -68,4 +69,7 @@ public class Process extends Persisted {
     }
 
 
+    public void setParent(SizingContext parent) {
+        this.parent = parent;
+    }
 }

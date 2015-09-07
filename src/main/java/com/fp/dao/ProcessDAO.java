@@ -48,6 +48,7 @@ public class ProcessDAO {
                 fp.setName(rs.getString("name"));
                 fp.setNotes(rs.getString("notes"));
                 fp.setRepository(sc.getRepository());
+                fp.setParent(sc);
                 return fp;
             }
         };

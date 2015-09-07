@@ -12,7 +12,10 @@ public class DataGroup extends Persisted{
 
     List<DataAttribute> attributes = new ArrayList<>();
     String name;
-    String notes;
+    private String notes;
+
+
+    private SizingContext parent;
 
     public List<DataAttribute> getAttributes() {
 
@@ -45,9 +48,17 @@ public class DataGroup extends Persisted{
         this.notes = notes;
     }
 
+    public void setParent(SizingContext parent) {
+        this.parent = parent;
+    }
 
-    public void saveDataMovements(SubProcess sp, List<String> attributeIds, String username) {
+    public SizingContext getParent() {
+        return parent;
+    }
 
-        repository.saveDataMovements(this, sp, attributeIds, username);
+
+    public void saveDataMovements(SubProcess sp, List<String> attributeIds, String type, String username) {
+
+        repository.saveDataMovements(this, sp, attributeIds, type, username);
     }
 }
