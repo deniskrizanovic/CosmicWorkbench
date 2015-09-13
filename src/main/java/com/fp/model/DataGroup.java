@@ -36,8 +36,9 @@ public class DataGroup extends Persisted{
         return name;
     }
 
-    public void setName(String name) {
+    public DataGroup setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getNotes() {
@@ -48,13 +49,34 @@ public class DataGroup extends Persisted{
         this.notes = notes;
     }
 
-    public void setParent(SizingContext parent) {
-        this.parent = parent;
-    }
-
     public SizingContext getParent() {
         return parent;
     }
 
+    public void setParent(SizingContext parent) {
+        this.parent = parent;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataGroup dataGroup = (DataGroup) o;
+
+        if (attributes != null ? !attributes.equals(dataGroup.attributes) : dataGroup.attributes != null) return false;
+        if (name != null ? !name.equals(dataGroup.name) : dataGroup.name != null) return false;
+        if (notes != null ? !notes.equals(dataGroup.notes) : dataGroup.notes != null) return false;
+        return !(parent != null ? !parent.equals(dataGroup.parent) : dataGroup.parent != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = attributes != null ? attributes.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (notes != null ? notes.hashCode() : 0);
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
+        return result;
+    }
 }

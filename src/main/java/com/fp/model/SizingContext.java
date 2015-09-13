@@ -29,6 +29,25 @@ public class SizingContext extends Persisted {
         this.datagroups = datagroups;
     }
 
+    public List<DataGroup> getDataGroupsWithNoMovements() {
+        List<Movement> movements = getDataMovements();
+        List<DataGroup> allDataGroups = getDatagroups();
+        List<DataGroup> dgWithNoMovements = new ArrayList<>();
+        for (Iterator i = allDataGroups.iterator(); i.hasNext(); ) {
+            DataGroup next = (DataGroup) i.next();
+
+            for (Iterator<Movement> m = movements.iterator(); m.hasNext(); ) {
+                Movement movement = m.next();
+                if (movement.getDataGroup() == next) {
+
+                }
+            }
+
+        }
+
+        return null;
+    }
+
     public DataGroup getDataGroup(int id) {
         DataGroup dg = new DataGroup();
         for (Iterator<DataGroup> i = getDatagroups().iterator(); i.hasNext(); ) {
@@ -71,7 +90,6 @@ public class SizingContext extends Persisted {
     public Process getProcess(int Id) {
 
 
-
         Process p = new Process();
         for (Iterator<Process> i = getAllProcesses().iterator(); i.hasNext(); ) {
             Process process = i.next();
@@ -91,23 +109,20 @@ public class SizingContext extends Persisted {
         getDataMovements();
     }
 
-    public List<Movement> getDataMovements()
-    {
-           if(movements.isEmpty())
-           {
-               movements = repository.getMovements(this);
-           }
+    public List<Movement> getDataMovements() {
+        if (movements.isEmpty()) {
+            movements = repository.getMovements(this);
+        }
 
         return movements;
 
     }
 
-    public boolean isExistingMovement(int dataGroupId, int  subProcessId, int attribId)
-    {
+    public boolean isExistingMovement(int dataGroupId, int subProcessId, int attribId) {
 
         for (Iterator<Movement> i = getDataMovements().iterator(); i.hasNext(); ) {
             Movement m = i.next();
-            if(m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId){
+            if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
                 return m.attributeAlreadyMapped(attribId);
             }
         }
@@ -118,12 +133,11 @@ public class SizingContext extends Persisted {
         this.movements = movements;
     }
 
-    public Movement getMovement(int subProcessId, int dataGroupId)
-    {
+    public Movement getMovement(int subProcessId, int dataGroupId) {
         Movement m = new Movement();
         for (Iterator<Movement> i = getDataMovements().iterator(); i.hasNext(); ) {
             m = i.next();
-            if(m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId){
+            if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
                 return m;
             }
         }
@@ -131,4 +145,11 @@ public class SizingContext extends Persisted {
 
     }
 
+
+    public void removeMovement(Movement m) {
+
+        movements.remove(m);
+
+
+    }
 }

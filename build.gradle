@@ -31,8 +31,18 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile("org.springframework:spring-jdbc")
 	compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-test")
     compile("com.h2database:h2")
-    testCompile("junit:junit")
+
+    //  testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+idea {
+    module {
+        sourceDirs += file('src/main/java')
+        testSourceDirs += file('src/test/java')
+    }
 }
 
 

@@ -29,26 +29,19 @@ import java.util.List;
 @Controller
 public class FunctionalModelController {
 
+    @Autowired
+    SizingContext sizingContext;
     private JdbcTemplate jdbcTemplate;
-
     private SystemContext systemContext;
-
     private String err;
-
     private DataGroup dataGroup;
-
     private FunctionalProcess functionalProcess;
-
     private FunctionalModel functionalModel;
-
     private int finalScore = 0;
     private FunctionalProcessRepository fpRepository;
     private FunctionalModelRepository fmRepository;
     private DataGroupRepository dgRepository;
     private Repository repository;
-    @Autowired
-    SizingContext sizingContext;
-
     @Autowired
     private WebApplicationContext context;
 
@@ -601,7 +594,7 @@ public class FunctionalModelController {
         model.addAttribute("sizingCtx", sizingContext);
 
 
-        return "select-data-attributes";
+        return "define-functional-model";
     }
 
 

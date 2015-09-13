@@ -18,8 +18,9 @@ public class Persisted {
         return id;
     }
 
-    public void setId(int id) {
+    public Object setId(int id) {
         this.id = id;
+        return this;
     }
 
     public int getVersion() {
@@ -46,12 +47,12 @@ public class Persisted {
         this.createdTime = createdTime;
     }
 
+    public Repository getRepository() {
+        return repository;
+    }
+
     @Autowired
     public void setRepository(Repository repository) {
         this.repository = repository;
-    }
-
-    public Repository getRepository() {
-        return repository;
     }
 }

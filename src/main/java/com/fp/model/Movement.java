@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Movement extends Persisted {
 
-    String type; //todo could be an enumeration
+    String type;
     SubProcess subProcess;
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
@@ -24,8 +24,9 @@ public class Movement extends Persisted {
         return subProcess;
     }
 
-    public void setSubProcess(SubProcess subProcess) {
+    public Movement setSubProcess(SubProcess subProcess) {
         this.subProcess = subProcess;
+        return this;
     }
 
     public List<DataAttribute> getAttributes() {
@@ -37,14 +38,14 @@ public class Movement extends Persisted {
         this.attributes = attributes;
     }
 
-
-    public void setDataGroup(DataGroup dg) {
-        dataGroup = dg;
-
-    }
-
     public DataGroup getDataGroup() {
         return dataGroup;
+    }
+
+    public Movement setDataGroup(DataGroup dg) {
+        dataGroup = dg;
+        return this;
+
     }
 
     public boolean attributeAlreadyMapped(int attribId)
@@ -90,7 +91,37 @@ public class Movement extends Persisted {
         return parent;
     }
 
-    public void setParent(SizingContext parent) {
+
+    public Movement setParent(SizingContext parent) {
         this.parent = parent;
+        return this;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movement movement = (Movement) o;
+
+        if (type != null ? !type.equals(movement.type) : movement.type != null) return false;
+        if (subProcess != null ? !subProcess.equals(movement.subProcess) : movement.subProcess != null) return false;
+        if (attributes != null ? !attributes.equals(movement.attributes) : movement.attributes != null) return false;
+        if (dataGroup != null ? !dataGroup.equals(movement.dataGroup) : movement.dataGroup != null) return false;
+        return !(parent != null ? !parent.equals(movement.parent) : movement.parent != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (subProcess != null ? subProcess.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        result = 31 * result + (dataGroup != null ? dataGroup.hashCode() : 0);
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
+        return result;
     }
 }
+
+
