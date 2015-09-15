@@ -5,6 +5,7 @@ public class SubProcess extends Persisted{
 
     String name;
     private Process parent;
+    private Process process;
 
     public String getName() {
         return name;
@@ -38,5 +39,9 @@ public class SubProcess extends Persisted{
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
+    }
+
+    public Process getProcess() {
+        return process;
     }
 }

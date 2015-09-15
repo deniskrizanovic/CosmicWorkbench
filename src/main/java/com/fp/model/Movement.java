@@ -122,6 +122,13 @@ public class Movement extends Persisted {
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
     }
+
+    public Process getProcess() {
+
+        return subProcess.getProcess();
+
+
+    }
 }
 
 

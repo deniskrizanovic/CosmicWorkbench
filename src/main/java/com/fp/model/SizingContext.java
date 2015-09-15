@@ -29,6 +29,20 @@ public class SizingContext extends Persisted {
         this.datagroups = datagroups;
     }
 
+    public List<DataGroup> getDataGroupsForProcessId(int processId) {
+
+        List<Movement> movements = getDataMovements();
+        List<DataGroup> dgForProcess = new ArrayList<>();
+
+        for (Movement m : movements) {
+            if (m.getProcess().getId() == processId) {
+                dgForProcess.add(m.getDataGroup());
+            }
+        }
+        return dgForProcess;
+
+    }
+
     public List<DataGroup> getDataGroupsWithNoMovements() {
         List<Movement> movements = getDataMovements();
         List<DataGroup> dgInMovements = new ArrayList<>();
@@ -54,19 +68,6 @@ public class SizingContext extends Persisted {
         return dg;
     }
 
-
-    public DataGroup getDataGroupByName(String name) {
-        DataGroup dg = new DataGroup();
-        for (DataGroup next : datagroups) {
-            if (next.getName().equals(name)) {
-                dg = next;
-            }
-        }
-
-        //todo need to do something smart if I just return a empty datagroup
-        return dg;
-    }
-
     public List<Process> getAllProcesses() {
 
         if (processes.isEmpty()) {
@@ -75,12 +76,7 @@ public class SizingContext extends Persisted {
         return processes;
     }
 
-    public void setProcesses(List<Process> processes) {
-        this.processes = processes;
-    }
-
     public Process getProcess(int Id) {
-
 
         Process p = new Process();
         for (Process process : getAllProcesses()) {
@@ -109,6 +105,21 @@ public class SizingContext extends Persisted {
 
     }
 
+    public List<Movement> getMovementsForProcessId(int processId) {
+
+        List<Movement> movements = getDataMovements();
+        List<Movement> movementsForProcess = new ArrayList<>();
+
+        for (Movement m : movements) {
+            if (m.getProcess().getId() == processId) {
+                movementsForProcess.add(m);
+            }
+        }
+
+        return movementsForProcess;
+
+    }
+
     public boolean isExistingMovement(int dataGroupId, int subProcessId, int attribId) {
 
         for (Movement m : getDataMovements()) {
@@ -117,10 +128,6 @@ public class SizingContext extends Persisted {
             }
         }
         return false;
-    }
-
-    public void setMovements(List<Movement> movements) {
-        this.movements = movements;
     }
 
     public Movement getMovement(int subProcessId, int dataGroupId) {
@@ -135,11 +142,16 @@ public class SizingContext extends Persisted {
 
     }
 
-
     public void removeMovement(Movement m) {
 
         movements.remove(m);
     }
 
+    public void setMovements(List<Movement> movements) {
+        this.movements = movements;
+    }
 
+    public void setProcesses(List<Process> processes) {
+        this.processes = processes;
+    }
 }
