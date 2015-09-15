@@ -1,7 +1,6 @@
 package com.fp.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Movement extends Persisted {
@@ -50,9 +49,8 @@ public class Movement extends Persisted {
 
     public boolean attributeAlreadyMapped(int attribId)
     {
-        for (Iterator<DataAttribute> attributeIterator = attributes.iterator(); attributeIterator.hasNext(); ) {
-            DataAttribute next = attributeIterator.next();
-            if(next.getId()==attribId){
+        for (DataAttribute next : attributes) {
+            if (next.getId() == attribId) {
                 return true;
             }
         }
@@ -102,6 +100,8 @@ public class Movement extends Persisted {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
 
         Movement movement = (Movement) o;
 

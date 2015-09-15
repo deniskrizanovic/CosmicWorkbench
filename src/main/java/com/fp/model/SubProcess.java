@@ -1,8 +1,6 @@
 package com.fp.model;
 
-/**
- * Created by denis on 4/09/15.
- */
+
 public class SubProcess extends Persisted{
 
     String name;
@@ -25,6 +23,7 @@ public class SubProcess extends Persisted{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         SubProcess that = (SubProcess) o;
 
@@ -35,7 +34,8 @@ public class SubProcess extends Persisted{
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
     }

@@ -151,8 +151,7 @@ public class FunctionalModel {
 		return functionalModelFunctionalSubProcess;
 	}
 
-	public void setFunctionalModelFunctionalSubProcess(
-			List<FunctionalModelFunctionalSubProcess> functionalModelFunctionalSubProcess) {
+	public void setFunctionalModelFunctionalSubProcess(List<FunctionalModelFunctionalSubProcess> functionalModelFunctionalSubProcess) {
 		this.functionalModelFunctionalSubProcess = functionalModelFunctionalSubProcess;
 	}
 

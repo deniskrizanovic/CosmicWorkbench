@@ -1,11 +1,11 @@
 package com.fp.model;
 
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -31,27 +31,20 @@ public class SizingContext extends Persisted {
 
     public List<DataGroup> getDataGroupsWithNoMovements() {
         List<Movement> movements = getDataMovements();
-        List<DataGroup> allDataGroups = getDatagroups();
-        List<DataGroup> dgWithNoMovements = new ArrayList<>();
-        for (Iterator i = allDataGroups.iterator(); i.hasNext(); ) {
-            DataGroup next = (DataGroup) i.next();
+        List<DataGroup> dgInMovements = new ArrayList<>();
 
-            for (Iterator<Movement> m = movements.iterator(); m.hasNext(); ) {
-                Movement movement = m.next();
-                if (movement.getDataGroup() == next) {
-
-                }
-            }
-
+        for (Movement m : movements) {
+            dgInMovements.add(m.getDataGroup());
         }
 
-        return null;
+        List<DataGroup> allDataGroups = getDatagroups();
+
+        return (List<DataGroup>) CollectionUtils.disjunction(allDataGroups, dgInMovements);
     }
 
     public DataGroup getDataGroup(int id) {
         DataGroup dg = new DataGroup();
-        for (Iterator<DataGroup> i = getDatagroups().iterator(); i.hasNext(); ) {
-            DataGroup next = i.next();
+        for (DataGroup next : getDatagroups()) {
             if (next.getId() == id) {
                 dg = next;
             }
@@ -64,8 +57,7 @@ public class SizingContext extends Persisted {
 
     public DataGroup getDataGroupByName(String name) {
         DataGroup dg = new DataGroup();
-        for (Iterator<DataGroup> i = datagroups.iterator(); i.hasNext(); ) {
-            DataGroup next = i.next();
+        for (DataGroup next : datagroups) {
             if (next.getName().equals(name)) {
                 dg = next;
             }
@@ -91,8 +83,7 @@ public class SizingContext extends Persisted {
 
 
         Process p = new Process();
-        for (Iterator<Process> i = getAllProcesses().iterator(); i.hasNext(); ) {
-            Process process = i.next();
+        for (Process process : getAllProcesses()) {
             if (process.getId() == Id)
                 p = process;
 
@@ -120,8 +111,7 @@ public class SizingContext extends Persisted {
 
     public boolean isExistingMovement(int dataGroupId, int subProcessId, int attribId) {
 
-        for (Iterator<Movement> i = getDataMovements().iterator(); i.hasNext(); ) {
-            Movement m = i.next();
+        for (Movement m : getDataMovements()) {
             if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
                 return m.attributeAlreadyMapped(attribId);
             }
@@ -135,8 +125,8 @@ public class SizingContext extends Persisted {
 
     public Movement getMovement(int subProcessId, int dataGroupId) {
         Movement m = new Movement();
-        for (Iterator<Movement> i = getDataMovements().iterator(); i.hasNext(); ) {
-            m = i.next();
+        for (Movement movement : getDataMovements()) {
+            m = movement;
             if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
                 return m;
             }
@@ -149,7 +139,7 @@ public class SizingContext extends Persisted {
     public void removeMovement(Movement m) {
 
         movements.remove(m);
-
-
     }
+
+
 }

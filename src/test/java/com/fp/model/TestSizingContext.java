@@ -24,8 +24,11 @@ public class TestSizingContext {
         Movement m3 = new Movement().setDataGroup(dg3).setSubProcess(sp3).setParent(sc);
 
         sc.removeMovement(m3);
+        List<DataGroup> groupsWithNoMovement = sc.getDataGroupsWithNoMovements();
 
-        Assert.assertEquals("notsure", true, true);
+
+        Assert.assertEquals("dg3 is contained in the list", true, groupsWithNoMovement.contains(dg3));
+        Assert.assertEquals("Only dg3 is returned", true, groupsWithNoMovement.size() == 1);
     }
 
     @Before

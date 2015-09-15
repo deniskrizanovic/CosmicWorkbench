@@ -55,4 +55,27 @@ public class Persisted {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Persisted persisted = (Persisted) o;
+
+        if (id != persisted.id) return false;
+        if (version != persisted.version) return false;
+        if (createdBy != null ? !createdBy.equals(persisted.createdBy) : persisted.createdBy != null) return false;
+        return !(createdTime != null ? !createdTime.equals(persisted.createdTime) : persisted.createdTime != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + version;
+        result = 31 * result + (createdBy != null ? createdBy.hashCode() : 0);
+        result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
+        return result;
+    }
 }
