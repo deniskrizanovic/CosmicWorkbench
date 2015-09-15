@@ -30,7 +30,7 @@ public class SizingContext extends Persisted {
     }
 
     public List<DataGroup> getDataGroupsWithNoMovements() {
-        List<Movement> movements = getDataMovements();
+        List<Movement> movements = getMovements();
         List<DataGroup> dgInMovements = new ArrayList<>();
 
         for (Movement m : movements) {
@@ -97,10 +97,10 @@ public class SizingContext extends Persisted {
         m.setParent(this);
         repository.saveDataMovements(m);
         movements.clear();
-        getDataMovements();
+        getMovements();
     }
 
-    public List<Movement> getDataMovements() {
+    public List<Movement> getMovements() {
         if (movements.isEmpty()) {
             movements = repository.getMovements(this);
         }
@@ -111,7 +111,7 @@ public class SizingContext extends Persisted {
 
     public boolean isExistingMovement(int dataGroupId, int subProcessId, int attribId) {
 
-        for (Movement m : getDataMovements()) {
+        for (Movement m : getMovements()) {
             if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
                 return m.attributeAlreadyMapped(attribId);
             }
@@ -125,7 +125,7 @@ public class SizingContext extends Persisted {
 
     public Movement getMovement(int subProcessId, int dataGroupId) {
         Movement m = new Movement();
-        for (Movement movement : getDataMovements()) {
+        for (Movement movement : getMovements()) {
             m = movement;
             if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
                 return m;

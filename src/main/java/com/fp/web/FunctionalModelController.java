@@ -71,7 +71,7 @@ public class FunctionalModelController {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    @RequestMapping("/define-functional-model")
+    @RequestMapping("/old-define-functional-model")
     public String showFunctionalModel(Model model, HttpServletRequest request, HttpSession session) {
 
         List<FunctionalSubProcess> functionalsubprocesslist = null;
@@ -562,8 +562,7 @@ public class FunctionalModelController {
     }
 
 
-
-        @RequestMapping(value = "/select-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/select-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
     public String selectDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
 
         Long name = (Long) session.getAttribute("systemcontextid");
@@ -575,6 +574,9 @@ public class FunctionalModelController {
 
     @RequestMapping(value = "/save-data-attributes", method = {RequestMethod.GET, RequestMethod.POST})
     public String saveDataAttributes(Model model, HttpServletRequest request, HttpSession session) {
+
+        //todo some validation
+
 
         int dgId = Integer.parseInt(request.getParameter("dg"));
         int processId = Integer.parseInt(request.getParameter("p"));
@@ -594,6 +596,19 @@ public class FunctionalModelController {
         sizingContext.saveMovement(dm);
         model.addAttribute("sizingCtx", sizingContext);
 
+
+        return "render-functional-model";
+    }
+
+
+    @RequestMapping(value = "/define-functional-model", method = {RequestMethod.GET, RequestMethod.POST})
+    public String renderFunctionalModel(Model model, HttpServletRequest request, HttpSession session) {
+
+        System.out.println("I am in here!");
+
+        Long ctxId = (Long) session.getAttribute("systemcontextid");
+        sizingContext.setId(ctxId.intValue());
+        model.addAttribute("sizingCtx", sizingContext);
 
         return "define-functional-model";
     }

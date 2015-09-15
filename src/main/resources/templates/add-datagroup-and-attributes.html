@@ -92,9 +92,9 @@
                         <div class="col-sm-8">
                             <select id="dg" name="dg" class="form-control"
                                     th:onclick="'javascript:getData(' +${sizingCtx.getProcess(param.p).getId()} + ');'">
-                                <option value="" selected="selected" disabled="disabled">Please select an option...
+                                <option value="" selected="selected" disabled="disabled">Please select a DataGroup ...
                                 </option>
-                                <option th:each="datagroup : ${sizingCtx.datagroups}" th:value="${datagroup.id}"
+                                <option th:each="datagroup : ${sizingCtx.getDataGroupsWithNoMovements()}" th:value="${datagroup.id}"
                                         th:text="${datagroup.name}"
                                         th:selected="${param.dg !=null ? datagroup.id eq sizingCtx.getDataGroup(param.dg[0]).getId() : 'false'}"></option>
                             </select>
