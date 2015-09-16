@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -82,11 +83,35 @@ public class SizingContext extends Persisted {
         for (Process process : getAllProcesses()) {
             if (process.getId() == Id)
                 p = process;
-
         }
-
         return p;
     }
+
+    public String[][] getDataToSubProcessMappingAsGrid(int processId) {
+
+        List<DataGroup> allGroupsForProcess = getDataGroupsForProcessId(processId);
+        List<SubProcess> allStepsForProcess = getProcess(processId).getSteps();
+        String[][] grid = new String[allStepsForProcess.size()][allGroupsForProcess.size() + 1];
+        int i = 0;
+        for (Iterator<SubProcess> iterator = allStepsForProcess.iterator(); iterator.hasNext(); ) {
+            SubProcess sp = iterator.next();
+            grid[i][0] = sp.getName();
+
+            int d = 1;
+            for (Iterator<DataGroup> j = allGroupsForProcess.iterator(); j.hasNext(); ) {
+                DataGroup dg = j.next();
+                Movement m = getMovement(sp.getId(), dg.getId());
+                grid[i][d] = m.getType();
+                d++;
+            }
+            i++;
+        }
+
+        return grid;
+
+
+    }
+
 
     public void saveMovement(Movement m) {
 

@@ -44,4 +44,9 @@ public class SubProcess extends Persisted{
     public Process getProcess() {
         return process;
     }
+
+    public SubProcess setProcess(Process process) {
+        this.process = process;
+        return this;
+    }
 }

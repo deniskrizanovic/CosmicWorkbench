@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Movement extends Persisted {
 
-    String type;
+    String type = "";
     SubProcess subProcess;
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
@@ -15,8 +15,9 @@ public class Movement extends Persisted {
         return type;
     }
 
-    public void setType(String type) {
+    public Movement setType(String type) {
         this.type = type;
+        return this;
     }
 
     public SubProcess getSubProcess() {

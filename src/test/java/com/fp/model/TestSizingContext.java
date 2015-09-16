@@ -31,24 +31,48 @@ public class TestSizingContext {
         Assert.assertEquals("Only dg3 is returned", true, groupsWithNoMovement.size() == 1);
     }
 
+
+    @Test
+    public void testMappingGrid() {
+        sc.getDataToSubProcessMappingAsGrid(1);
+
+        //Assert.assertEquals();
+
+    }
+
     @Before
     public void setup() {
 
-        DataGroup dg1 = (DataGroup) new DataGroup().setId(1);
-        DataGroup dg2 = (DataGroup) new DataGroup().setId(2);
-        DataGroup dg3 = (DataGroup) new DataGroup().setId(3);
+        DataGroup dg1 = (DataGroup) new DataGroup().setName("dg1").setId(1);
+        DataGroup dg2 = (DataGroup) new DataGroup().setName("dg2").setId(2);
+        DataGroup dg3 = (DataGroup) new DataGroup().setName("dg3").setId(3);
 
         List<DataGroup> dgList = new ArrayList();
         dgList.add(dg1);
         dgList.add(dg2);
         dgList.add(dg3);
 
-        SubProcess sp1 = (SubProcess) new SubProcess().setId(1);
-        SubProcess sp2 = (SubProcess) new SubProcess().setId(2);
-        SubProcess sp3 = (SubProcess) new SubProcess().setId(3);
+        Process p1 = (Process) new Process().setName("p1").setId(1);
+        Process p2 = (Process) new Process().setName("p2").setId(2);
+        Process p3 = (Process) new Process().setName("p3").setId(3);
 
-        Movement m1 = new Movement().setDataGroup(dg1).setSubProcess(sp1).setParent(sc);
-        Movement m2 = new Movement().setDataGroup(dg2).setSubProcess(sp2).setParent(sc);
+        List<Process> processList = new ArrayList<>();
+        processList.add(p1);
+        processList.add(p2);
+        processList.add(p3);
+
+        SubProcess sp1 = (SubProcess) new SubProcess().setProcess(p1).setName("sp1").setId(1);   //todo it feels like this should set the processes steps
+        SubProcess sp2 = (SubProcess) new SubProcess().setProcess(p1).setName("sp2").setId(2);
+        SubProcess sp3 = (SubProcess) new SubProcess().setProcess(p1).setName("sp3").setId(3);
+        List<SubProcess> subProcessList = new ArrayList<>();
+        subProcessList.add(sp1);
+        subProcessList.add(sp2);
+        subProcessList.add(sp3);
+        p1.setSteps(subProcessList);
+
+
+        Movement m1 = new Movement().setDataGroup(dg1).setSubProcess(sp1).setParent(sc).setType("E");
+        Movement m2 = new Movement().setDataGroup(dg2).setSubProcess(sp2).setParent(sc).setType("X");
         Movement m3 = new Movement().setDataGroup(dg3).setSubProcess(sp3).setParent(sc);
 
         List<Movement> movementList = new ArrayList();
@@ -58,5 +82,6 @@ public class TestSizingContext {
 
         sc.setMovements(movementList);
         sc.setDatagroups(dgList);
+        sc.setProcesses(processList);
     }
 }
