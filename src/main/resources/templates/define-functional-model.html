@@ -295,8 +295,7 @@
 						<div class="col-xs-4" style="padding-right: 0">
 							<!-- required for floating -->
 							<!-- Nav tabs -->
-							<ul class="nav nav-tabs tabs-left"
-                                th:each="fp : ${sizingCtx.getAllProcesses()}">
+                            <ul class="nav nav-tabs tabs-left" th:each="fp : ${sizingCtx.getAllProcesses()}">
                                 <li th:class="${param.p !=null ? (#numbers.formatInteger(fp.id,1) == #numbers.formatInteger(param.p[0],1) ? 'active': '') : ''}">
                                     <a th:href="${'define-functional-model?p=' + fp.id}" data-toggle="tab" th:text="${fp.name}" th:onclick="'javascript:getFunctionalModelData(\'' +${fp.id} + '\');'"></a>
 								</li>
@@ -317,7 +316,7 @@
 												<tr>
 													<th></th>
                                                     <th width="40%" th:each="movement : ${sizingCtx.getMovements()}">
-                                                        <div th:text="${movement.dataGroup.name}"></div>
+                                                        <div th:id="${movement.dataGroup.id}" th:text="${movement.dataGroup.name}"></div>
 													</th>
 													<th>
                                                         <button type="button" class="btn btn-default" th:onclick="'javascript:call('+ ${33} + ');'">+</button>
@@ -326,17 +325,14 @@
 											</thead>
 											<tbody>
 
-												<tr
-                                                        th:each="subprocess : ${functionalsubprocesslist}">
-													<td th:text="${functionalsubprocess.name}"></td>
-                                                    <!--<td-->
-                                                    <!--th:each="functionalmodel : ${functionalsubprocess.functionalModel}"-->
-                                                    <!--th:onclick="'javascript:getGrade(' +${functionalmodel.functionalSubProcessId} + ',' + ${functionalmodel.functionalModelId} + ',\'' + ${functionalmodel.displaydataGroupName} + '\',\'' + ${functionalmodel.grade} + '\',\'' + ${functionalmodel.notes} + '\',' + ${functionalmodel.dataGroupId} + ',\'' + ${functionalmodel.datafieldList} + '\');'"-->
-                                                    <!--th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '" ></td>-->
-                                                    <td th:each="functionalmodel : ${functionalsubprocess.functionalModel}"
-                                                        th:onclick="'javascript:openMyWindow( ' + ${functionalmodel.dataGroupId} + ',' + ${functionalsubprocess.functionalSubProcessId} + ','+ ${functionalmodel.functionalProcessId} + ');'"
-                                                        th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '">
-                                                    </td>
+                                            <tr th:each="sp : ${sizingCtx.getProcess(param.p[0]).steps}">
+                                                <td th:text="${sp.name}"></td>
+                                                <td th:text="${div[id=}"></td>
+
+                                                <!--<td th:each="functionalmodel : ${functionalsubprocess.functionalModel}"-->
+                                                <!--th:onclick="'javascript:openMyWindow( ' + ${functionalmodel.dataGroupId} + ',' + ${functionalsubprocess.functionalSubProcessId} + ','+ ${functionalmodel.functionalProcessId} + ');'"-->
+                                                <!--th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '">-->
+                                                <!--</td>-->
 
                                                 </tr>
 												<tr>

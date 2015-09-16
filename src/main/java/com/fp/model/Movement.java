@@ -10,6 +10,7 @@ public class Movement extends Persisted {
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
     private SizingContext parent;
+    private Process process;
 
     public String getType() {
         return type;
@@ -102,25 +103,32 @@ public class Movement extends Persisted {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-
         Movement movement = (Movement) o;
 
         if (type != null ? !type.equals(movement.type) : movement.type != null) return false;
         if (subProcess != null ? !subProcess.equals(movement.subProcess) : movement.subProcess != null) return false;
         if (attributes != null ? !attributes.equals(movement.attributes) : movement.attributes != null) return false;
         if (dataGroup != null ? !dataGroup.equals(movement.dataGroup) : movement.dataGroup != null) return false;
-        return !(parent != null ? !parent.equals(movement.parent) : movement.parent != null);
+        if (parent != null ? !parent.equals(movement.parent) : movement.parent != null) return false;
+        return !(process != null ? !process.equals(movement.process) : movement.process != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (subProcess != null ? subProcess.hashCode() : 0);
         result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
         result = 31 * result + (dataGroup != null ? dataGroup.hashCode() : 0);
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
+        result = 31 * result + (process != null ? process.hashCode() : 0);
         return result;
+    }
+
+    public void setProcess(Process process) {
+        this.process = process;
+
     }
 }
 

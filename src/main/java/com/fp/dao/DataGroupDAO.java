@@ -143,6 +143,7 @@ public class DataGroupDAO {
 
                 movement = new Movement();
                 movement.setSubProcess(parentProcess.getStep(rs.getInt("subprocessid")));
+                movement.setProcess(parentProcess);
                 movement.setDataGroup(dataGroup);
                 movements.add(movement);
 
