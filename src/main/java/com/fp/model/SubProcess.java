@@ -7,6 +7,15 @@ public class SubProcess extends Persisted{
     private Process parent;
     private Process process;
 
+    @Override
+    public String toString() {
+        return "SubProcess{" +
+                "name='" + name + '\'' +
+                ", parent=" + parent +
+                ", process=" + process +
+                '}';
+    }
+
     public String getName() {
         return name;
     }

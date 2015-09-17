@@ -21,6 +21,18 @@ public class Movement extends Persisted {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "Movement{" +
+                "type='" + type + '\'' +
+                ", subProcess=" + subProcess +
+                ", attributes=" + attributes +
+                ", dataGroup=" + dataGroup +
+                ", parent=" + parent +
+                ", process=" + process +
+                '}';
+    }
+
     public SubProcess getSubProcess() {
         return subProcess;
     }
@@ -128,15 +140,15 @@ public class Movement extends Persisted {
         return result;
     }
 
-    public void setProcess(Process process) {
-        this.process = process;
-
-    }
-
     public Process getProcess() {
 
         return process;
 
+
+    }
+
+    public void setProcess(Process process) {
+        this.process = process;
 
     }
 }

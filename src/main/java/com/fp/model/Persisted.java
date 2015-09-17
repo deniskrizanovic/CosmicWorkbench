@@ -78,4 +78,15 @@ public class Persisted {
         result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Persisted{" +
+                "id=" + id +
+                ", version=" + version +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdTime=" + createdTime +
+                ", repository=" + repository +
+                '}';
+    }
 }

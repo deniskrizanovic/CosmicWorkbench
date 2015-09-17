@@ -143,6 +143,10 @@ public class SizingContext extends Persisted {
 
     }
 
+    public void setMovements(List<Movement> movements) {
+        this.movements = movements;
+    }
+
     public List<Movement> getMovementsForProcessId(int processId) {
 
         List<Movement> movements = getMovements();
@@ -171,9 +175,8 @@ public class SizingContext extends Persisted {
     public Movement getMovement(int subProcessId, int dataGroupId) {
         Movement m = new Movement();
         for (Movement movement : getMovements()) {
-            m = movement;
-            if (m.getSubProcess().getId() == subProcessId && m.getDataGroup().getId() == dataGroupId) {
-                return m;
+            if (movement.getSubProcess().getId() == subProcessId && movement.getDataGroup().getId() == dataGroupId) {
+                return movement;
             }
         }
         return m;
@@ -183,10 +186,6 @@ public class SizingContext extends Persisted {
     public void removeMovement(Movement m) {
 
         movements.remove(m);
-    }
-
-    public void setMovements(List<Movement> movements) {
-        this.movements = movements;
     }
 
     public void setProcesses(List<Process> processes) {

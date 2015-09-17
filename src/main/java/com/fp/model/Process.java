@@ -45,8 +45,7 @@ public class Process extends Persisted {
 
     public List<SubProcess> getSteps() {
 
-        if(steps.isEmpty())
-        {
+        if(steps.isEmpty()) {
             steps = repository.getSteps(this);
         }
 
@@ -75,5 +74,16 @@ public class Process extends Persisted {
 
     public void setParent(SizingContext parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public String toString() {
+        return "Process{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", notes='" + notes + '\'' +
+                ", steps=" + steps +
+                ", parent=" + parent +
+                '}';
     }
 }
