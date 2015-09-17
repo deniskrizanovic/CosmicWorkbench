@@ -5,19 +5,19 @@ import java.util.List;
 
 public class Movement extends Persisted {
 
-    String type;
+    String type = "";
     SubProcess subProcess;
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
     private SizingContext parent;
-    private Process process;
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public Movement setType(String type) {
         this.type = type;
+        return this;
     }
 
     public SubProcess getSubProcess() {
@@ -128,6 +128,13 @@ public class Movement extends Persisted {
 
     public void setProcess(Process process) {
         this.process = process;
+
+    }
+
+    public Process getProcess() {
+
+        return subProcess.getProcess();
+
 
     }
 }

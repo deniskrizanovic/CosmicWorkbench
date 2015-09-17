@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -27,6 +28,20 @@ public class SizingContext extends Persisted {
 
     public void setDatagroups(List<DataGroup> datagroups) {
         this.datagroups = datagroups;
+    }
+
+    public List<DataGroup> getDataGroupsForProcessId(int processId) {
+
+        List<Movement> movements = getDataMovements();
+        List<DataGroup> dgForProcess = new ArrayList<>();
+
+        for (Movement m : movements) {
+            if (m.getProcess().getId() == processId) {
+                dgForProcess.add(m.getDataGroup());
+            }
+        }
+        return dgForProcess;
+
     }
 
     public List<DataGroup> getDataGroupsWithNoMovements() {
@@ -54,19 +69,6 @@ public class SizingContext extends Persisted {
         return dg;
     }
 
-
-    public DataGroup getDataGroupByName(String name) {
-        DataGroup dg = new DataGroup();
-        for (DataGroup next : datagroups) {
-            if (next.getName().equals(name)) {
-                dg = next;
-            }
-        }
-
-        //todo need to do something smart if I just return a empty datagroup
-        return dg;
-    }
-
     public List<Process> getAllProcesses() {
 
         if (processes.isEmpty()) {
@@ -75,22 +77,41 @@ public class SizingContext extends Persisted {
         return processes;
     }
 
-    public void setProcesses(List<Process> processes) {
-        this.processes = processes;
-    }
-
     public Process getProcess(int Id) {
-
 
         Process p = new Process();
         for (Process process : getAllProcesses()) {
             if (process.getId() == Id)
                 p = process;
-
         }
-
         return p;
     }
+
+    public String[][] getDataToSubProcessMappingAsGrid(int processId) {
+
+        List<DataGroup> allGroupsForProcess = getDataGroupsForProcessId(processId);
+        List<SubProcess> allStepsForProcess = getProcess(processId).getSteps();
+        String[][] grid = new String[allStepsForProcess.size()][allGroupsForProcess.size() + 1];
+        int i = 0;
+        for (Iterator<SubProcess> iterator = allStepsForProcess.iterator(); iterator.hasNext(); ) {
+            SubProcess sp = iterator.next();
+            grid[i][0] = sp.getName();
+
+            int d = 1;
+            for (Iterator<DataGroup> j = allGroupsForProcess.iterator(); j.hasNext(); ) {
+                DataGroup dg = j.next();
+                Movement m = getMovement(sp.getId(), dg.getId());
+                grid[i][d] = m.getType();
+                d++;
+            }
+            i++;
+        }
+
+        return grid;
+
+
+    }
+
 
     public void saveMovement(Movement m) {
 
@@ -109,6 +130,21 @@ public class SizingContext extends Persisted {
 
     }
 
+    public List<Movement> getMovementsForProcessId(int processId) {
+
+        List<Movement> movements = getDataMovements();
+        List<Movement> movementsForProcess = new ArrayList<>();
+
+        for (Movement m : movements) {
+            if (m.getProcess().getId() == processId) {
+                movementsForProcess.add(m);
+            }
+        }
+
+        return movementsForProcess;
+
+    }
+
     public boolean isExistingMovement(int dataGroupId, int subProcessId, int attribId) {
 
         for (Movement m : getMovements()) {
@@ -117,10 +153,6 @@ public class SizingContext extends Persisted {
             }
         }
         return false;
-    }
-
-    public void setMovements(List<Movement> movements) {
-        this.movements = movements;
     }
 
     public Movement getMovement(int subProcessId, int dataGroupId) {
@@ -135,11 +167,16 @@ public class SizingContext extends Persisted {
 
     }
 
-
     public void removeMovement(Movement m) {
 
         movements.remove(m);
     }
 
+    public void setMovements(List<Movement> movements) {
+        this.movements = movements;
+    }
 
+    public void setProcesses(List<Process> processes) {
+        this.processes = processes;
+    }
 }

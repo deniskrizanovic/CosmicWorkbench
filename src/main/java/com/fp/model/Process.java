@@ -22,8 +22,9 @@ public class Process extends Persisted {
         return name;
     }
 
-    public void setName(String name) {
+    public Process setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDescription() {
