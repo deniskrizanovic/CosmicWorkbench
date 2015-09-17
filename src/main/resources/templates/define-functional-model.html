@@ -324,10 +324,10 @@
                     <div class="col-xs-8 bluebg">
                         <!-- Tab panes -->
                         <div class="tab-content">
-                            <div class="tab-pane active" id="data1" style="padding: 25px 5px;">
+							<div class="tab-pane active" id="data1" style="">
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
-                                        <span th:each="row,iter : ${sizingCtx.getDataToSubProcessMappingAsGrid(#numbers.formatInteger(param.p[0],1))}">
+										<div th:each="row,iter : ${sizingCtx.getDataToSubProcessMappingAsGrid(#numbers.formatInteger(param.p[0],1))}">
                                             <div th:if="${iter.first}">
                                                 <thead>
                                                 <tr>
@@ -355,7 +355,7 @@
                                             </div>
                                             </tbody>
 
-                                        </span>
+										</div>
 
                                         <!-- please take m -->
 
