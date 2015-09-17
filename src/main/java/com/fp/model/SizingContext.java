@@ -32,7 +32,7 @@ public class SizingContext extends Persisted {
 
     public List<DataGroup> getDataGroupsForProcessId(int processId) {
 
-        List<Movement> movements = getDataMovements();
+        List<Movement> movements = getMovements();
         List<DataGroup> dgForProcess = new ArrayList<>();
 
         for (Movement m : movements) {
@@ -91,20 +91,33 @@ public class SizingContext extends Persisted {
 
         List<DataGroup> allGroupsForProcess = getDataGroupsForProcessId(processId);
         List<SubProcess> allStepsForProcess = getProcess(processId).getSteps();
-        String[][] grid = new String[allStepsForProcess.size()][allGroupsForProcess.size() + 1];
-        int i = 0;
+        //the grid accommodates a header row and a header column on the left
+        String[][] grid = new String[allStepsForProcess.size() + 1][allGroupsForProcess.size() + 1];
+
+        //setup first line
+        grid[0][0] = ""; //this is the first blank one
+
+        int colIndexForHeadingRow = 1;
+        for (Iterator<DataGroup> dgi = allGroupsForProcess.iterator(); dgi.hasNext(); ) {
+            DataGroup dataGroup = dgi.next();
+            grid[0][colIndexForHeadingRow] = dataGroup.getName();
+            colIndexForHeadingRow++;
+        }
+
+
+        int rowIndex = 1;
         for (Iterator<SubProcess> iterator = allStepsForProcess.iterator(); iterator.hasNext(); ) {
             SubProcess sp = iterator.next();
-            grid[i][0] = sp.getName();
+            grid[rowIndex][0] = sp.getName();
 
-            int d = 1;
-            for (Iterator<DataGroup> j = allGroupsForProcess.iterator(); j.hasNext(); ) {
-                DataGroup dg = j.next();
+            int colIndex = 1;
+            for (Iterator<DataGroup> dataGroupIterator = allGroupsForProcess.iterator(); dataGroupIterator.hasNext(); ) {
+                DataGroup dg = dataGroupIterator.next();
                 Movement m = getMovement(sp.getId(), dg.getId());
-                grid[i][d] = m.getType();
-                d++;
+                grid[rowIndex][colIndex] = m.getType();
+                colIndex++;
             }
-            i++;
+            rowIndex++;
         }
 
         return grid;
@@ -132,7 +145,7 @@ public class SizingContext extends Persisted {
 
     public List<Movement> getMovementsForProcessId(int processId) {
 
-        List<Movement> movements = getDataMovements();
+        List<Movement> movements = getMovements();
         List<Movement> movementsForProcess = new ArrayList<>();
 
         for (Movement m : movements) {

@@ -10,6 +10,7 @@ public class Movement extends Persisted {
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
     private SizingContext parent;
+    private Process process;
 
     public String getType() {
         return type;
@@ -26,6 +27,7 @@ public class Movement extends Persisted {
 
     public Movement setSubProcess(SubProcess subProcess) {
         this.subProcess = subProcess;
+        this.process = subProcess.getProcess();
         return this;
     }
 
@@ -133,7 +135,7 @@ public class Movement extends Persisted {
 
     public Process getProcess() {
 
-        return subProcess.getProcess();
+        return process;
 
 
     }

@@ -34,6 +34,7 @@ public class TestSizingContext {
 
     @Test
     public void testMappingGrid() {
+
         sc.getDataToSubProcessMappingAsGrid(1);
 
         //Assert.assertEquals();
@@ -61,7 +62,7 @@ public class TestSizingContext {
         processList.add(p2);
         processList.add(p3);
 
-        SubProcess sp1 = (SubProcess) new SubProcess().setProcess(p1).setName("sp1").setId(1);   //todo it feels like this should set the processes steps
+        SubProcess sp1 = (SubProcess) new SubProcess().setProcess(p1).setName("sp1").setId(1);
         SubProcess sp2 = (SubProcess) new SubProcess().setProcess(p1).setName("sp2").setId(2);
         SubProcess sp3 = (SubProcess) new SubProcess().setProcess(p1).setName("sp3").setId(3);
         List<SubProcess> subProcessList = new ArrayList<>();
