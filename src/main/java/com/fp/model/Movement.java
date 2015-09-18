@@ -39,7 +39,7 @@ public class Movement extends Persisted {
 
     public Movement setSubProcess(SubProcess subProcess) {
         this.subProcess = subProcess;
-        this.process = subProcess.getProcess();
+        this.process = subProcess.getParent();
         return this;
     }
 

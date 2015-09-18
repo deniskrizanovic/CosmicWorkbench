@@ -5,14 +5,12 @@ public class SubProcess extends Persisted{
 
     String name;
     private Process parent;
-    private Process process;
 
     @Override
     public String toString() {
         return "SubProcess{" +
                 "name='" + name + '\'' +
-                ", parent=" + parent +
-                ", process=" + process +
+                ", parent=" + parent.getName() +
                 '}';
     }
 
@@ -25,8 +23,9 @@ public class SubProcess extends Persisted{
         return this;
     }
 
-    public void setParent(Process parent) {
+    public SubProcess setParent(Process parent) {
         this.parent = parent;
+        return this;
     }
 
     @Override
@@ -50,12 +49,8 @@ public class SubProcess extends Persisted{
         return result;
     }
 
-    public Process getProcess() {
-        return process;
-    }
 
-    public SubProcess setProcess(Process process) {
-        this.process = process;
-        return this;
+    public Process getParent() {
+        return parent;
     }
 }

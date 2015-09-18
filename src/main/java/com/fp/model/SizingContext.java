@@ -87,12 +87,12 @@ public class SizingContext extends Persisted {
         return p;
     }
 
-    public String[][] getDataToSubProcessMappingAsGrid(int processId) {
+    public Object[][] getDataToSubProcessMappingAsGrid(int processId) {
 
         List<DataGroup> allGroupsForProcess = getDataGroupsForProcessId(processId);
         List<SubProcess> allStepsForProcess = getProcess(processId).getSteps();
         //the grid accommodates a header row and a header column on the left
-        String[][] grid = new String[allStepsForProcess.size() + 1][allGroupsForProcess.size() + 1];
+        Object[][] grid = new Object[allStepsForProcess.size() + 1][allGroupsForProcess.size() + 1];
 
         //setup first line
         grid[0][0] = ""; //this is the first blank one
@@ -114,7 +114,7 @@ public class SizingContext extends Persisted {
             for (Iterator<DataGroup> dataGroupIterator = allGroupsForProcess.iterator(); dataGroupIterator.hasNext(); ) {
                 DataGroup dg = dataGroupIterator.next();
                 Movement m = getMovement(sp.getId(), dg.getId());
-                grid[rowIndex][colIndex] = m.getType();
+                grid[rowIndex][colIndex] = m.setDataGroup(dg).setSubProcess(sp); //I reset datagroup and subprocess, as I need the id's
                 colIndex++;
             }
             rowIndex++;

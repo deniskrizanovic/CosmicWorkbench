@@ -62,9 +62,9 @@ public class TestSizingContext {
         processList.add(p2);
         processList.add(p3);
 
-        SubProcess sp1 = (SubProcess) new SubProcess().setProcess(p1).setName("sp1").setId(1);
-        SubProcess sp2 = (SubProcess) new SubProcess().setProcess(p1).setName("sp2").setId(2);
-        SubProcess sp3 = (SubProcess) new SubProcess().setProcess(p1).setName("sp3").setId(3);
+        SubProcess sp1 = (SubProcess) new SubProcess().setParent(p1).setName("sp1").setId(1);
+        SubProcess sp2 = (SubProcess) new SubProcess().setParent(p1).setName("sp2").setId(2);
+        SubProcess sp3 = (SubProcess) new SubProcess().setParent(p1).setName("sp3").setId(3);
         List<SubProcess> subProcessList = new ArrayList<>();
         subProcessList.add(sp1);
         subProcessList.add(sp2);
