@@ -44,12 +44,14 @@ public class SizingContext extends Persisted {
 
     }
 
-    public List<DataGroup> getDataGroupsWithNoMovements() {
+    public List<DataGroup> getDataGroupsWithNoMovements(int processId) {
         List<Movement> movements = getMovements();
         List<DataGroup> dgInMovements = new ArrayList<>();
 
         for (Movement m : movements) {
-            dgInMovements.add(m.getDataGroup());
+            if (m.getProcess().getId() == processId) {
+                dgInMovements.add(m.getDataGroup());
+            }
         }
 
         List<DataGroup> allDataGroups = getDatagroups();
