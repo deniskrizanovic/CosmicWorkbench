@@ -19,7 +19,7 @@ public class SizingContext extends Persisted {
     List<Movement> movements = new ArrayList<>();
 
 
-    public List<DataGroup> getDatagroups() {
+    public List<DataGroup> getDataGroups() {
         if (datagroups.isEmpty()) {
             repository.getDataGroups(this);
         }
@@ -54,14 +54,14 @@ public class SizingContext extends Persisted {
             }
         }
 
-        List<DataGroup> allDataGroups = getDatagroups();
+        List<DataGroup> allDataGroups = getDataGroups();
 
         return (List<DataGroup>) CollectionUtils.disjunction(allDataGroups, dgInMovements);
     }
 
     public DataGroup getDataGroup(int id) {
         DataGroup dg = new DataGroup();
-        for (DataGroup next : getDatagroups()) {
+        for (DataGroup next : getDataGroups()) {
             if (next.getId() == id) {
                 dg = next;
             }
