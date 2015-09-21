@@ -36,192 +36,13 @@
 
 
     <script type="text/javascript" th:inline="javascript">
-	var popUpObj;
 
-	function showModalPopUp()
-
-	{
-
-		LoadModalDiv();
-
-	}
-
-	function showModalPopUp1(param3, param4, param5, param6, s1)
-
-	{
-
-		LoadModalDiv1(param3, param4, param5, param6, s1);
-
-	}
-
-	function LoadModalDiv()
-
-	{
-
-		var bcgDiv = document.getElementById("addDataGroupToModel");
-
-		bcgDiv.style.display = "block";
-
-	}
-
-	function LoadModalDiv1(param3, param4, param5, param6, s1)
-
-	{
-
-		var bcgDiv = document.getElementById("chooseAttributes");
-
-		bcgDiv.style.display = "block";
-
-		document.getElementById("datagroupid").innerHTML = param3;
-		
-		document.getElementById("datafielddiv").innerHTML = param6;
-		
-	//	document.getElementById("datalist1").innerHTML = s1;
-
-		document.getElementById("grade").value = param4;
-
-		document.getElementById("notes").value = param5;
-
-	}
-
-	function HideModalDiv()
-
-	{
-
-		var bcgDiv = document.getElementById("addDataGroupToModel");
-
-		bcgDiv.style.display = "none";
-
-	}
-
-	function HideModalDiv1()
-
-	{
-
-		var bcgDiv = document.getElementById("chooseAttributes");
-
-		bcgDiv.style.display = "none";
-
-	}
-
-
-
-
-
-
-
-
-    </script>
-
-
-    <script type="text/javascript" th:inline="javascript">
-	function clickFunc(name) {
-
-		var ctx = document.getElementById("functionalprocessname").value;
-
-		if (ctx == '' || ctx == null) {
-			alert("Name is mandatory");
-			return false;
-		}
-
-		var note = document.getElementById("functionalprocessnotes").value;
-
-		if (note == '' || note == null) {
-			alert("Notes is mandatory");
-			return false;
-		}
-
-		document.getElementById("option").value = name;
-
-		document.functionalprocessform.action = "/create-new-functional-process";
-
-		document.functionalprocessform.submit();
-
-	}
-
-	function popupClick(name) {
-
-		document.getElementById("option").value = name;
-
-		var name = document.functionalmodelform.datagroupname1.value;
-
-		document.functionalmodelform.action = "/create-new-functional-model?datagroupname="
-				+ name;
-		document.functionalmodelform.submit();
-
-	}
-
-	function popupClick1(name) {
-
-		document.getElementById("option").value = name;
-
-		document.functionalmodelform.action = "/create-new-functional-model";
-		document.functionalmodelform.submit();
-
-	}
-
-	function getFunctionalModelData(processId) {
-
-		document.functionalmodelform.method = "post";
-		document.functionalmodelform.action = "/define-functional-model?p="+ProcessId;
-		document.functionalmodelform.submit();
-	}
 
 	function call(process) {
 		//showModalPopUp();
 
         document.functionalmodelform.action = "/add-datagroup-and-attributes?p=" + process;
         document.functionalmodelform.submit();
-	}
-
-	function getGrade(param1, param2, param3, param4, param5, param8, param9) {
-		document.getElementById("functionalsubprocessid").value = param1;
-
-		document.getElementById("datagroupname").value = param3;
-
-		document.getElementById("functionalmodelid").value = param2;
-
-		var datafieldlist = [[${datafieldlist}]];
-		
-		var i = datafieldlist.length;
-		
-		var j = 0;
-		
-		var param6 = '';
-		
-	//	print_r(datafieldlist);
-		
-		var s1 = '';
-	
-		for(var p in datafieldlist){ 
-		
-			if (datafieldlist[p].dataGroupId == param8)
-				{					
-				    if (param9.indexOf(datafieldlist[p].dataFieldId) == -1)
-				    	{
-					s1 = s1 + '<li><div class="checkbox"><label><input type="checkbox" value="';
-					s1 = s1 + datafieldlist[p].dataFieldId;
-					s1 = s1 + '" name="datafields">';
-					s1 = s1 + datafieldlist[p].name; 
-					s1 = s1 + '</input></label></div></li>';
-				    	}
-				    else
-				    	{
-				    	s1 = s1 + '<li><div class="checkbox"><label><input type="checkbox" value="';
-						s1 = s1 + datafieldlist[p].dataFieldId;
-						s1 = s1 + '" checked="true" name="datafields">';
-						s1 = s1 + datafieldlist[p].name; 
-						s1 = s1 + '</input></label></div></li>';
-				    	}
-					
-				}
-		
- 
-         }
-
-        alert("s1=" + s1);
-		showModalPopUp1(param3, param4, param5, param6, s1);
-
 	}
 
 	function openMyWindow(datagroup, subprocess, process)
@@ -231,54 +52,6 @@
         document.functionalmodelform.action = "/select-data-attributes?dg=" + datagroup + "\u0026sp=" + subprocess + "\u0026p=" + process;
         document.functionalmodelform.submit();
 	}
-	
-	/*
-	
-	function addToCheckBoxListControl(textValue, valueValue)
-	{
-	 var tableRef = document.getElementById("test");
-	 
-	 var tableRow = tableRef.insertRow();
-	 var tableCell = tableRow.insertCell();
-	 
-	 var checkBoxRef = document.createElement('input');
-	 var labelRef = document.createElement('label');
-	 
-	 checkBoxRef.type = 'checkbox';
-	 labelRef.innerHTML = textValue;
-	 checkBoxRef.value = valueValue;
-	 
-	 tableCell.appendChild(checkBoxRef);
-	 tableCell.appendChild(labelRef);
-	}
-	
-	*/
-	//this is just a helper function I think?
-	function print_r(theObj){ 
-	       if(theObj.constructor == Array || theObj.constructor == Object){ 
-	          document.write("<ul>");
-	          for(var p in theObj){ 
-	             if(theObj[p].constructor == Array || theObj[p].constructor == Object){ 
-	                document.write("<li>["+p+"] => "+typeof(theObj)+"</li>"); 
-	                document.write("<ul>");
-	                print_r(theObj[p]); 
-	                document.write("</ul>") 
-	             } else { 
-	                document.write("<li>["+p+"] => "+theObj[p]+"</li>"); 
-	                document.write("<li>["+p+"] => "+theObj[p].dataGroupId+"</li>");
-	             } 
-	          } 
-	          document.write("</ul>") 
-	       } 
-	    } 
-	
-
-
-
-
-
-
-
 
     </script>
 
@@ -360,16 +133,6 @@
 
                                         </div>
 
-                                        <!-- please take m -->
-
-                                        <!--<tr th:each="sp : ${sizingCtx.getProcess(param.p[0]).steps}">-->
-                                        <!--<td th:text="${sp.name}"></td>-->
-
-
-                                        <!--&lt;!&ndash;<td th:each="functionalmodel : ${functionalsubprocess.functionalModel}"&ndash;&gt;-->
-                                        <!--&lt;!&ndash;th:onclick="'javascript:openMyWindow( ' + ${functionalmodel.dataGroupId} + ',' + ${functionalsubprocess.functionalSubProcessId} + ','+ ${functionalmodel.functionalProcessId} + ');'"&ndash;&gt;-->
-                                        <!--&lt;!&ndash;th:text="*{functionalmodel.grade != null} ? ${functionalmodel.grade} : ' '">&ndash;&gt;-->
-                                        <!--&lt;!&ndash;</td>&ndash;&gt;-->
 
                                         <!--</tr>-->
                                         <!--<tr>-->
@@ -388,7 +151,6 @@
 
             </div>
 
-            `
         </div>
 
     </div>
