@@ -12,7 +12,7 @@ public class ModelBuilder {
     public static Movement buildMovement(DataGroup dg, SubProcess sp, String[] attributeIds, String type, String username) {
 
         List attributesToAdd = new ArrayList();
-        if(attributeIds != null) {
+        if (attributeIds != null) {
             List<String> attribs = Arrays.asList(attributeIds);
 
             if (!attribs.isEmpty()) {
@@ -39,4 +39,32 @@ public class ModelBuilder {
     }
 
 
+    public static DataGroup buildDataGroup(String dataGroupName, String notes, String[] attribs, int dataGroupId, String userName) {
+
+        DataGroup dg = new DataGroup();
+        dg.setName(dataGroupName);
+        dg.setNotes(notes);
+        dg.setCreatedBy(userName);
+        dg.setId(dataGroupId);
+
+        List<DataAttribute> attribList = new ArrayList<>();
+
+        List<String> attribNameList = Arrays.asList(attribs);
+
+        for (Iterator i = attribNameList.iterator(); i.hasNext(); ) {
+            String attribName = (String) i.next();
+
+            if (!attribName.equals("")) {
+                DataAttribute newAttrib = new DataAttribute();
+                newAttrib.setName(attribName);
+                newAttrib.setParent(dg);
+                attribList.add(newAttrib);
+            }
+        }
+
+        dg.setAttributes(attribList);
+
+        return dg;
+
+    }
 }

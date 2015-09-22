@@ -193,4 +193,14 @@ public class SizingContext extends Persisted {
     public void setProcesses(List<Process> processes) {
         this.processes = processes;
     }
+
+    public void saveDataGroup(DataGroup dg) {
+
+        dg.setParent(this);
+        repository.saveDataGroup(dg);
+        datagroups.clear();
+        getDataGroups();
+
+
+    }
 }

@@ -31,8 +31,7 @@ public class DataGroupDAO {
     public List<DataGroup> getDataGroups(SizingContext sc) {
         String sql = "select datagroupid, version, name, notes " +
                 "from datagroup " +
-                "where not deleteflag " +
-                "and version = 0 " +
+                "where version = 0 " +
                 "and systemcontextid = " + sc.getId();
         return this.jdbcTemplate.query(sql, getRowToModelMapper(sc));
     }
@@ -60,8 +59,7 @@ public class DataGroupDAO {
 
         String sql = "select datafieldid, datagroupid, version, name " +
                 "from datafield " +
-                "where not deleteflag " +
-                "and version = 0 " +
+                "where version = 0 " +
                 "and datagroupid = :dgId";
 
 
@@ -166,6 +164,7 @@ public class DataGroupDAO {
     }
 
     private boolean iteratedOverToANewMovement(int previousDataGroupId, int previousSubProcessId, int currentSubProcessId, int currentDataGroupId) {
+
         return currentDataGroupId != previousDataGroupId || currentSubProcessId != previousSubProcessId;
     }
 
@@ -190,5 +189,101 @@ public class DataGroupDAO {
 
             }
         });
+    }
+
+    public DataGroup getDataGroup(DataGroup dg) {
+
+        Map boundVariables = new HashMap();
+        boundVariables.put("id", dg.getId());
+
+        String sql = "select datagroupid, version, name, notes " +
+                "from datagroup " +
+                "where version = 0 " +
+                "and datagroupid = :id";
+
+        return namedJdbcTemplate.queryForObject(sql, boundVariables, new RowMapper<DataGroup>() {
+            public DataGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                DataGroup dg = new DataGroup();
+                dg.setId(rs.getInt("datagroupid"));
+                dg.setName(rs.getString("name"));
+                dg.setNotes(rs.getString("notes"));
+                dg.setAttributes(getAttributes(dg));
+                return dg;
+            }
+        });
+
+
+    }
+
+    public DataGroup saveDataGroupAndAttributes(DataGroup dg) {
+
+        DataGroup saved = saveDataGroup(dg);
+
+        if (!dg.getAttributes().isEmpty()) {
+            dg.setId(saved.getId());
+            addAttributes(dg);
+        }
+        return getDataGroup(saved);
+
+
+    }
+
+    public void addAttributes(DataGroup dg) {
+
+
+        Map boundVariables = new HashMap();
+        boundVariables.put("dataGroupId", dg.getId());
+        boundVariables.put("userName", dg.getCreatedBy());
+
+
+        String updateVersionOfExistingAttributes = "update datafield set version = version + 1 where datagroupid = :dataGroupId ";
+        namedJdbcTemplate.update(updateVersionOfExistingAttributes, boundVariables);
+
+
+        String insertTheNewAttribute = "insert into datafield ( datafieldid, datagroupid, name, userid ) " +
+                "values (seq_DataField.nextval, :dataGroupId, :attribute, :userName)";
+
+        for (Iterator<DataAttribute> i = dg.getAttributes().iterator(); i.hasNext(); ) {
+
+            DataAttribute attribute = i.next();
+
+            boundVariables.put("attribute", attribute.getName());
+
+            namedJdbcTemplate.update(insertTheNewAttribute, boundVariables);
+        }
+    }
+
+    private DataGroup saveDataGroup(DataGroup dg) {
+
+
+        String insertNewDataGroupRecord = " insert into datagroup ( datagroupid, systemcontextid, name, notes, userid ) " +
+                "values ( :seq, :systemContextId, :datagroupName, :dataGroupNotes, :userName)";
+
+        Map namedParameters = new HashMap();
+        namedParameters.put("systemContextId", dg.getParent().getId());
+        namedParameters.put("datagroupName", dg.getName().replace("'", "''"));
+        namedParameters.put("dataGroupNotes", dg.getNotes().replace("'", "''"));
+        namedParameters.put("userName", dg.getCreatedBy());
+
+        int seq;
+
+        if (dg.getId() > 0) {
+
+            String updateVersionOfExistingDataGroup = "update datagroup set version = version + 1 where datagroupid =" + dg.getId();
+            jdbcTemplate.update(updateVersionOfExistingDataGroup);
+            seq = dg.getId();
+
+        } else {
+            String getDataGroupNextVal = "select seq_DataGroup.nextval";
+            seq = jdbcTemplate.queryForObject(getDataGroupNextVal, Integer.class);
+        }
+
+        namedParameters.put("seq", seq);
+
+        namedJdbcTemplate.update(insertNewDataGroupRecord, namedParameters);
+
+        DataGroup criteria = (DataGroup) new DataGroup().setId(seq);
+        return getDataGroup(criteria);
     }
 }

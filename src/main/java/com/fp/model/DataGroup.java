@@ -81,4 +81,15 @@ public class DataGroup extends Persisted{
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
     }
+
+
+    @Override
+    public String toString() {
+        return "DataGroup{" +
+                "attributes=" + attributes +
+                ", name='" + name + '\'' +
+                ", notes='" + notes + '\'' +
+                ", parent=" + parent +
+                '}';
+    }
 }

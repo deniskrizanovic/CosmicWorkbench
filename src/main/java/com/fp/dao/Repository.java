@@ -68,4 +68,23 @@ public class Repository {
         return movements;
     }
 
+    public void saveDataGroup(DataGroup dg) {
+
+        if (dg.getId() > 0) {
+            DataGroup existing = dgDao.getDataGroup(dg);
+
+            if (dataGroupNeedsUpdating(dg, existing)) {
+                dgDao.saveDataGroupAndAttributes(dg);
+            } else {
+                dgDao.addAttributes(dg);
+            }
+        } else {
+            dgDao.saveDataGroupAndAttributes(dg);
+        }
+
+    }
+
+    private boolean dataGroupNeedsUpdating(DataGroup dg, DataGroup existing) {
+        return !(existing.getName().equals(dg.getName()) && existing.getNotes().equals(dg.getNotes()));
+    }
 }

@@ -5,6 +5,7 @@ import com.fp.dao.SystemContextRepository;
 import com.fp.domain.DataField;
 import com.fp.domain.DataGroup;
 import com.fp.domain.SystemContext;
+import com.fp.model.ModelBuilder;
 import com.fp.model.SizingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,18 +25,13 @@ import java.util.List;
 @Controller
 public class DataGroupController {
 
-    private JdbcTemplate jdbcTemplate;
-
-    private SystemContext systemContext;
-
-    private DataGroup dataGroup;
-
-    private DataGroupRepository dataGroupRepository;
-    private SystemContextRepository systemContextRepository;
-
     @Autowired
     SizingContext sizingContext;
-
+    private JdbcTemplate jdbcTemplate;
+    private SystemContext systemContext;
+    private DataGroup dataGroup;
+    private DataGroupRepository dataGroupRepository;
+    private SystemContextRepository systemContextRepository;
 
     @Autowired
     public void setSystemContextRepository(SystemContextRepository repository) {
@@ -64,15 +60,6 @@ public class DataGroupController {
     public String dispDataGroup(Model model, HttpSession session) {
 
         setupSystemContext(model, session);
-
-        if (session.getAttribute("systemcontextid") != null) {
-            Long systemContextId = (Long) session.getAttribute("systemcontextid");
-            List<DataGroup> datagroups = dataGroupRepository.getDataGroupsForSystemContext(systemContextId);
-
-            model.addAttribute("datagrouplist", datagroups);
-        }
-
-
         return "/define-data-groups";
     }
 
@@ -80,41 +67,32 @@ public class DataGroupController {
     public String showDataGroup(Model model, HttpSession session) {
 
         setupSystemContext(model, session);
+        return "define-data-groups";
+    }
 
-//        long dataGroupId = 0l;
-//
-//        List<DataField> datafieldlist = null;
-//
-//        List<DataGroup> dataGroups = null;
-//
-//        if (session.getAttribute("systemcontextid") != null)
-//        {
-//            Long systemContextId = (Long) session.getAttribute("systemcontextid");
-//            dataGroups = dataGroupRepository.getDataGroupsForSystemContext(systemContextId);
-//
-//            model.addAttribute("datagrouplist", dataGroups);
-//
-//            if (dataGroups.size() > 0)
-//            {
-//                dataGroupId = dataGroups.get(0).getDataGroupId();
-//                this.dataGroup = dataGroups.get(0);
-//            } else
-//            {
-//                this.dataGroup = null;
-//            }
-//
-//            datafieldlist = getDataFields(dataGroupId);
-//
-//            model.addAttribute("datafieldlist", datafieldlist);
-//        }
-//
-//        model.addAttribute("datagroup", this.dataGroup);
+    @RequestMapping(value = "/save-data-group", method = {RequestMethod.GET, RequestMethod.POST})
+    public String creatingNewDataGroup(Model model, HttpServletRequest request, HttpSession session) {
+
+        System.out.println("I am!");
+
+        setupSystemContext(model, session);
+
+        String dataGroupName = request.getParameter("name");
+        String notes = request.getParameter("notes");
+        String[] attribs = request.getParameterValues("attribute");
+        String dataGroupId = request.getParameter("dgId");
+        String userName = (String) session.getAttribute("username");
+
+        com.fp.model.DataGroup dg = ModelBuilder.buildDataGroup(dataGroupName, notes, attribs, Integer.parseInt(dataGroupId), userName);
+        sizingContext.saveDataGroup(dg);
+
 
         return "define-data-groups";
     }
 
-    @RequestMapping(value = "/create-new-data-group", method = {RequestMethod.GET, RequestMethod.POST})
-    public String creatingNewDataGroup(Model model, HttpServletRequest request, HttpSession session) {
+
+    @RequestMapping(value = "/oldcreate-new-data-group", method = {RequestMethod.GET, RequestMethod.POST})
+    public String OldcreatingNewDataGroup(Model model, HttpServletRequest request, HttpSession session) {
 
         String systemContextId = String.valueOf(session.getAttribute("systemcontextid")); //todo not sure why it's a long in the session.
 
@@ -240,7 +218,7 @@ public class DataGroupController {
 
 //        List<DataGroup> dataGroups = dataGroupRepository.getDataGroupsForSystemContext(systemContextId);
 //
-//        model.addAttribute("datagrouplist", dataGroups);
+//        model.addAttributes("datagrouplist", dataGroups);
 //
 //        if (dataGroupIdIsPresent(request)) {
 //            if (dataGroupId != null && !dataGroupId.equals("")) {
@@ -253,10 +231,10 @@ public class DataGroupController {
 //            }
 //        }
 //
-//        model.addAttribute("datagroup", this.dataGroup);
+//        model.addAttributes("datagroup", this.dataGroup);
 //
 //        List<DataField> datafieldlist = getDataFields(dataGroup.getDataGroupId());
-//        model.addAttribute("datafieldlist", datafieldlist);
+//        model.addAttributes("datafieldlist", datafieldlist);
 
 
         return "define-data-groups";
@@ -282,4 +260,6 @@ public class DataGroupController {
     private boolean dataGroupIdIsPresent(HttpServletRequest request) {
         return request.getParameter("datagroupid") != null && !(request.getParameter("datagroupid") + "").equals("");
     }
+
+
 }

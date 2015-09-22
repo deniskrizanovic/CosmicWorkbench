@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     </meta>
@@ -38,35 +38,11 @@
     <script src="js/ie-emulation-modes-warning.js"></script>
 
     <script>
-        function clickFunc(name) {
-
-            var ctx = document.getElementById("datagroupname").value;
-
-            if (ctx == '' || ctx == null) {
-                alert("Name is mandatory");
-                return false;
-            }
-
-            var note = document.getElementById("datagroupnotes").value;
-
-
-            document.getElementById("option").value = name;
-
-            document.datagroupform.action = "/create-new-data-group";
-
-            document.datagroupform.submit();
-
-        }
-
-        function clickFunc1(name) {
+        function deleteAttribute(id) {
 
             alert("clickFunc1:" + name)
-            document.getElementById("delete").value = name;
-            document.getElementById("option").value = 'deletingDataAttribute';
-
-            document.datagroupform.action = "/create-new-data-group";
-
-            document.datagroupform.submit();
+            var elem = document.getElementById(id);
+            elem.parentNode.removeChild(elem);
 
         }
 
@@ -74,7 +50,6 @@
 
             if (name == 'new') {
                 alert(name)
-                document.getElementById("option").value = '2';
                 document.datagroupform.method = "post";
                 document.datagroupform.action = "/disp-data-groups";
                 document.datagroupform.submit();
@@ -87,6 +62,10 @@
             }
 
         }
+
+
+
+
     </script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -110,17 +89,19 @@
     </div>
 </div>
 <div class="container">
-    <form name="datagroupform" method="post" class="form-horizontal">
+    <form name="datagroupform" method="post" class="form-horizontal" action="/save-data-group">
         <div class="row">
             <div class="col-sm-12">
                 <div class="col-xs-4" style="padding-right:0"> <!-- required for floating -->
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs tabs-left" th:each="dg : ${sizingCtx.getDataGroups()}">
-                        <li><a th:href="${'show-data-groups?dg=' + dg.id}" data-toggle="tab" th:text="${dg.name}"></a>
+                        <li th:class="${param.dg !=null ? (#numbers.formatInteger(dg.id,1) == #numbers.formatInteger(param.dg[0],1) ? 'active': '') : ''}">
+                            <a th:href="${'show-data-groups?dg=' + dg.id}" data-toggle="tab" th:text="${dg.name}"></a>
                         </li>
                     </ul>
                     <ul class="nav nav-tabs tabs-left">
-                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getDataGroupData(\'new\');'">New Data Group</a></li>
+                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getDataGroupData(\'new\');'">New Data
+                            Group</a></li>
                     </ul>
                 </div>
                 <div class="col-xs-8 bluebg">
@@ -130,36 +111,44 @@
 
 
                             <div class="form-group">
-                                <label class="col-sm-4 control-label" for="datagroupname">Name</label>
+                                <label class="col-sm-4 control-label" for="name">Name</label>
 
                                 <div class="col-sm-8">
-                                    <input type="text" id="datagroupname" name="datagroupname" th:value="*{param.dg != null} ? ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).name} : ''" class="form-control"> </input>
-                                    <input type="hidden" id="datagroupid" name="datagroupid" th:value="*{param.dg != null} ? ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).id} : ''" class="form-control"> </input>
+                                    <input type="text" id="name" name="name"
+                                           th:value="*{param.dg != null} ? ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).name} : ''"
+                                           class="form-control"> </input>
+                                    <input type="hidden" id="dgId" name="dgId"
+                                           th:value="*{param.dg != null} ? ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).id} : 0"
+                                           class="form-control"> </input>
                                 </div>
                                 <div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label" for="datagroupnotes">Notes</label>
+                                <label class="col-sm-4 control-label" for="notes">Notes</label>
 
                                 <div class="col-sm-8">
-                                    <input type="text" id="datagroupnotes" name="datagroupnotes" th:value="*{param.dg != null} ? ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).notes} : ''" class="form-control"> </input>
+                                    <input type="text" id="notes" name="notes"
+                                           th:value="*{param.dg != null} ? ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).notes} : ''"
+                                           class="form-control"> </input>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label" for="datafieldname">Attributes:</label>
+                                <label class="col-sm-4 control-label" for="attribute">Attributes:</label>
 
-                                <div th:if="${param.dg != null}" class="col-sm-8">
-                                    <ul lass="datalist" th:each="datafieldtmp : ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).attributes}">
-                                        <li>
-                                            <div style="float: left;">
-                                                <img src="/resources/close.png" th:onclick="'javascript:clickFunc1(' + ${datafieldtmp.id} + ');'" id="img1"> </img>
-                                            </div>
-                                            <div th:text="  ${datafieldtmp.name}">
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <input type="text" id="datafieldname" name="datafieldname"  class="form-control"> </input>
+                                <div class="col-sm-8">
+                                    <div th:if="${param.dg != null}">
+                                        <ul th:id="${attribute.id}" class="datalist"
+                                            th:each="attribute : ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).attributes}">
+                                            <li>
+                                                <div style="float: left;">
+                                                    <input type="text" id="attribute" th:name="attribute" th:value="${attribute.name}">  </input>
+                                                    <img src="/resources/close.png" th:onclick="'javascript:deleteAttribute(' + ${attribute.id} + ');'" id="img1"> </img>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <input type="text" id="newAttribute" name="attribute" class="datalist"> </input>
                                 </div>
                             </div>
 
@@ -169,10 +158,8 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
 
-                                    <button class="btn btn-default" type="submit" th:onclick="'javascript:clickFunc(\'save\');'">
-                                        Save
-                                    </button>
-                                    <button class="btn btn-danger" type="submit"  th:onclick="'javascript:clickFunc(\'delete\');'">Delete
+                                    <button class="btn btn-default" type="submit"> Save</button>
+                                    <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(\'delete\');'">Delete
                                     </button>
                                 </div>
                             </div>
