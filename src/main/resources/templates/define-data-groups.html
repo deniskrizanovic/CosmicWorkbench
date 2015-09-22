@@ -51,13 +51,13 @@
             if (name == 'new') {
                 alert(name)
                 document.datagroupform.method = "post";
-                document.datagroupform.action = "/disp-data-groups";
+                document.datagroupform.action = "/define-data-groups";
                 document.datagroupform.submit();
             }
             else {
                 document.getElementById("option").value = '3';
                 document.datagroupform.method = "post";
-                document.datagroupform.action = "/show-data-groups?id=" + name;
+                document.datagroupform.action = "/define-data-groups?id=" + name;
                 document.datagroupform.submit();
             }
 
