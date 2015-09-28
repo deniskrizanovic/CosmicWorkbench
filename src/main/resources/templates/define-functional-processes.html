@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
         >
 <head>
     <meta charset="utf-8">
@@ -75,14 +75,14 @@
             if (id == 0 || id == '0') {
                 document.getElementById("option").value = '2';
                 document.functionalprocessform.method = "post";
-                document.functionalprocessform.action = "/disp-functional-processes";
+                document.functionalprocessform.action = "/define-functional-processes";
                 document.functionalprocessform.submit();
             }
             else {
                 document.getElementById("option").value = '3';
                 document.getElementById("functionalprocessid").value = id;
                 document.functionalprocessform.method = "post";
-                document.functionalprocessform.action = "/show-functional-processes?functionalprocessid=" + id;
+                document.functionalprocessform.action = "/show-functional-processes?fp=" + id;
                 document.functionalprocessform.submit();
             }
 
@@ -95,6 +95,9 @@
 
 	        document.functionalprocessform.submit();
 	}
+
+
+
 
 
     </script>
@@ -126,19 +129,17 @@
             <div class="col-sm-12">
                 <div class="col-xs-4" style="padding-right:0"> <!-- required for floating -->
                     <!-- Nav tabs -->
-                    <ul class="nav nav-tabs tabs-left" th:each="functionalprocesstmp : ${functionalprocesslist}">
+                    <ul class="nav nav-tabs tabs-left" th:each="fp : ${sizingCtx.getAllProcesses()}">
 
                         <li>
 
-                            <a href="#" data-toggle="tab" th:text="${functionalprocesstmp.name}"
-                               th:onclick="'javascript:getFunctionalProcessData(\'' +${functionalprocesstmp.functionalProcessId} + '\');'"></a>
+                            <a href="#" data-toggle="tab" th:text="${fp.name}" th:onclick="'javascript:getFunctionalProcessData(\'' +${fp.id} + '\');'"></a>
                         </li>
 
 
                     </ul>
                     <ul class="nav nav-tabs tabs-left">
-                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(0);'">New
-                            Process</a></li>
+                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(0);'">New Process</a></li>
                     </ul>
                 </div>
 
@@ -153,11 +154,11 @@
 
                                     <div class="col-sm-8">
                                         <input type="text" id="functionalprocessname" name="functionalprocessname"
-                                               th:onBlur="*{functionalprocess == null}? 'javascript:getData();' "
-                                               th:value="*{functionalprocess != null} ? ${functionalprocess.name} : ''"
+                                               th:onBlur="*{param.fp == null}? 'javascript:getData();' "
+                                               th:value="*{param.fp != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).name} : ''"
                                                class="form-control"> </input>
                                         <input type="hidden" id="functionalprocessid" name="functionalprocessid"
-                                               th:value="*{functionalprocess != null} ? ${functionalprocess.functionalProcessId} : ''"
+                                               th:value="*{param.fp != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).id} : ''"
                                                class="form-control"> </input>
                                     </div>
                                 </div>
@@ -166,29 +167,27 @@
 
                                     <div class="col-sm-8">
                                         <input type="text" id="functionalprocessnotes" name="functionalprocessnotes"
-                                               th:value="*{functionalprocess != null} ? ${functionalprocess.notes} : ''"
+                                               th:value="*{functionalprocess != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).notes} : ''"
                                                class="form-control"> </input>
                                     </div>
                                 </div>
+
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label" for="functionalsubprocessname">Process
-                                        Steps:</label>
+                                    <label class="col-sm-4 control-label" for="functionalsubprocessname">Process Steps:</label>
 
                                     <div class="col-sm-8">
-                                        <ul class="datalist"
-                                            th:each="functionalsubprocesstmp : ${functionalsubprocesslist}">
-                                            <li>
-                                                <div style="float: left;">
-                                                    <img src="/resources/close.png"
-                                                         th:onclick="'javascript:clickFuncDeleteSubProcessStep(' + ${functionalsubprocesstmp.functionalSubProcessId} + ');'"
-                                                         id="img1"> </img>
-                                                </div>
-                                                <div th:text="${functionalsubprocesstmp.name}">
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <input type="text" id="functionalsubprocessname" name="functionalsubprocessname"
-                                               class="form-control"> </input>
+                                        <div th:if="${param.fp != null}">
+                                            <ul class="datalist" th:id="${sp.id}" th:each="sp : ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).steps}">
+                                                <li>
+                                                    <div style="float: left;">
+                                                        <input type="text" id="sp.name" th:name="sp.name" th:value="${sp.name}">  </input>
+                                                        <img src="/resources/close.png" th:onclick="'javascript:clickFuncDeleteSubProcessStep(' + ${sp.id} + ');'" id="img1"> </img>
+                                                    </div>
+
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <input type="text" id="functionalsubprocessname" name="functionalsubprocessname" class="datalist"> </input>
                                     </div>
                                 </div>
 

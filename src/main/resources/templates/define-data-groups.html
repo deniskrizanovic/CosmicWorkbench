@@ -96,7 +96,7 @@
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs tabs-left" th:each="dg : ${sizingCtx.getDataGroups()}">
                         <li th:class="${param.dg !=null ? (#numbers.formatInteger(dg.id,1) == #numbers.formatInteger(param.dg[0],1) ? 'active': '') : ''}">
-                            <a th:href="${'show-data-groups?dg=' + dg.id}" data-toggle="tab" th:text="${dg.name}"></a>
+                            <a th:href="${'define-data-groups?dg=' + dg.id}" data-toggle="tab" th:text="${dg.name}"></a>
                         </li>
                     </ul>
                     <ul class="nav nav-tabs tabs-left">

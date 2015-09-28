@@ -5,6 +5,7 @@ import com.fp.dao.SystemContextRepository;
 import com.fp.domain.FunctionalProcess;
 import com.fp.domain.FunctionalSubProcess;
 import com.fp.domain.SystemContext;
+import com.fp.model.SizingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -21,16 +22,13 @@ import java.util.List;
 public class FunctionalProcessController
 {
 
+    @Autowired
+    SizingContext sizingContext;   //todo this is definitely not thread safe. Even though it's a prototype
     private JdbcTemplate jdbcTemplate;
-
     private SystemContext systemContext;
-
     private FunctionalProcess funcProc;
-
     private FunctionalProcessRepository fpRepository;
-
     private SystemContextRepository scRepository;
-
     private String err;
 
     @Autowired
@@ -66,8 +64,21 @@ public class FunctionalProcessController
         return "/define-functional-processes";
     }
 
+
+    public void setupSystemContext(Model model, HttpSession session) {
+
+        Long name = (Long) session.getAttribute("systemcontextid");
+        sizingContext.setId(name.intValue());
+        model.addAttribute("sizingCtx", sizingContext);
+    }
+
     @RequestMapping("/define-functional-processes")
-    public String showFunctionalProcess(Model model, HttpSession session)
+    public String showFunctionalProcess(Model model, HttpSession session) {
+        setupSystemContext(model, session);
+        return "define-functional-processes";
+    }
+
+    public String oldshowFunctionalProcess(Model model, HttpSession session)
     {
 
         System.out.println("or is this me?");
@@ -328,59 +339,63 @@ public class FunctionalProcessController
     @RequestMapping(value = "/show-functional-processes", method = {RequestMethod.GET, RequestMethod.POST})
     public String getFunctionalProcess(Model model, HttpServletRequest request, HttpSession session)
     {
-        if (session.getAttribute("systemcontextid") != null)
-        {
-            if (request.getParameter("functionalprocessid") != null && !(request.getParameter("functionalprocessid") + "").equals(""))
-            {
 
-                Long systemContextId = (Long) session.getAttribute("systemcontextid");
-                String functionalprocessid = request.getParameter("functionalprocessid");
-
-                List<FunctionalProcess> fpList =  fpRepository.getListOfFunctionalProcessesForContext(systemContextId);
-
-                model.addAttribute("functionalprocesslist", fpList);
-
-                if (functionalprocessid != null && !functionalprocessid.equals(""))
-                {
-
-                    this.funcProc = fpRepository.getFunctionalProcessById(systemContextId, functionalprocessid) ;
-                }
-
-                model.addAttribute("functionalprocess", this.funcProc);
-
-                List<FunctionalSubProcess> functionalsubprocesslist = fpRepository.getListofSubProcesses(Long.parseLong(functionalprocessid));
-
-                model.addAttribute("functionalsubprocesslist", functionalsubprocesslist);
-
-            } else
-            {
-
-                System.out.println("do I get here at any time?");
-                Long systemContextId = (Long) session.getAttribute("systemcontextid");
-                String functionalprocessname = request.getParameter("functionalprocessname");
-
-
-                List<FunctionalProcess> actors =  fpRepository.getListOfFunctionalProcessesForContext(systemContextId);
-
-                model.addAttribute("functionalprocesslist", actors);
-
-                if (functionalprocessname != null && !functionalprocessname.equals(""))
-                {
-
-                    this.funcProc =  fpRepository.getFunctionalProcessByName(systemContextId, functionalprocessname);
-                }
-
-                model.addAttribute("functionalprocess", this.funcProc);
-                //todo why doens't this just comeback as part of the model? who taught this person to code?
-                List<FunctionalSubProcess> functionalsubprocesslist = fpRepository.getListofSubProcesses(funcProc.getFunctionalProcessId());
-
-
-                model.addAttribute("functionalsubprocesslist", functionalsubprocesslist);
-            }
-
-        }
-
+        setupSystemContext(model, session);
         return "define-functional-processes";
+
+//        if (session.getAttribute("systemcontextid") != null)
+//        {
+//            if (request.getParameter("functionalprocessid") != null && !(request.getParameter("functionalprocessid") + "").equals(""))
+//            {
+//
+//                Long systemContextId = (Long) session.getAttribute("systemcontextid");
+//                String functionalprocessid = request.getParameter("functionalprocessid");
+//
+//                List<FunctionalProcess> fpList =  fpRepository.getListOfFunctionalProcessesForContext(systemContextId);
+//
+//                model.addAttribute("functionalprocesslist", fpList);
+//
+//                if (functionalprocessid != null && !functionalprocessid.equals(""))
+//                {
+//
+//                    this.funcProc = fpRepository.getFunctionalProcessById(systemContextId, functionalprocessid) ;
+//                }
+//
+//                model.addAttribute("functionalprocess", this.funcProc);
+//
+//                List<FunctionalSubProcess> functionalsubprocesslist = fpRepository.getListofSubProcesses(Long.parseLong(functionalprocessid));
+//
+//                model.addAttribute("functionalsubprocesslist", functionalsubprocesslist);
+//
+//            } else
+//            {
+//
+//                System.out.println("do I get here at any time?");
+//                Long systemContextId = (Long) session.getAttribute("systemcontextid");
+//                String functionalprocessname = request.getParameter("functionalprocessname");
+//
+//
+//                List<FunctionalProcess> actors =  fpRepository.getListOfFunctionalProcessesForContext(systemContextId);
+//
+//                model.addAttribute("functionalprocesslist", actors);
+//
+//                if (functionalprocessname != null && !functionalprocessname.equals(""))
+//                {
+//
+//                    this.funcProc =  fpRepository.getFunctionalProcessByName(systemContextId, functionalprocessname);
+//                }
+//
+//                model.addAttribute("functionalprocess", this.funcProc);
+//                //todo why doens't this just comeback as part of the model? who taught this person to code?
+//                List<FunctionalSubProcess> functionalsubprocesslist = fpRepository.getListofSubProcesses(funcProc.getFunctionalProcessId());
+//
+//
+//                model.addAttribute("functionalsubprocesslist", functionalsubprocesslist);
+//            }
+//
+//        }
+//
+//        return "define-functional-processes";
     }
 
 }
