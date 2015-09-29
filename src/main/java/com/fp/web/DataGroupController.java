@@ -45,7 +45,7 @@ public class DataGroupController {
         String userName = (String) session.getAttribute("username");
 
         int dataGroupId = 0;
-        if (request.getParameter("dgId").equals("")) {
+        if (!request.getParameter("dgId").equals("")) {
             dataGroupId = Integer.parseInt(request.getParameter("dgId"));
         }
 

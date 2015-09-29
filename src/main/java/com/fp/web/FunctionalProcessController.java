@@ -93,7 +93,7 @@ public class FunctionalProcessController
         int processId = 0;
         String userName = (String) session.getAttribute("username");
 
-        if (request.getParameter("fpId").equals("")) {
+        if (!request.getParameter("fpId").equals("")) {
             processId = Integer.parseInt(request.getParameter("fpId"));
         }
 
