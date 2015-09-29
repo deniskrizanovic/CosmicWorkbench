@@ -86,8 +86,7 @@
                 <div class="col-xs-4" style="padding-right:0"> <!-- required for floating -->
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs tabs-left" th:each="fp : ${sizingCtx.getAllProcesses()}">
-
-                        <li>
+                        <li th:class="${param.fp !=null ? (#numbers.formatInteger(fp.id,1) == #numbers.formatInteger(param.fp[0],1) ? 'active': '') : ''}">
                             <a th:href="${'define-functional-process?fp=' + fp.id}" data-toggle="tab" th:text="${fp.name}"></a>
                         </li>
 
