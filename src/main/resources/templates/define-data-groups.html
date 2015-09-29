@@ -46,8 +46,24 @@
 
         }
 
+        function addRow(id) {
+
+            alert("I do not know how to dynamically add a row here. Sorry::" + id);
+            var elem = document.getElementById(id);
+            var input = document.createElement("input");
+        //    var type = document.createAttribute("type").value = "text";
+        //    input.setAttributeNode(type);
+
+
+            elem.appendChild(input);
+
+
+
+        }
+
     </script>
 
+    <!--<input type="text" id="newAttribute1" name="attribute" class="datalist" th:onblur="'javascript:addRow(\'newAttribute1\');'"> </input>-->
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -127,7 +143,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <input type="text" id="newAttribute" name="attribute" class="datalist"> </input>
+                                    <input type="text" id="newAttribute1" name="attribute" class="datalist" th:onblur="'javascript:addRow(\'newAttribute1\');'"> </input>
                                 </div>
                             </div>
                             <div class="form-group">
