@@ -203,4 +203,21 @@ public class SizingContext extends Persisted {
 
 
     }
+
+    public void saveProcess(Process p) {
+
+        p.setParent(this);
+        repository.saveProcess(p);
+        processes.clear();
+        getAllProcesses();
+    }
+
+    @Override
+    public String toString() {
+        return "SizingContext{" +
+                "datagroups=" + datagroups +
+                ", processes=" + processes +
+                ", movements=" + movements +
+                '}';
+    }
 }

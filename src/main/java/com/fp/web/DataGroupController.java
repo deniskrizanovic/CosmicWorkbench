@@ -42,10 +42,14 @@ public class DataGroupController {
         String dataGroupName = request.getParameter("name");
         String notes = request.getParameter("notes");
         String[] attribs = request.getParameterValues("attribute");
-        String dataGroupId = request.getParameter("dgId");
         String userName = (String) session.getAttribute("username");
 
-        DataGroup dg = ModelBuilder.buildDataGroup(dataGroupName, notes, attribs, Integer.parseInt(dataGroupId), userName);
+        int dataGroupId = 0;
+        if (request.getParameter("dgId").equals("")) {
+            dataGroupId = Integer.parseInt(request.getParameter("dgId"));
+        }
+
+        DataGroup dg = ModelBuilder.buildDataGroup(dataGroupName, notes, attribs, dataGroupId, userName);
         sizingContext.saveDataGroup(dg);
 
 

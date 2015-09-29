@@ -87,4 +87,27 @@ public class Repository {
     private boolean dataGroupNeedsUpdating(DataGroup dg, DataGroup existing) {
         return !(existing.getName().equals(dg.getName()) && existing.getNotes().equals(dg.getNotes()));
     }
+
+    public void saveProcess(Process p) {
+
+
+        if (p.getId() > 0) {
+            Process existing = pDao.getProcess(p);
+
+            if (processNeedsUpdating(p, existing)) {
+                pDao.saveProcessAndSteps(p);
+            } else {
+                pDao.addSteps(p);
+            }
+
+
+        } else {
+            pDao.saveProcessAndSteps(p);
+        }
+
+    }
+
+    private boolean processNeedsUpdating(Process p, Process existing) {
+        return !(existing.getName().equals(p.getName()) && existing.getNotes().equals(p.getNotes()));
+    }
 }

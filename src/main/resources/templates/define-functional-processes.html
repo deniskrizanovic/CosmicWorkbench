@@ -40,51 +40,12 @@
     <script src="js/ie-emulation-modes-warning.js"></script>
 
     <script>
-        function clickFunc(name) {
 
-            var ctx = document.getElementById("functionalprocessname").value;
+        function deleteSubProcessStep(id) {
 
-            if (ctx == '' || ctx == null) {
-                alert("Name is mandatory");
-                return false;
-            }
-
-            var note = document.getElementById("functionalprocessnotes").value;
-
-
-            document.getElementById("option").value = name;
-
-            document.functionalprocessform.action = "/create-new-functional-process";
-
-            document.functionalprocessform.submit();
-
-        }
-
-        function clickFuncDeleteSubProcessStep(name) {
-
-            document.getElementById("delete").value = name;
-            document.getElementById("option").value = 'delete.subprocess';
-
-            document.functionalprocessform.action = "/create-new-functional-process";
-
-            document.functionalprocessform.submit();
-
-        }
-
-        function getFunctionalProcessData(id) {
-            if (id == 0 || id == '0') {
-                document.getElementById("option").value = '2';
-                document.functionalprocessform.method = "post";
-                document.functionalprocessform.action = "/define-functional-processes";
-                document.functionalprocessform.submit();
-            }
-            else {
-                document.getElementById("option").value = '3';
-                document.getElementById("functionalprocessid").value = id;
-                document.functionalprocessform.method = "post";
-                document.functionalprocessform.action = "/show-functional-processes?fp=" + id;
-                document.functionalprocessform.submit();
-            }
+            alert("clickFunc1:" + id)
+            var elem = document.getElementById(id);
+            elem.parentNode.removeChild(elem);
 
         }
 
@@ -92,13 +53,8 @@
 	    function getData() {
 		    var name = document.getElementById("functionalprocessname").value;
 	        document.functionalprocessform.action = "/show-functional-processes?functionalprocessname=" + name;
-
 	        document.functionalprocessform.submit();
 	}
-
-
-
-
 
     </script>
 
@@ -124,7 +80,7 @@
 
 </div>
 <div class="container">
-    <form name="functionalprocessform" method="post" class="form-horizontal">
+    <form name="functionalprocessform" method="post" class="form-horizontal" action="/save-functional-process">
         <div class="row">
             <div class="col-sm-12">
                 <div class="col-xs-4" style="padding-right:0"> <!-- required for floating -->
@@ -132,14 +88,12 @@
                     <ul class="nav nav-tabs tabs-left" th:each="fp : ${sizingCtx.getAllProcesses()}">
 
                         <li>
-
-                            <a href="#" data-toggle="tab" th:text="${fp.name}" th:onclick="'javascript:getFunctionalProcessData(\'' +${fp.id} + '\');'"></a>
+                            <a th:href="${'define-functional-process?fp=' + fp.id}" data-toggle="tab" th:text="${fp.name}"></a>
                         </li>
-
 
                     </ul>
                     <ul class="nav nav-tabs tabs-left">
-                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getFunctionalProcessData(0);'">New Process</a></li>
+                        <li><a href="/define-functional-process" data-toggle="tab">New Process</a></li>
                     </ul>
                 </div>
 
@@ -150,62 +104,51 @@
 
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label" for="functionalprocessname">Name</label>
+                                    <label class="col-sm-4 control-label" for="name">Name</label>
 
                                     <div class="col-sm-8">
-                                        <input type="text" id="functionalprocessname" name="functionalprocessname"
+                                        <input type="text" id="name" name="name"
                                                th:onBlur="*{param.fp == null}? 'javascript:getData();' "
                                                th:value="*{param.fp != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).name} : ''"
                                                class="form-control"> </input>
-                                        <input type="hidden" id="functionalprocessid" name="functionalprocessid"
+                                        <input type="hidden" id="fpId" name="fpId"
                                                th:value="*{param.fp != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).id} : ''"
                                                class="form-control"> </input>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label" for="functionalprocessnotes">Notes</label>
+                                    <label class="col-sm-4 control-label" for="notes">Notes</label>
 
                                     <div class="col-sm-8">
-                                        <input type="text" id="functionalprocessnotes" name="functionalprocessnotes"
-                                               th:value="*{functionalprocess != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).notes} : ''"
+                                        <input type="text" id="notes" name="notes"
+                                               th:value="*{param.fp != null} ? ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).notes} : ''"
                                                class="form-control"> </input>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label" for="functionalsubprocessname">Process Steps:</label>
+                                    <label class="col-sm-4 control-label" for="step">Process Steps:</label>
 
                                     <div class="col-sm-8">
                                         <div th:if="${param.fp != null}">
                                             <ul class="datalist" th:id="${sp.id}" th:each="sp : ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).steps}">
                                                 <li>
                                                     <div style="float: left;">
-                                                        <input type="text" id="sp.name" th:name="sp.name" th:value="${sp.name}">  </input>
-                                                        <img src="/resources/close.png" th:onclick="'javascript:clickFuncDeleteSubProcessStep(' + ${sp.id} + ');'" id="img1"> </img>
+                                                        <input type="text" id="step" th:name="step" th:value="${sp.name}">  </input>
+                                                        <img src="/resources/close.png" th:onclick="'javascript:deleteSubProcessStep(' + ${sp.id} + ');'" id="img1"> </img>
                                                     </div>
 
                                                 </li>
                                             </ul>
                                         </div>
-                                        <input type="text" id="functionalsubprocessname" name="functionalsubprocessname" class="datalist"> </input>
+                                        <input type="text" id="newStep" name="step" class="datalist"> </input>
                                     </div>
                                 </div>
 
-                                <input type="hidden" id="delete" name="delete"> </input>
-
-                                <input type="hidden" id="option" name="option"> </input>
                                 <div class="form-group">
                                     <div class="col-sm-offset-4 col-sm-8">
-
-                                        <button class="btn btn-default" type="submit"
-                                                th:onclick="'javascript:clickFunc(\'save\');'">
-                                            Save
-                                        </button>
-                                        <button class="btn btn-danger" type="submit"
-                                                th:onclick="'javascript:clickFunc(\'delete\');'">Delete
-                                        </button>
-
-
+                                        <button class="btn btn-default" type="submit">Save</button>
+                                        <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(\'delete\');'">Delete</button>
                                     </div>
                                 </div>
                             </form>

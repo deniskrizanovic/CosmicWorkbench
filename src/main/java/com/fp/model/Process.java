@@ -71,6 +71,9 @@ public class Process extends Persisted {
         return step;
     }
 
+    public SizingContext getParent() {
+        return parent;
+    }
 
     public void setParent(SizingContext parent) {
         this.parent = parent;

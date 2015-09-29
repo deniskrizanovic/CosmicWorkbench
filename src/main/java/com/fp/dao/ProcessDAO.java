@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Repository
@@ -75,4 +77,115 @@ public class ProcessDAO {
     }
 
 
+    public Process getProcess(Process p) {
+
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("id", p.getId());
+
+
+        String returnFPsql = "select systemcontextid, functionalprocessid, version, name, notes " +
+                "from functionalprocess " +
+                "where version = 0" +
+                "and functionalprocessid = :id";
+
+        List listOfFPs = this.namedJdbcTemplate.query(returnFPsql, bindVariables, getProcessRowMapper(p.getParent()));
+
+        Process fp = new Process();
+
+        if (listOfFPs.size() > 0) {
+
+            fp = (Process) listOfFPs.get(0);
+        }
+        return fp;
+
+    }
+
+    public RowMapper<Process> getProcessRowMapper(final SizingContext parent) {
+        return new RowMapper<Process>() {
+            public Process mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Process fp = new Process();
+                fp.setId(rs.getInt("functionalprocessid"));
+                fp.setName(rs.getString("name"));
+                fp.setNotes(rs.getString("notes"));
+                fp.setSteps(getSteps(fp));
+                fp.setParent(parent);
+                return fp;
+            }
+        };
+    }
+
+    public Process saveProcessAndSteps(Process p) {
+
+        Process saved = saveProcess(p);
+
+
+        if (!p.getSteps().isEmpty()) {
+            p.setId(saved.getId());
+            addSteps(p);
+        }
+
+        return getProcess(saved);
+
+    }
+
+    public void addSteps(Process p) {
+
+        Map boundVariables = new HashMap();
+        boundVariables.put("processId", p.getId());
+        boundVariables.put("userName", p.getCreatedBy());
+
+
+        String updateVersionOfExistingSteps = " update functionalsubprocess set version = version + 1 where functionalprocessid = " + p.getId();
+        namedJdbcTemplate.update(updateVersionOfExistingSteps, boundVariables);
+
+
+        String insertTheNewSteps = " insert into functionalsubprocess (functionalprocessid, name, userid ) " +
+                "values ( :processId, :spName, :userName)";
+
+        for (SubProcess sp : p.getSteps()) {
+
+            boundVariables.put("spName", sp.getName());
+
+            namedJdbcTemplate.update(insertTheNewSteps, boundVariables);
+        }
+
+
+    }
+
+    private Process saveProcess(Process p) {
+
+        Map bindVariables = new HashMap();
+        bindVariables.put("systemContextId", p.getParent().getId());
+        bindVariables.put("name", p.getName().replace("'", "''"));
+        bindVariables.put("notes", p.getNotes().replace("'", "''"));
+        bindVariables.put("username", p.getCreatedBy());
+
+
+        String sql = " insert into functionalprocess (functionalprocessid, systemcontextid, name, notes, userid ) " +
+                "values ( :seq, :systemContextId, :name, :notes, :username )";
+
+        int seq;
+
+        if (p.getId() > 0) {
+
+            String updateVersionOfExistingProcess = "update functionalprocess set version = version + 1 where functionalProcessId = " + p.getId();
+            jdbcTemplate.update(updateVersionOfExistingProcess);
+            seq = p.getId();
+
+        } else {
+            String getProcessNextVal = "select seq_FunctionalProcess.nextval";
+            seq = jdbcTemplate.queryForObject(getProcessNextVal, Integer.class);
+        }
+
+        bindVariables.put("seq", seq);
+
+
+        namedJdbcTemplate.update(sql, bindVariables);
+
+        Process criteria = (Process) new Process().setId(seq);
+        return getProcess(criteria);
+
+
+    }
 }

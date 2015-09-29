@@ -3,7 +3,6 @@ package com.fp.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class ModelBuilder {
@@ -11,14 +10,13 @@ public class ModelBuilder {
 
     public static Movement buildMovement(DataGroup dg, SubProcess sp, String[] attributeIds, String type, String username) {
 
-        List attributesToAdd = new ArrayList();
+        List<DataAttribute> attributesToAdd = new ArrayList();
         if (attributeIds != null) {
             List<String> attribs = Arrays.asList(attributeIds);
 
             if (!attribs.isEmpty()) {
 
-                for (Iterator<String> iterator = attribs.iterator(); iterator.hasNext(); ) {
-                    String next = iterator.next();
+                for (String next : attribs) {
                     DataAttribute dm = new DataAttribute();
                     dm.setParent(dg);
                     dm.setId(Integer.parseInt(next));
@@ -51,9 +49,7 @@ public class ModelBuilder {
 
         List<String> attribNameList = Arrays.asList(attribs);
 
-        for (Iterator i = attribNameList.iterator(); i.hasNext(); ) {
-            String attribName = (String) i.next();
-
+        for (String attribName : attribNameList) {
             if (!attribName.equals("")) {
                 DataAttribute newAttrib = new DataAttribute();
                 newAttrib.setName(attribName);
@@ -65,6 +61,34 @@ public class ModelBuilder {
         dg.setAttributes(attribList);
 
         return dg;
+
+    }
+
+    public static Process buildProcess(int processId, String processName, String notes, String[] steps, String userName) {
+
+        Process p = new Process();
+        p.setName(processName);
+        p.setNotes(notes);
+        p.setCreatedBy(userName);
+        p.setId(processId);
+
+        List<SubProcess> spList = new ArrayList<>();
+        List<String> stepsNameList = Arrays.asList(steps);
+
+        for (String step : stepsNameList) {
+
+            if (!step.equals("")) {
+                SubProcess sp = new SubProcess();
+                sp.setName(step);
+                sp.setParent(p);
+                spList.add(sp);
+            }
+
+        }
+        p.setSteps(spList);
+
+        return p;
+
 
     }
 }

@@ -46,26 +46,6 @@
 
         }
 
-        function getDataGroupData(name) {
-
-            if (name == 'new') {
-                alert(name)
-                document.datagroupform.method = "post";
-                document.datagroupform.action = "/define-data-groups";
-                document.datagroupform.submit();
-            }
-            else {
-                document.getElementById("option").value = '3';
-                document.datagroupform.method = "post";
-                document.datagroupform.action = "/define-data-groups?id=" + name;
-                document.datagroupform.submit();
-            }
-
-        }
-
-
-
-
     </script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -100,8 +80,7 @@
                         </li>
                     </ul>
                     <ul class="nav nav-tabs tabs-left">
-                        <li><a href="#" data-toggle="tab" th:onclick="'javascript:getDataGroupData(\'new\');'">New Data
-                            Group</a></li>
+                        <li><a href="/define-data-groups" data-toggle="tab">New Data Group</a></li>
                     </ul>
                 </div>
                 <div class="col-xs-8 bluebg">
@@ -151,10 +130,6 @@
                                     <input type="text" id="newAttribute" name="attribute" class="datalist"> </input>
                                 </div>
                             </div>
-
-                            <input type="hidden" id="delete" name="delete"> </input>
-
-                            <input type="hidden" id="option" name="option"> </input>
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
 
