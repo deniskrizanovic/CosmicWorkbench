@@ -5,9 +5,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Scope("prototype")
@@ -30,10 +28,10 @@ public class SizingContext extends Persisted {
         this.datagroups = datagroups;
     }
 
-    public List<DataGroup> getDataGroupsForProcessId(int processId) {
+    public Set<DataGroup> getDataGroupsForProcessId(int processId) {
 
         List<Movement> movements = getMovements();
-        List<DataGroup> dgForProcess = new ArrayList<>();
+        Set<DataGroup> dgForProcess = new HashSet<>();
 
         for (Movement m : movements) {
             if (m.getProcess().getId() == processId) {
@@ -91,7 +89,7 @@ public class SizingContext extends Persisted {
 
     public Object[][] getDataToSubProcessMappingAsGrid(int processId) {
 
-        List<DataGroup> allGroupsForProcess = getDataGroupsForProcessId(processId);
+        Set<DataGroup> allGroupsForProcess = getDataGroupsForProcessId(processId);
         List<SubProcess> allStepsForProcess = getProcess(processId).getSteps();
         //the grid accommodates a header row and a header column on the left
         Object[][] grid = new Object[allStepsForProcess.size() + 1][allGroupsForProcess.size() + 1];

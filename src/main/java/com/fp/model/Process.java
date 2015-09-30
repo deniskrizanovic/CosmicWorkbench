@@ -86,7 +86,7 @@ public class Process extends Persisted {
                 ", description='" + description + '\'' +
                 ", notes='" + notes + '\'' +
                 ", steps=" + steps +
-                ", parent=" + parent +
+                ", parent=" + parent.getId() +
                 '}';
     }
 }

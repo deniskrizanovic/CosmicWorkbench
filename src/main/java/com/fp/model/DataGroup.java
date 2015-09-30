@@ -89,7 +89,7 @@ public class DataGroup extends Persisted{
                 "attributes=" + attributes +
                 ", name='" + name + '\'' +
                 ", notes='" + notes + '\'' +
-                ", parent=" + parent +
+                ", parent=" + parent.getId() +
                 '}';
     }
 }

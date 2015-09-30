@@ -114,10 +114,8 @@ CREATE TABLE IF NOT EXISTS DataMovement  (
 
 select * from dual;
 
-DROP trigger tr_system_context_versions IF EXISTS;
 CREATE TRIGGER IF NOT EXISTS tr_system_context_versions Before INSERT ON SYSTEMCONTEXT FOR EACH ROW CALL "com.fp.dao.SystemContextTrigger";
 
-DROP trigger tr_datagroup_versions IF EXISTS;
 CREATE TRIGGER IF NOT EXISTS tr_datagroup_versions Before INSERT ON datagroup FOR EACH ROW CALL "com.fp.dao.DataGroupTrigger";
 
 --DROP sequence seq_SystemContext if exists;

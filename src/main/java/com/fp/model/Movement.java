@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Movement extends Persisted {
 
-    String type = "";
+    String type = "-";
     SubProcess subProcess;
     List<DataAttribute> attributes = new ArrayList<>();
     DataGroup dataGroup;
@@ -22,13 +22,14 @@ public class Movement extends Persisted {
     }
 
     @Override
+
     public String toString() {
         return "Movement{" +
                 "type='" + type + '\'' +
                 ", subProcess=" + subProcess +
                 ", attributes=" + attributes +
                 ", dataGroup=" + dataGroup +
-                ", parent=" + parent +
+                ", parent=" + parent.getId() +
                 ", process=" + process +
                 '}';
     }

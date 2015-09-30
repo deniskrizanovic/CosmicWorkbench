@@ -53,6 +53,7 @@
         document.functionalmodelform.submit();
 	}
 
+
     </script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -102,37 +103,39 @@
                             <div class="tab-pane active" id="data1" style="">
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
-                                        <div th:each="row,iter : ${sizingCtx.getDataToSubProcessMappingAsGrid(#numbers.formatInteger(param.p[0],1))}">
-                                            <div th:if="${iter.first}">
-                                                <thead>
-                                                <tr>
-                                                    <th width="40%" th:each="col, colIter : ${row}">
-                                                        <div th:text="${row[colIter.index]}"></div>
-                                                    </th>
-                                                    <th>
-                                                        <button type="button" class="btn btn-default"
-                                                                th:onclick="'javascript:call('+ ${#numbers.formatInteger(param.p[0],1)} + ');'">
-                                                            +
-                                                        </button>
-                                                    </th>
-                                                </tr>
-                                                </thead>
+                                        <div th:if="${param.p != null}">
+                                            <div th:each="row,iter : ${sizingCtx.getDataToSubProcessMappingAsGrid(#numbers.formatInteger(param.p[0],1))}">
+                                                <div th:if="${iter.first}">
+                                                    <thead>
+                                                    <tr>
+                                                        <th width="40%" th:each="col, colIter : ${row}">
+                                                            <div th:text="${row[colIter.index]}"></div>
+                                                        </th>
+                                                        <th>
+                                                            <button type="button" class="btn btn-default"
+                                                                    th:onclick="'javascript:call('+ ${#numbers.formatInteger(param.p[0],1)} + ');'">
+                                                                +
+                                                            </button>
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                </div>
+                                                <tbody>
+                                                <div th:if="${!iter.first}">
+
+                                                    <tr>
+                                                        <th width="40%" th:each="col, colIter : ${row}">
+                                                            <div th:if="${colIter.first}" th:text="${row[colIter.index]}"></div>
+                                                            <!--<div th:if="${!colIter.first}" th:text="${row[colIter.index].type}" th:onclick="'javascript:openMyWindow(99,5,161);'"></div>-->
+                                                            <div th:if="${!colIter.first}" th:text="*{row[colIter.index].type}" th:onclick="'javascript:openMyWindow( ' + ${row[colIter.index].dataGroup.id} + ',' + ${row[colIter.index].subProcess.id} + ','+ ${row[colIter.index].process.id} + ');'"></div>
+                                                        </th>
+                                                    </tr>
+
+                                                </div>
+                                                </tbody>
+
                                             </div>
-                                            <tbody>
-                                            <div th:if="${!iter.first}">
-
-                                                <tr>
-                                                    <th width="40%" th:each="col, colIter : ${row}">
-                                                        <div th:if="${colIter.first}" th:text="${row[colIter.index]}"></div>
-                                                        <div th:if="${!colIter.first}" th:text="${row[colIter.index].type}" th:onclick="'javascript:openMyWindow( ' + ${row[colIter.index].dataGroup.id} + ',' + ${row[colIter.index].subProcess.id} + ','+ ${row[colIter.index].process.id} + ');'"></div>
-                                                    </th>
-                                                </tr>
-
-                                            </div>
-                                            </tbody>
-
                                         </div>
-
 
                                         <!--</tr>-->
                                         <!--<tr>-->

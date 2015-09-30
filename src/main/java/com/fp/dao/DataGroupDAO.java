@@ -175,8 +175,7 @@ public class DataGroupDAO {
 
         String sql = "select datafieldid, datagroupid, name " +
                 "from datafield " +
-                "where not deleteflag " +
-                "and version = 0 " +
+                "where version = 0 " +
                 "and datafieldid = :attribId";
 
         return namedJdbcTemplate.queryForObject(sql, boundVariables, new RowMapper<DataAttribute>() {
