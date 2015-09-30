@@ -38,7 +38,7 @@ public class SystemContextRepository {
 
     public List<SystemContext> getSystemContexts() {
         String sql = "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0";
-        return this.namedJdbcTemplate.query(sql, getRowMapper(new SystemContext()));
+        return this.namedJdbcTemplate.query(sql, getRowMapper());
     }
 
     public SystemContext getSystemContextDetailsById(String id) {
@@ -51,14 +51,15 @@ public class SystemContextRepository {
                 "and version = 0 " +
                 "and systemcontextid = " + id + "";
 
-        this.jdbcTemplate.query(sql, getRowMapper(context));
 
-        return context;
+        return this.jdbcTemplate.queryForObject(sql, getRowMapper());
+
     }
 
-    public RowMapper<SystemContext> getRowMapper(final SystemContext sc) {
+    public RowMapper<SystemContext> getRowMapper() {
         return new RowMapper<SystemContext>() {
             public SystemContext mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SystemContext sc = new SystemContext();
                 sc.setSystemContextId(rs.getLong("systemcontextid"));
                 sc.setName(rs.getString("name"));
                 sc.setNotes(rs.getString("notes"));
@@ -78,10 +79,7 @@ public class SystemContextRepository {
                      "and version = 0 " +
                      "and name = '" + contextname.replace("'", "''") + "'";
 
-
-        this.jdbcTemplate.query(sql, getRowMapper(context));
-
-        return context;
+        return this.jdbcTemplate.queryForObject(sql, getRowMapper());
     }
 
     //todo the question is, why isn't a SystemContext object just passed in, and then persisted?
