@@ -52,12 +52,17 @@ public class ModelBuilder {
         for (String attrib : attribNameList) {
             if (!attrib.equals("")) {
 
-                String id = attrib.substring(0, attrib.indexOf(":"));
-                String name = attrib.substring(attrib.indexOf(":") + 1, attrib.length());
-
                 DataAttribute newAttrib = new DataAttribute();
 
-                newAttrib.setId(Integer.parseInt(id));
+                boolean existingAttribute = attrib.indexOf(":") > 0;
+                int id = 0;
+                if (existingAttribute) {
+
+                    id = Integer.parseInt(attrib.substring(0, attrib.indexOf(":")));
+                }
+
+                String name = attrib.substring(attrib.indexOf(":") + 1, attrib.length());
+                newAttrib.setId(id);
                 newAttrib.setName(name);
                 newAttrib.setParent(dg);
                 attribList.add(newAttrib);

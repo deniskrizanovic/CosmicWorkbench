@@ -254,7 +254,8 @@ public class DataGroupDAO {
             if (attribute.getId() > 0) {
                 boundVariables.put("dataFieldId", attribute.getId());
             } else {
-                boundVariables.put("dataFieldId", "seq_DataField.nextval");
+                int datafieldId = jdbcTemplate.queryForObject("select seq_DataField.nextval", Integer.class);
+                boundVariables.put("dataFieldId", datafieldId);
             }
 
             namedJdbcTemplate.update(insertTheNewAttribute, boundVariables);
