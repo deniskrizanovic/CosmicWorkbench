@@ -25,13 +25,13 @@ public class Repository {
     }
 
     //todo this pattern of almost having a fluent api needs to be consistent or removed.
-    public SizingContext getDataGroups(SizingContext sc) {
+    public List<DataGroup> getDataGroups(SizingContext sc) {
 
         List<DataGroup> dataGroupList = dgDao.getDataGroups(sc);
 
         sc.setDatagroups(dataGroupList);
 
-        return sc;
+        return dataGroupList;
     }
 
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
+@Component()
 @Scope("prototype")
 public class SizingContext extends Persisted {
 
@@ -21,7 +21,7 @@ public class SizingContext extends Persisted {
         if (datagroups.isEmpty()) {
             repository.getDataGroups(this);
         }
-        return datagroups;
+        return repository.getDataGroups(this);
     }
 
     public void setDatagroups(List<DataGroup> datagroups) {
@@ -74,7 +74,7 @@ public class SizingContext extends Persisted {
         if (processes.isEmpty()) {
             processes = repository.getProcesses(this);
         }
-        return processes;
+        return repository.getProcesses(this);
     }
 
     public Process getProcess(int Id) {
@@ -139,7 +139,7 @@ public class SizingContext extends Persisted {
             movements = repository.getMovements(this);
         }
 
-        return movements;
+        return repository.getMovements(this);
 
     }
 
