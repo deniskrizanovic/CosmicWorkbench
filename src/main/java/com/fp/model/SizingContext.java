@@ -198,6 +198,7 @@ public class SizingContext extends Persisted {
         dg.setParent(this);
         repository.saveDataGroup(dg);
         datagroups.clear();
+        movements.clear();
         getDataGroups();
 
 
@@ -208,6 +209,7 @@ public class SizingContext extends Persisted {
         p.setParent(this);
         repository.saveProcess(p);
         processes.clear();
+        movements.clear();
         getAllProcesses();
     }
 
