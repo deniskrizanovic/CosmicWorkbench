@@ -34,7 +34,6 @@ public class ProcessDAO {
 
         String sql = "select functionalprocessid, version, name, notes " +
                 "from functionalprocess where systemcontextid = " + sc.getId() + " " +
-                "and not deleteflag " +
                 "and version = 0 " +
                 "order by functionalprocessid";
 
@@ -61,8 +60,7 @@ public class ProcessDAO {
 
         String sql = "select id, functionalprocessid, version, name " +
                 "from functionalsubprocess " +
-                "where not deleteflag " +
-                "and version = 0 " +
+                "where version = 0 " +
                 "and functionalprocessid = " + parent.getId();
 
         return this.jdbcTemplate.query(sql, new RowMapper<SubProcess>() {

@@ -115,6 +115,7 @@ public class DataGroupDAO {
                 "from datamovement m, functionalsubprocess sp " +
                 "where m.subprocessid = sp.id " +
                 "and m.version = 0 " +
+                "and sp.version = 0 " +
                 "and m.SizingContextId = :sizingCtxId " +
                 "order by m.subProcessId, m.DataGroupId";
 
@@ -215,6 +216,7 @@ public class DataGroupDAO {
 
     }
 
+    @Transactional
     public DataGroup saveDataGroupAndAttributes(DataGroup dg) {
 
         DataGroup saved = saveDataGroup(dg);
@@ -228,6 +230,7 @@ public class DataGroupDAO {
 
     }
 
+    @Transactional
     public void addAttributes(DataGroup dg) {
 
 
@@ -253,6 +256,7 @@ public class DataGroupDAO {
         }
     }
 
+    @Transactional
     private DataGroup saveDataGroup(DataGroup dg) {
 
 

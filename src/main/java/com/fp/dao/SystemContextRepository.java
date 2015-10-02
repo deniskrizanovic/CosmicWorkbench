@@ -2,6 +2,7 @@ package com.fp.dao;
 
 import com.fp.domain.SystemContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -37,22 +38,26 @@ public class SystemContextRepository {
 
 
     public List<SystemContext> getSystemContexts() {
-        String sql = "select systemcontextid, name, notes from systemcontext where not deleteflag and version = 0";
+        String sql = "select systemcontextid, name, notes from systemcontext where version = 0";
         return this.namedJdbcTemplate.query(sql, getRowMapper());
     }
 
     public SystemContext getSystemContextDetailsById(String id) {
 
-        final SystemContext context = new SystemContext();
+        SystemContext context = new SystemContext();
 
         String sql = "select systemcontextid,name, notes " +
                 "from systemcontext " +
-                "where not deleteflag " +
-                "and version = 0 " +
+                "where version = 0 " +
                 "and systemcontextid = " + id + "";
 
+        try {
+            context = this.jdbcTemplate.queryForObject(sql, getRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            //just catch because I expect this to be null some of the time.
+        }
 
-        return this.jdbcTemplate.queryForObject(sql, getRowMapper());
+        return context;
 
     }
 
@@ -71,15 +76,20 @@ public class SystemContextRepository {
 
     public SystemContext getSystemContextByName(String contextname) {
 
-        final SystemContext context = new SystemContext();
+        SystemContext context = new SystemContext();
 
         String sql = "select systemcontextid, name, notes " +
                      "from systemcontext " +
-                     "where not deleteflag " +
-                     "and version = 0 " +
+                "where version = 0 " +
                      "and name = '" + contextname.replace("'", "''") + "'";
 
-        return this.jdbcTemplate.queryForObject(sql, getRowMapper());
+        try {
+            context = this.jdbcTemplate.queryForObject(sql, getRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            //just catch because I expect this to be null some of the time.
+        }
+
+        return context;
     }
 
     //todo the question is, why isn't a SystemContext object just passed in, and then persisted?

@@ -192,6 +192,7 @@ public class SizingContext extends Persisted {
         this.processes = processes;
     }
 
+    //todo there is a bug somewhere when you save the first datagroup for a brand new system context.
     public void saveDataGroup(DataGroup dg) {
 
         dg.setParent(this);

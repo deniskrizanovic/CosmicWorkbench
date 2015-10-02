@@ -57,9 +57,20 @@
 
             elem.appendChild(input);
 
-
-
         }
+
+        function save() {
+            alert("what alerts?");
+            $("input[id^='attrib:']").each(function() {
+                alert("me too:" + $(this).attr('id'));
+                var encodedValue = $(this).attr('id')
+                encodedValue = encodedValue.substring(encodedValue.search(":")+1, encodedValue.length);
+                var currentVal = $(this).val();
+                $(this).val(encodedValue + ":" + currentVal );
+            });
+        }
+
+
 
     </script>
 
@@ -129,7 +140,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label" for="attribute">Attributes:</label>
+                                <label class="col-sm-4 control-label">Attributes:</label>
 
                                 <div class="col-sm-8">
                                     <div th:if="${param.dg != null}">
@@ -137,7 +148,7 @@
                                             th:each="attribute : ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).attributes}">
                                             <li>
                                                 <div style="float: left;">
-                                                    <input type="text" id="attribute" th:name="attribute" th:value="${attribute.name}">  </input>
+                                                    <input type="text" th:id="'attrib:' + ${attribute.id}" th:name="attribute" th:value="${attribute.name}">  </input>
                                                     <img src="/resources/close.png" th:onclick="'javascript:deleteAttribute(' + ${attribute.id} + ');'" id="img1"> </img>
                                                 </div>
                                             </li>
@@ -149,8 +160,8 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
 
-                                    <button class="btn btn-default" type="submit"> Save</button>
-                                    <button class="btn btn-danger" type="submit" th:onclick="'javascript:clickFunc(\'delete\');'">Delete
+                                    <button class="btn btn-default" type="submit" th:onclick="'javascript:save();'"> Save</button>
+                                    <button class="btn btn-danger" type="submit" th:onclick="'javascript:delete();'">Delete
                                     </button>
                                 </div>
                             </div>
