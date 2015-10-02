@@ -60,9 +60,7 @@
         }
 
         function save() {
-            alert("what alerts?");
             $("input[id^='attrib:']").each(function() {
-                alert("me too:" + $(this).attr('id'));
                 var encodedValue = $(this).attr('id')
                 encodedValue = encodedValue.substring(encodedValue.search(":")+1, encodedValue.length);
                 var currentVal = $(this).val();

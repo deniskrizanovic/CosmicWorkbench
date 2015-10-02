@@ -49,10 +49,16 @@ public class ModelBuilder {
 
         List<String> attribNameList = Arrays.asList(attribs);
 
-        for (String attribName : attribNameList) {
-            if (!attribName.equals("")) {
+        for (String attrib : attribNameList) {
+            if (!attrib.equals("")) {
+
+                String id = attrib.substring(0, attrib.indexOf(":"));
+                String name = attrib.substring(attrib.indexOf(":") + 1, attrib.length());
+
                 DataAttribute newAttrib = new DataAttribute();
-                newAttrib.setName(attribName);
+
+                newAttrib.setId(Integer.parseInt(id));
+                newAttrib.setName(name);
                 newAttrib.setParent(dg);
                 attribList.add(newAttrib);
             }

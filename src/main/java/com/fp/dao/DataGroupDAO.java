@@ -244,13 +244,18 @@ public class DataGroupDAO {
 
 
         String insertTheNewAttribute = "insert into datafield ( datafieldid, datagroupid, name, userid ) " +
-                "values (seq_DataField.nextval, :dataGroupId, :attribute, :userName)";
+                "values (:dataFieldId, :dataGroupId, :attribute, :userName)";
 
         for (Iterator<DataAttribute> i = dg.getAttributes().iterator(); i.hasNext(); ) {
 
             DataAttribute attribute = i.next();
 
             boundVariables.put("attribute", attribute.getName());
+            if (attribute.getId() > 0) {
+                boundVariables.put("dataFieldId", attribute.getId());
+            } else {
+                boundVariables.put("dataFieldId", "seq_DataField.nextval");
+            }
 
             namedJdbcTemplate.update(insertTheNewAttribute, boundVariables);
         }
