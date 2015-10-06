@@ -28,9 +28,6 @@ var autoRow = (function($) {
     }
 
     return {
-        test: function() {
-            console.log("test ****************************");
-        },
         add: function(containerId, templateId, rowClass, blurClass, delBtnClass) {
             addRow(containerId, templateId, rowClass, blurClass, delBtnClass);
         }
