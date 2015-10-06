@@ -154,12 +154,6 @@
     </form>
 </div>
 <!-- /container -->
-<script id="newAttributeTemplate" type="text/x-custom-template">
-<div style="float: left;">
-    <input type="text" name="attribute" class="datalist attribute"></input>
-    <img src="/resources/close.png" style="display:none"></img>
-</div>
-</script>
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -168,40 +162,19 @@
 <script src="js/docs.min.js"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="js/ie10-viewport-bug-workaround.js"></script>
+<script id="autoRowTemplate" type="text/x-custom-template">
+    <div style="float: left;" class="autoRow">
+        <input type="text" name="attribute" class="datalist attribute autoRowBlur"></input>
+        <img src="/resources/close.png" style="display:none" class="autoRowDel"></img>
+    </div>
+</script>
+<script type="text/javascript" src="/js/autorow.js"></script>
 <script>
-
-    function addRowWhenNonEmpty($input, containerId, templateId, targetClass) {
-        if ($input.val() != '') {
-            addRow(containerId, templateId, targetClass);
-        }
+    function init() {
+        autoRow.add('attributes', 'autoRowTemplate', 'autoRow', 'autoRowBlur', 'autoRowDel');
     }
 
-    function addRow(containerId, templateId, targetClass) {
-
-        var $oldInput = $("#" + containerId).find("." + targetClass).last();
-
-        var template = $('#' + templateId).html();
-        $("#" + containerId).append(template);
-        var $newInput = $("#" + containerId).find("." + targetClass).last();
-
-        if ($oldInput) {
-            $oldInput.off('blur');
-            var $del = $oldInput.parent().find('img');
-            $del.click(function() {
-                $(this).parent().remove();
-            });
-            $del.show();
-        }
-        $newInput.blur(function() {
-            addRowWhenNonEmpty($newInput, containerId, templateId, targetClass);
-        });
-    }
-
-    function bindAddRowField() {
-        addRow('attributes', 'newAttributeTemplate', 'attribute');
-    }
-
-    $(document).ready(bindAddRowField());
+    $(document).ready(init());
 </script>
 </body>
 </html>
