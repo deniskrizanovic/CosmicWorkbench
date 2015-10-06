@@ -40,27 +40,18 @@
     <script>
         function deleteAttribute(id) {
 
-            alert("clickFunc1:" + name)
+            //alert("clickFunc1:" + name)
             var elem = document.getElementById(id);
             elem.parentNode.removeChild(elem);
 
         }
 
-        function addRow(id) {
 
-            alert("I do not know how to dynamically add a row here. Sorry::" + id);
-            var elem = document.getElementById(id);
-            var input = document.createElement("input");
-        //    var type = document.createAttribute("type").value = "text";
-        //    input.setAttributeNode(type);
-
-
-            elem.appendChild(input);
-
-        }
 
         function save() {
+            alert("what alerts?");
             $("input[id^='attrib:']").each(function() {
+                alert("me too:" + $(this).attr('id'));
                 var encodedValue = $(this).attr('id')
                 encodedValue = encodedValue.substring(encodedValue.search(":")+1, encodedValue.length);
                 var currentVal = $(this).val();
@@ -140,7 +131,7 @@
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">Attributes:</label>
 
-                                <div class="col-sm-8">
+                                <div class="col-sm-8" id="attributes">
                                     <div th:if="${param.dg != null}">
                                         <ul th:id="${attribute.id}" class="datalist"
                                             th:each="attribute : ${sizingCtx.getDataGroup(#numbers.formatInteger(param.dg[0],1)).attributes}">
@@ -152,7 +143,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <input type="text" id="newAttribute1" name="attribute" class="datalist" th:onblur="'javascript:addRow(\'newAttribute1\');'"> </input>
+                                    <input type="text" id="newAttribute_1" name="attribute" class="datalist"> </input>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -177,10 +168,51 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/docs.min.js"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="js/ie10-viewport-bug-workaround.js"></script>
+<script>
+
+    function addRowWhenNonEmpty($input, containerId, templateId, targetClass) {
+        if ($input.val() != '') {
+            addRow(containerId, templateId, targetClass);
+        }
+    }
+
+    function findLastUsedIndex(containerId, targetName) {
+        var lastId = $('#'+ containerId).find("input[name='" + targetName + "']").last().attr('id');
+        var suffix = lastId.substring(lastId.search("_")+1, lastId.length);
+        return parseInt(suffix || -1);
+    }
+
+    function addRow(containerId, templateId, targetClass) {
+        console.log("addRow: container id = " + containerId + " , template Id=" + templateId);
+
+        var lastIndex = findLastUsedIndex(containerId, targetClass);
+
+        var $clone = $('#' + templateId).clone();
+        $clone.attr('id', 'newAttribute_' + (lastIndex+1));
+        $clone.val('');
+        $clone.appendTo('#' + containerId);
+
+        $('#newAttribute_' + lastIndex).off('blur');
+        $clone.blur(function() {
+            console.log("Row blue" + ($clone.val() != ''));
+            addRowWhenNonEmpty($clone, containerId, templateId, targetClass);
+        });
+    }
+
+    function bindAddRowField() {
+        console.log("Bind add row on blur for initial row");
+
+        $('#' + 'newAttribute_1').blur(function() {
+            addRowWhenNonEmpty($('#' + 'newAttribute_1'), 'attributes', 'newAttribute_1', 'attribute');
+        });
+    }
+
+    $(document).ready(bindAddRowField());
+</script>
 </body>
 </html>
