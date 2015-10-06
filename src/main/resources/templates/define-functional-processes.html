@@ -42,11 +42,8 @@
     <script>
 
         function deleteSubProcessStep(id) {
-
-            alert("clickFunc1:" + id)
             var elem = document.getElementById(id);
             elem.parentNode.removeChild(elem);
-
         }
 
         //this should probably be asynch
@@ -128,7 +125,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label" for="step">Process Steps:</label>
 
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-8" id="steps">
                                         <div th:if="${param.fp != null}">
                                             <ul class="datalist" th:id="${sp.id}" th:each="sp : ${sizingCtx.getProcess(#numbers.formatInteger(param.fp[0],1)).steps}">
                                                 <li>
@@ -140,7 +137,6 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <input type="text" id="newStep" name="step" class="datalist"> </input>
                                     </div>
                                 </div>
 
@@ -164,8 +160,6 @@
     </form>
 </div>
 <!-- /container -->
-
-
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -174,5 +168,19 @@
 <script src="js/docs.min.js"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="js/ie10-viewport-bug-workaround.js"></script>
+<script id="autoRowTemplate" type="text/x-custom-template">
+    <div style="float: left;" class="autoRow">
+        <input type="text" name="step" class="datalist autoRowBlur"> </input>
+        <img src="/resources/close.png" style="display:none" class="autoRowDel"></img>
+    </div>
+</script>
+<script type="text/javascript" src="/js/autorow.js"></script>
+<script>
+    function init() {
+        autoRow.add('steps', 'autoRowTemplate', 'autoRow', 'autoRowBlur', 'autoRowDel');
+    }
+
+    $(document).ready(init());
+</script>
 </body>
 </html>
