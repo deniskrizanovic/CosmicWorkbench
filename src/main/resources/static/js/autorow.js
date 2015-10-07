@@ -25,6 +25,7 @@ var autoRow = (function($) {
         $newBlur.blur(function() {
             addRowWhenNonEmpty($newBlur, containerId, templateId, rowClass, blurClass, delBtnClass);
         });
+        $newBlur.focus();
     }
 
     return {
