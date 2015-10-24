@@ -1,0 +1,33 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+
+
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet"
+      th:href="@{/resources/css/bootstrap.min.css}">
+</link>
+<!-- Bootstrap theme -->
+<link href="css/bootstrap-theme.min.css"
+      th:href="@{/resources/css/bootstrap-theme.min.css}" rel="stylesheet">
+</link>
+<link rel="stylesheet" href="css/bootstrap.vertical-tabs.css"
+      th:href="@{/resources/css/bootstrap.vertical-tabs.css}">
+</link>
+
+<!-- Custom styles for this template -->
+<link href="css/theme1.css" th:href="@{/resources/css/theme1.css}"
+      rel="stylesheet">
+</link>
+
+<body>
+
+<div class="container">
+    <div class="col-md-12">
+        <div th:fragment="nav">
+            <a th:href="@{/system-context(id=${sizingCtx.id})}">SystemContext</a>&gt;<a href="/define-functional-process">Processes</a> &gt;<a href="/define-data-groups">Data</a> &gt;<a href="/define-functional-model">Mapping</a>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

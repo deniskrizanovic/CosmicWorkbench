@@ -66,6 +66,15 @@
 
 <div class="container">
 
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:include="navigation :: nav"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
     <p style="color:red" th:text="*{err != null} ? ${err} : ''"></p>
 
 
@@ -76,6 +85,8 @@
     </div>
 
 </div>
+
+
 <div class="container">
     <form name="functionalprocessform" method="post" class="form-horizontal" action="/save-functional-process">
         <div class="row">

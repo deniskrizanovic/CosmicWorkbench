@@ -41,6 +41,7 @@ dependencies {
     compile("com.h2database:h2")
     compile("commons-collections:commons-collections:3.2.1")
     compile("org.flywaydb:flyway-core")
+    compile("org.springframework.boot:spring-boot-tools")  //todo not sure if these are the spring boot dev tools...
 
     //  testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
