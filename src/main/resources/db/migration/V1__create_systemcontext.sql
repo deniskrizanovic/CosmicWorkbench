@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS SystemContext  (
 	name VARCHAR(100) NOT NULL,
 	notes VARCHAR(200) ,
 	diagram BLOB ,
-	userid VARCHAR(100) NOT NULL ,
+	createdby VARCHAR(100) NOT NULL ,
 	createdtime TIMESTAMP DEFAULT NOW()
 )   ;
 

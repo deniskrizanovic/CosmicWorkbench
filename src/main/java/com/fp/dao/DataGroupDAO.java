@@ -243,7 +243,7 @@ public class DataGroupDAO {
         namedJdbcTemplate.update(updateVersionOfExistingAttributes, boundVariables);
 
 
-        String insertTheNewAttribute = "insert into datafield ( datafieldid, datagroupid, name, userid ) " +
+        String insertTheNewAttribute = "insert into datafield ( datafieldid, datagroupid, name, createdBy ) " +
                 "values (:dataFieldId, :dataGroupId, :attribute, :userName)";
 
         for (Iterator<DataAttribute> i = dg.getAttributes().iterator(); i.hasNext(); ) {
@@ -266,7 +266,7 @@ public class DataGroupDAO {
     private DataGroup saveDataGroup(DataGroup dg) {
 
 
-        String insertNewDataGroupRecord = " insert into datagroup ( datagroupid, systemcontextid, name, notes, userid ) " +
+        String insertNewDataGroupRecord = " insert into datagroup ( datagroupid, systemcontextid, name, notes, createdBy ) " +
                 "values ( :seq, :systemContextId, :datagroupName, :dataGroupNotes, :userName)";
 
         Map namedParameters = new HashMap();

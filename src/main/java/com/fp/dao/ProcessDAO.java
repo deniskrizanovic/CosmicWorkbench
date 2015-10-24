@@ -138,7 +138,7 @@ public class ProcessDAO {
         namedJdbcTemplate.update(updateVersionOfExistingSteps, boundVariables);
 
 
-        String insertTheNewSteps = " insert into functionalsubprocess (functionalprocessid, name, userid ) " +
+        String insertTheNewSteps = " insert into functionalsubprocess (functionalprocessid, name, createdby ) " +
                 "values ( :processId, :spName, :userName)";
 
         for (SubProcess sp : p.getSteps()) {
@@ -160,7 +160,7 @@ public class ProcessDAO {
         bindVariables.put("username", p.getCreatedBy());
 
 
-        String sql = " insert into functionalprocess (functionalprocessid, systemcontextid, name, notes, userid ) " +
+        String sql = " insert into functionalprocess (functionalprocessid, systemcontextid, name, notes, createdBy ) " +
                 "values ( :seq, :systemContextId, :name, :notes, :username )";
 
         int seq;

@@ -96,10 +96,10 @@ public class SystemContextRepository {
     public void insertNewSystemContext(String systemContextId, String username, String contextname, String notes, MultipartFile uploadedFile) throws IOException {
 
 
-        String sql = " insert into systemcontext (systemContextId, name, notes, userid )" +
+        String sql = " insert into systemcontext (systemContextId, name, notes, createdBy )" +
                      " values ( seq_SystemContext.nextval, :contextName, :notes, :username)";
 
-        String sqlAllOthertimes = " insert into systemcontext (systemContextId, name, notes, userid )" +
+        String sqlAllOthertimes = " insert into systemcontext (systemContextId, name, notes, createdBy )" +
                                   " values ( :seq, :contextName, :notes, :username)";
 
         Map namedParameters = new HashMap();
