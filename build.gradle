@@ -4,6 +4,7 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 
+
 jar {
     baseName = 'CosmicWorkbench'
     version =  '0.1.0'
@@ -25,6 +26,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+
     }
 }
 
@@ -38,6 +40,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("com.h2database:h2")
     compile("commons-collections:commons-collections:3.2.1")
+    compile("org.flywaydb:flyway-core")
 
     //  testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
@@ -49,6 +52,7 @@ idea {
         testSourceDirs += file('src/test/java')
     }
 }
+
 
 
 
