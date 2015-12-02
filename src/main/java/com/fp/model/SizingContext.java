@@ -139,6 +139,7 @@ public class SizingContext extends Persisted {
             movements = repository.getMovements(this);
         }
 
+        //todo this breaks all the tests because I no longer return my current state for this.
         return repository.getMovements(this);
 
     }
