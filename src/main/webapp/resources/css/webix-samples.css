@@ -57,3 +57,7 @@
 .paging {
 	width:900px;
 }
+
+.hide {
+    visibility: hidden;
+}
