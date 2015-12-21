@@ -163,7 +163,14 @@
                 //we need to send id to form to know what item to edit
                 var formData = {type: item.dg1, id: item.id};
                 webix.message(JSON.stringify(item));
-                $$("myform").setValues(formData);
+                var form = $$("myform");
+                form.setValues(formData);
+                if (form.isVisible()) {
+                    form.hide();
+                }
+                else {
+                    form.show();
+                }
 
 
             }
@@ -176,6 +183,7 @@
         container: "webixUIForm",
         view: "form",
         id: "myform",
+        hidden: "true",
         elements: [
             {view: "text", name: "type", label: "Type"},
             {view: "text", name: "attr1", label: "Attr1"},
@@ -226,7 +234,6 @@
                 }
         )
     }
-
 
 
 </script>
