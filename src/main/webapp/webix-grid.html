@@ -118,6 +118,7 @@
     var grid2 = new webix.ui({
         container: "webixUItable",
         view: "datatable",
+        id: "fpGrid",
         columns: [
             {id: "fp", editor: "text", header: "FuncProcess1"},
             {
@@ -155,15 +156,20 @@
             onSelectChange: function () {
                 var text = grid2.getSelectedId(true, true);
                 //var text = "Selected: "+grid.getSelectedId(true).join();
-                document.getElementById('mutliselect').innerHTML = text;
+                //document.getElementById('mutliselect').innerHTML = "i have clicked" + text;
             },
             onItemDblClick: function (id, e) {
 
+                var gridCoOrds = grid2.getSelectedId(true, true);
+                var rowNum = gridCoOrds[0].slice(0, gridCoOrds[0].indexOf("_"));
+                var colName = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_")+1, gridCoOrds[0].length);
+
                 var item = this.getItem(id);
+                webix.message(item[colName]);
+
                 //we need to send id to form to know what item to edit
-                var formData = {type: item.dg1, id: item.id};
-                webix.message(JSON.stringify(item));
-                var form = $$("myform");
+                var formData = {type: item[colName], id: item.id, dg:colName};
+                var form = $$("editDM");
                 form.setValues(formData);
                 if (form.isVisible()) {
                     form.hide();
@@ -182,13 +188,14 @@
     var form2 = webix.ui({
         container: "webixUIForm",
         view: "form",
-        id: "myform",
+        id: "editDM",
         hidden: "true",
         elements: [
             {view: "text", name: "type", label: "Type"},
+            {view: "text", name: "dg", label: "dg", hidden: "true"},
             {view: "text", name: "attr1", label: "Attr1"},
             {view: "text", name: "attr2", label: "Attr2"},
-            {view: "button", inputWidth: 200, value: "Save"}]
+            {view: "button", inputWidth: 200, value: "Save", click:function(){saveDataToGrid()}}]
 
     });
 
@@ -233,6 +240,25 @@
                     document.getElementById('gridnow').innerHTML += text;
                 }
         )
+    }
+
+    function saveDataToGrid() {
+
+        var values = $$("editDM").getValues();
+        webix.message(JSON.stringify(values));
+
+
+        if (values.id) {
+            var item = $$("fpGrid").getItem(values.id);
+
+            var column = $$("editDM").getValues()["dg"];
+
+            item[column] = values.type;
+            $$("fpGrid").updateItem(item.id, item);
+            //do something to save attr1 and attr2
+        }
+
+        $$("editDM").hide();
     }
 
 
