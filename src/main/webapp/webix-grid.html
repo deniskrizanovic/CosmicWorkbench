@@ -162,19 +162,20 @@
 
                 var gridCoOrds = grid2.getSelectedId(true, true);
                 var rowNum = gridCoOrds[0].slice(0, gridCoOrds[0].indexOf("_"));
-                var colName = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_")+1, gridCoOrds[0].length);
+                var colName = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_") + 1, gridCoOrds[0].length);
 
                 var item = this.getItem(id);
                 webix.message(item[colName]);
 
                 //we need to send id to form to know what item to edit
-                var formData = {type: item[colName], id: item.id, dg:colName};
+                var formData = {type: item[colName], id: item.id, dg: colName};
                 var form = $$("editDM");
                 form.setValues(formData);
                 if (form.isVisible()) {
                     form.hide();
                 }
                 else {
+                    readAttributesFromAServer();
                     form.show();
                 }
 
@@ -190,12 +191,15 @@
         view: "form",
         id: "editDM",
         hidden: "true",
+        width: 300,
         elements: [
-            {view: "text", name: "type", label: "Type"},
+            {view: "select", name: "type", label: "Type", options: ["E", "X", "R", "W"]},
             {view: "text", name: "dg", label: "dg", hidden: "true"},
-            {view: "text", name: "attr1", label: "Attr1"},
-            {view: "text", name: "attr2", label: "Attr2"},
-            {view: "button", inputWidth: 200, value: "Save", click:function(){saveDataToGrid()}}]
+            {
+                view: "button", inputWidth: 200, value: "Save", click: function () {
+                saveDataToGrid()
+            }
+            }]
 
     });
 
@@ -204,7 +208,7 @@
 <script>
 
     function add_column() {
-        var columns = webix.toArray(grid.config.columns);
+        var columns = webix.toArray(grid2.config.columns);
         columns.insertAt({
             id: "c" + webix.uid(),
             header: "New DataGroup",
@@ -259,6 +263,32 @@
         }
 
         $$("editDM").hide();
+    }
+
+    function readAttributesFromAServer() {
+
+        var raw = webix.ajax().sync().get("/CosmicWorkBench/dg3.json");
+        var dg3 = JSON.parse(raw.response);
+        var attribs = dg3["attributes"];
+        webix.message(dg3["attributes"]);
+
+
+        var elements = webix.toArray(form2.elements);
+        for (i = 0; i < attribs.length; i++) {
+
+            var attrib = attribs[i];
+
+            form2.addView({
+                id: "myID" + attrib,
+                view: "checkbox",
+                name: attrib,
+                label: attrib
+            }, 3);
+        }
+
+
+        form2.refresh();
+
     }
 
 
