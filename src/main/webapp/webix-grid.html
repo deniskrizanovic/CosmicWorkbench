@@ -196,7 +196,7 @@
             {view: "select", name: "type", label: "Type", options: ["E", "X", "R", "W"]},
             {view: "text", name: "dg", label: "dg", hidden: "true"},
             {
-                view: "button", inputWidth: 200, value: "Save", click: function () {
+                view: "button", id:"SubmitButton", inputWidth: 200, value: "Save", click: function () {
                 saveDataToGrid()
             }
             }]
@@ -217,13 +217,13 @@
             options: ["E", "X", "R", "W", ""],
             css: "centre"
         }, 2);
-        grid.refreshColumns();
+        grid2.refreshColumns();
     }
 
     function add_row() {
 
-        var rows = grid.count();
-        grid.add({
+        var rows = grid2.count();
+        grid2.add({
             fp: "step3",
             dg1: "-",
             dg2: "-",
@@ -235,15 +235,17 @@
     function show_grid() {
 
         document.getElementById('gridnow').innerHTML = "";
-        grid.eachRow(
+        grid2.eachRow(
                 function (row) {
 
 
-                    var record = grid.getItem(row);
+                    var record = grid2.getItem(row);
                     var text = record.fp + ":" + record.dg1 + ":" + record.dg2 + ":" + record.dg3 + "<p>";
                     document.getElementById('gridnow').innerHTML += text;
                 }
         )
+
+
     }
 
     function saveDataToGrid() {
@@ -270,10 +272,10 @@
         var raw = webix.ajax().sync().get("/CosmicWorkBench/dg3.json");
         var dg3 = JSON.parse(raw.response);
         var attribs = dg3["attributes"];
-        webix.message(dg3["attributes"]);
 
+        var pos = form2.index($$("SubmitButton"));
 
-        var elements = webix.toArray(form2.elements);
+        //there should be some check to see if we've already read the datagroups.. because this just stupidly repeats the read
         for (i = 0; i < attribs.length; i++) {
 
             var attrib = attribs[i];
@@ -283,7 +285,7 @@
                 view: "checkbox",
                 name: attrib,
                 label: attrib
-            }, 3);
+            }, pos);
         }
 
 
