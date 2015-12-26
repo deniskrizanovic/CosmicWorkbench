@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Funky Funky Grid</title>
+    <link rel="stylesheet" href="resources/js/codebase/webix.css" type="text/css" charset="utf-8">
+    <script src="resources/js/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="resources/css/webix-samples.css">
+</head>
+
+
+<body>
+
+<div id="testA" class="hide"></div>
+<div id="webixUItable"></div>
+<div id="webixUIForm"></div>
+<input type='button' class="sample_button" value='add datagroup' onclick='add_column()'>
+<input type='button' class="sample_button" value='add step' onclick='add_row()'>
+<input type='button' class="sample_button" value='show me the grid' onclick='show_grid()'>
+
+<div id="mutliselect" class='sample_comment'></div>
+<div id="gridnow" class='sample_comment'></div>
+<div id="hidden text" class='sample_comment, hide'>blablahbla</div>
+
+
+<script type="text/javascript" charset="utf-8">
+
+    //the id of the column, could be the
+
+    webix.ready(function () {
+
+        grid = {
+            view: "datatable",
+            columns: [
+                {id: "fp", editor: "text", header: "FuncProcess1"},
+                {
+                    id: "dg1",
+                    editor: "select",
+                    header: "Data Group 1",
+                    options: ["E", "X", "R", "W", ""],
+                    css: "centre",
+                    width: 200
+                },
+                {
+                    id: "dg2",
+                    editor: "select",
+                    header: "Data Group 2",
+                    options: ["E", "X", "R", "W", ""],
+                    css: "centre",
+                    width: 200
+                },
+                {
+                    id: "dg3",
+                    editor: "select",
+                    header: "Data Group 3",
+                    options: ["E", "X", "R", "W", ""],
+                    css: "centre",
+                    width: 200
+                }
+            ],
+            data: [
+                {id: 1, fp: "step1", dg1: "-", dg2: "E", dg3: "-"},
+                {id: 2, fp: "step2", dg1: "E", dg2: "-", dg3: "-"}
+            ],
+
+
+            editable: true,
+            autoheight: true,
+            autowidth: true,
+            select: "cell",
+            multiselect: true,
+            editaction: "dblclick",
+            dragColumn: "order",
+            drag: "order",
+
+            on: {
+                onSelectChange: function () {
+                    var text = grid.getSelectedId(true, true);
+                    //var text = "Selected: "+grid.getSelectedId(true).join();
+                    document.getElementById('mutliselect').innerHTML = text;
+                }
+            }
+
+        };
+
+        var form = {
+            view: "form", id: "form1", scroll: false,
+            elements: [
+                {view: "text", name: "type", label: "Type"},
+                {view: "textarea", name: "attrib1", label: "Attrib1"},
+                {view: "textarea", name: "Attrib1", label: "Attrib2"},
+                {
+                    view: "button", inputWidth: 200, value: "Save", click: function () {
+                    var values = $$("myform").getValues();
+                    webix.message(JSON.stringify(values));
+                    if (values.id) {
+                        var item = $$("mydata").getItem(values.id);
+                        item.title = values.title;
+                        $$("mydata").updateItem(item.id, item);
+                        //do something to save attr1 and attr2
+                    }
+                }
+                }
+            ]
+        };
+
+
+        webix.ui({
+            container: "testA",
+            type: "wide",
+            rows: [grid, form]
+        });
+
+    });
+
+</script>
+<script>
+
+    var grid2 = new webix.ui({
+        container: "webixUItable",
+        view: "datatable",
+        id: "fpGrid",
+        columns: [
+            {id: "fp", editor: "text", header: "FuncProcess1"},
+            {
+                id: "dg1",
+                header: "Data Group 1",
+                css: "centre",
+                width: 200
+            },
+            {
+                id: "dg2",
+                header: "Data Group 2",
+                css: "centre",
+                width: 200
+            },
+            {
+                id: "dg3",
+                header: "Data Group 3",
+                css: "centre",
+                width: 200
+            }
+        ],
+        data: [
+            {id: 1, fp: "step1", dg1: "-", dg2: "E", dg3: "-"},
+            {id: 2, fp: "step2", dg1: "E", dg2: "-", dg3: "-"}
+        ],
+
+        autoheight: true,
+        autowidth: true,
+        select: "cell",
+        multiselect: true,
+        dragColumn: "order",
+        drag: "order",
+
+        on: {
+            onSelectChange: function () {
+                var text = grid2.getSelectedId(true, true);
+                //var text = "Selected: "+grid.getSelectedId(true).join();
+                //document.getElementById('mutliselect').innerHTML = "i have clicked" + text;
+            },
+            onItemDblClick: function (id, e) {
+
+                var gridCoOrds = grid2.getSelectedId(true, true);
+                var rowNum = gridCoOrds[0].slice(0, gridCoOrds[0].indexOf("_"));
+                var colName = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_") + 1, gridCoOrds[0].length);
+
+                var item = this.getItem(id);
+                webix.message(item[colName]);
+
+                //we need to send id to form to know what item to edit
+                var formData = {type: item[colName], id: item.id, dg: colName};
+                var form = $$("editDM");
+                form.setValues(formData);
+                if (form.isVisible()) {
+                    form.hide();
+                }
+                else {
+                    readAttributesFromAServer();
+                    form.show();
+                }
+
+
+            }
+        }
+
+    });
+
+
+    var form2 = webix.ui({
+        container: "webixUIForm",
+        view: "form",
+        id: "editDM",
+        hidden: "true",
+        width: 300,
+        elements: [
+            {view: "select", name: "type", label: "Type", options: ["E", "X", "R", "W"]},
+            {view: "text", name: "dg", label: "dg", hidden: "true"},
+            {
+                view: "button", inputWidth: 200, value: "Save", click: function () {
+                saveDataToGrid()
+            }
+            }]
+
+    });
+
+
+</script>
+<script>
+
+    function add_column() {
+        var columns = webix.toArray(grid2.config.columns);
+        columns.insertAt({
+            id: "c" + webix.uid(),
+            header: "New DataGroup",
+            width: 200,
+            editor: "select",
+            options: ["E", "X", "R", "W", ""],
+            css: "centre"
+        }, 2);
+        grid.refreshColumns();
+    }
+
+    function add_row() {
+
+        var rows = grid.count();
+        grid.add({
+            fp: "step3",
+            dg1: "-",
+            dg2: "-",
+            dg3: "-"
+        });
+
+    }
+
+    function show_grid() {
+
+        document.getElementById('gridnow').innerHTML = "";
+        grid.eachRow(
+                function (row) {
+
+
+                    var record = grid.getItem(row);
+                    var text = record.fp + ":" + record.dg1 + ":" + record.dg2 + ":" + record.dg3 + "<p>";
+                    document.getElementById('gridnow').innerHTML += text;
+                }
+        )
+    }
+
+    function saveDataToGrid() {
+
+        var values = $$("editDM").getValues();
+        webix.message(JSON.stringify(values));
+
+
+        if (values.id) {
+            var item = $$("fpGrid").getItem(values.id);
+
+            var column = $$("editDM").getValues()["dg"];
+
+            item[column] = values.type;
+            $$("fpGrid").updateItem(item.id, item);
+            //do something to save attr1 and attr2
+        }
+
+        $$("editDM").hide();
+    }
+
+    function readAttributesFromAServer() {
+
+        var raw = webix.ajax().sync().get("/CosmicWorkBench/dg3.json");
+        var dg3 = JSON.parse(raw.response);
+        var attribs = dg3["attributes"];
+        webix.message(dg3["attributes"]);
+
+
+        var elements = webix.toArray(form2.elements);
+        for (i = 0; i < attribs.length; i++) {
+
+            var attrib = attribs[i];
+
+            form2.addView({
+                id: "myID" + attrib,
+                view: "checkbox",
+                name: attrib,
+                label: attrib
+            }, 3);
+        }
+
+
+        form2.refresh();
+
+    }
+
+
+</script>
+
+<!--
+
+         form = {
+                view:"form",
+                id:"myform",
+                elements:[
+                    { view:"text", name:"title", label:"Title" },
+                    { view:"text", name:"attr1", label:"Attr1" },
+                    { view:"text", name:"attr2", label:"Attr2" },
+                    { view:"button", inputWidth:200, value:"Save"}]
+
+         };
+-->
+
+</body>
+</html>
