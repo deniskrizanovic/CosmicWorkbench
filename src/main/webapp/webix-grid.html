@@ -13,7 +13,7 @@
 <div id="testA" class="hide"></div>
 <div id="webixUItable"></div>
 <div id="webixUIForm"></div>
-<input type='button' class="sample_button" value='add datagroup' onclick='add_column()'>
+<input type='button' class="sample_button" value='add datagroup' onclick='addDataGroup()'>
 <input type='button' class="sample_button" value='add step' onclick='add_row()'>
 <input type='button' class="sample_button" value='show me the grid' onclick='show_grid()'>
 
@@ -204,20 +204,54 @@
     });
 
 
+    var form3 = webix.ui({
+        container: "webixUIForm",
+        view: "form",
+        id: "selectDG",
+        hidden: "true",
+        width: 300,
+        elements: [
+            {view: "select", name: "Choose a Data Group", label: "Type", options: ["get my DG's from the db", "DataGroup4", "DataGroup5", "DataGroup6"]},
+            {view: "text", name: "dg", label: "dg", hidden: "true"},
+            {
+                view: "button", id:"SubmitButton", inputWidth: 200, value: "Save", click: function () {
+                saveDataGroupToGrid();
+            }
+            }]
+
+    });
+
+
 </script>
 <script>
 
-    function add_column() {
-        var columns = webix.toArray(grid2.config.columns);
-        columns.insertAt({
-            id: "c" + webix.uid(),
-            header: "New DataGroup",
-            width: 200,
-            editor: "select",
-            options: ["E", "X", "R", "W", ""],
-            css: "centre"
-        }, 2);
-        grid2.refreshColumns();
+    function saveDataGroupToGrid() {
+
+        var values = $$("selectDG").getValues();
+        var columns = $$("fpGrid").columns;
+        webix.message(JSON.stringify(values));
+
+
+
+
+    }
+
+
+    function addDataGroup() {
+
+        var form = $$("selectDG");
+        form.show();
+
+//        var columns = webix.toArray(grid2.config.columns);
+//        columns.insertAt({
+//            id: "c" + webix.uid(),
+//            header: "New DataGroup",
+//            width: 200,
+//            editor: "select",
+//            options: ["E", "X", "R", "W", ""],
+//            css: "centre"
+//        }, 2);
+//        grid2.refreshColumns();
     }
 
     function add_row() {
