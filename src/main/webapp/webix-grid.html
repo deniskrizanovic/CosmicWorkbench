@@ -211,10 +211,10 @@
         hidden: "true",
         width: 300,
         elements: [
-            {view: "select", name: "Choose a Data Group", label: "Type", options: ["get my DG's from the db", "DataGroup4", "DataGroup5", "DataGroup6"]},
+            {view: "select", name: "NewDataGroup", label: "Choose a Data Group", options: ["get my DG's from the db", "DataGroup4", "DataGroup5", "DataGroup6"]},
             {view: "text", name: "dg", label: "dg", hidden: "true"},
             {
-                view: "button", id:"SubmitButton", inputWidth: 200, value: "Save", click: function () {
+                view: "button", id:"SubmitButton2", inputWidth: 200, value: "Save", click: function () {
                 saveDataGroupToGrid();
             }
             }]
@@ -227,10 +227,21 @@
 
     function saveDataGroupToGrid() {
 
-        var values = $$("selectDG").getValues();
-        var columns = $$("fpGrid").columns;
-        webix.message(JSON.stringify(values));
+        var form = $$("selectDG");
 
+        var values =form.getValues();
+
+        var columns = webix.toArray(grid2.config.columns);
+
+        columns.insertAt({
+            id:"c"+webix.uid(),
+            header:values.NewDataGroup,
+            css: "centre",
+            width: 200
+        },columns.length);
+
+        grid2.refreshColumns();
+        form.hide();
 
 
 
