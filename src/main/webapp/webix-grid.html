@@ -14,7 +14,7 @@
 <div id="webixUItable" style='width:1500px; height:600px; margin:20px'></div>
 <div id="webixUIForm"></div>
 <input type='button' class="sample_button" value='add datagroup' onclick='addDataGroup()'>
-<input type='button' class="sample_button" value='add step' onclick='add_row()'>
+<input type='button' class="sample_button" value='add step' onclick='addStep()'>
 <input type='button' class="sample_button" value='show me the grid' onclick='show_grid()'>
 
 <!--<div id="mutliselect" class='sample_comment'></div>-->
@@ -24,7 +24,7 @@
 
 <script>
 
-    var grid2 = {
+    var gridConfig = {
         view: "datatable",
         id: "fpGrid",
         columns: [
@@ -35,7 +35,6 @@
                 css: "centre",
                 autoWidth: true,
                 width: 150
-
             },
             {
                 id: "dg2",
@@ -51,10 +50,6 @@
                 autoWidth: true,
                 width: 150
             }
-        ],
-        data: [
-            {id: 1, fp: "step1", dg1: "-", dg2: "E", dg3: "-"},
-            {id: 2, fp: "step2", dg1: "E", dg2: "-", dg3: "-"}
         ],
 
         autoheight: true,
@@ -105,17 +100,11 @@
         height: 600,
         select: true,
         template: "#name#",
-        data: [
-            {id: 1, name: "FuncProce1"},
-            {id: 2, name: "FuncProce2"},
-            {id: 3, name: "FuncProce3"},
-            {id: 4, name: "FuncProce4"},
-            {id: 5, name: "FuncProce5"}
-        ],
         on: {
-            onItemClick: function (id, e) {
+            onAfterSelect: function (listIndex, e) {
 
-                webix.message("you clicked me");
+                var fpName = this.getItem(listIndex).name;
+                refreshDataTableWithNewFunctionalProcess(fpName);
 
             }
         }
@@ -219,7 +208,7 @@
         form.show();
     }
 
-    function add_row() {
+    function addStep() {
         var dt = $$("fpGrid");
 
         var rows = dt.count();
@@ -285,16 +274,57 @@
 
     }
 
+    function getListOfFunctionalProcesses() {
+
+        return [
+            {id: 1, name: "1FuncProce10"},
+            {id: 2, name: "2FuncProce20"},
+            {id: 3, name: "3FuncProce30"},
+            {id: 4, name: "4FuncProce40"},
+            {id: 5, name: "5FuncProce50"}
+        ];
+
+    }
+
+    function getFunctionalProcessData() {
+
+        return [
+            {id: 1, fp: "step1", dg1: "-", dg2: "E", dg3: "-"},
+            {id: 2, fp: "step2", dg1: "E", dg2: "-", dg3: "-"}
+        ];
+    }
+
+
+
+    function refreshDataTableWithNewFunctionalProcess(fpName) {
+
+        var newFPData = getFunctionalProcessData();
+        newFPData.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"})
+
+        var dt = $$("fpGrid");
+        dt.clearAll();
+
+        for(var i in newFPData) {
+            dt.add(newFPData[i]);
+        }
+
+
+    }
+
 
 </script>
 
 <script>
 
+    fpList.data = getListOfFunctionalProcesses();
+    gridConfig.data = getFunctionalProcessData();
+
     webix.ui({
         container: "webixUItable",
+        id:"theWholeThing",
         type: "wide",
         autoWidth: true,
-        cols: [fpList, {view: "resizer"}, grid2]
+        cols: [fpList, {view: "resizer"}, gridConfig]
     });
 
     webix.ui(editDataMovementForm);
