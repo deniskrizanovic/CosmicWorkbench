@@ -1,6 +1,6 @@
 /*
 @license
-webix UI v.3.1.1
+webix UI v.3.1.2
 This software is covered by Webix Trial License.
 Usage without proper license is prohibited.
 (c) XB Software Ltd.
@@ -52,7 +52,7 @@ webix.assert_level_out = function(){
 /*
 	Common helpers
 */
-webix.version="3.1.1";
+webix.version="3.1.2";
 webix.codebase="./";
 webix.name = "core";
 
@@ -9656,7 +9656,7 @@ webix.DataLoader=webix.proto({
 		var url = this.data.url;
 		if (from<0) from = 0;
 		var final_callback = [
-			this._feed_callback,
+			{ success: this._feed_callback, error: this._feed_callback },
 			callback
 		];
 		if (url && typeof url != "string"){
@@ -30078,13 +30078,13 @@ webix.DataProcessor = webix.proto({
 		} else
 			this.setItemState(id, false);
 
-		if (obj && status != "delete" && this._settings.updateFromResponse){
-			this._settings.store.updateItem(id, obj);
-		}
+		if (obj && status != "delete" && this._settings.updateFromResponse)
+			this.ignore(function(){
+				this._settings.store.updateItem(id, obj);
+			});
 
 		if (newid && id != newid)
-			this._settings.store.changeId(id, newid);
-		
+			this._settings.store.changeId(id, newid);	
 		
 		this.callEvent("onAfterSave",[obj, id, details]);
 		this.callEvent("onAfter"+status, [obj, id, details]);
