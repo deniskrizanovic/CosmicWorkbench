@@ -7,51 +7,17 @@
     <link rel="stylesheet" type="text/css" href="resources/css/webix-samples.css">
 </head>
 
-
 <body>
-
 
 <div id="webixUItable" style='width:1500px; height:600px; margin:20px'></div>
 <div id="webixUIForm"></div>
-<input type='button' class="sample_button" value='add datagroup' onclick='addDataGroup()'>
-<input type='button' class="sample_button" value='add step' onclick='addStep()'>
 <input type='button' class="sample_button" value='show me the grid' onclick='show_grid()'>
-
-<!--<div id="mutliselect" class='sample_comment'></div>-->
-<!--<div id="gridnow" class='sample_comment'></div>-->
-<!--<div id="hidden text" class='sample_comment, hide'>blablahbla</div>-->
-
 
 <script>
 
     var gridConfig = {
         view: "datatable",
         id: "fpGrid",
-        columns: [
-            {id: "fp", editor: "text", header: "steps"},
-            {
-                id: "dg1",
-                header: "Data Group 1",
-                css: "centre",
-                autoWidth: true,
-                width: 150
-            },
-            {
-                id: "dg2",
-                header: "Data Group 2",
-                css: "centre",
-                autoWidth: true,
-                width: 150
-            },
-            {
-                id: "dg3",
-                header: "Data Group 3",
-                css: "centre",
-                autoWidth: true,
-                width: 150
-            }
-        ],
-
         autoheight: true,
         autowidth: true,
         select: "cell",
@@ -97,7 +63,7 @@
     var fpList = {
         view: "list",
         width: 320,
-        height: 600,
+        height: 500,
         select: true,
         template: "#name#",
         on: {
@@ -108,6 +74,47 @@
 
             }
         }
+    };
+
+
+    var scenarioList = {
+        view: "list",
+        width: 320,
+        height: 500,
+        select: true,
+        template: "#name#",
+        on: {
+            onAfterSelect: function (listIndex, e) {
+
+                var fpName = this.getItem(listIndex).name;
+                // refreshDataTableWithNewFunctionalProcess(fpName);
+
+            }
+        }
+    };
+
+    var accordian = {
+        view: "accordion",
+        multi: true,
+        rows: [ //or rows
+            {header: "functional Processes", body: fpList},
+            {header: "Sizing Scenarios", body: scenarioList}
+        ]
+    };
+
+    var tabview = {
+        view: "tabview",
+        width: 250,
+        cells: [
+            {
+                header: "Processes",
+                body: fpList
+            },
+            {
+                header: "Sizing Scenarios",
+                body: scenarioList
+            }
+        ]
     };
 
 
@@ -166,6 +173,31 @@
             }
             }]
 
+    };
+
+
+    var addStepButton = {
+        view: "button",
+        id: "addStepButton",
+        value: "AddStep",
+        inputWidth: 100,
+        click: function (id, context) {
+            webix.message("hey there");
+            addStep();
+        }
+    };
+
+
+
+    var addDataGroupButton = {
+        view: "button",
+        id: "addDataGroupButton",
+        value: "Add Data Group",
+        inputWidth: 100,
+        click: function (id, context) {
+            webix.message("hey there");
+            addDataGroup();
+        }
     };
 
 
@@ -232,7 +264,6 @@
         var values = $$("editDM").getValues();
         webix.message(JSON.stringify(values));
 
-
         if (values.id) {
             var item = $$("fpGrid").getItem(values.id);
 
@@ -274,6 +305,36 @@
 
     }
 
+
+    function getFunctionalProcessColumns() {
+
+        return [
+            {id: "fp", editor: "text", header: "steps"},
+            {
+                id: "dg1",
+                header: "Data Group 1",
+                css: "centre",
+                autoWidth: true,
+                width: 150
+            },
+            {
+                id: "dg2",
+                header: "Data Group 2",
+                css: "centre",
+                autoWidth: true,
+                width: 150
+            },
+            {
+                id: "dg3",
+                header: "Data Group 3",
+                css: "centre",
+                autoWidth: true,
+                width: 150
+            }
+        ];
+
+    }
+
     function getListOfFunctionalProcesses() {
 
         return [
@@ -282,6 +343,18 @@
             {id: 3, name: "3FuncProce30"},
             {id: 4, name: "4FuncProce40"},
             {id: 5, name: "5FuncProce50"}
+        ];
+
+    }
+
+    function getListOfSizingScenarios() {
+
+        return [
+            {id: 1, name: "RS-2845"},
+            {id: 2, name: "RS-1234"},
+            {id: 3, name: "RS-7483"},
+            {id: 4, name: "RS-7823"},
+            {id: 5, name: "RS-5790"}
         ];
 
     }
@@ -295,20 +368,18 @@
     }
 
 
-
     function refreshDataTableWithNewFunctionalProcess(fpName) {
 
         var newFPData = getFunctionalProcessData();
         newFPData.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"})
 
         var dt = $$("fpGrid");
-        dt.clearAll();
+        dt.config.columns = getFunctionalProcessColumns();
 
-        for(var i in newFPData) {
+        dt.clearAll();
+        for (var i in newFPData) {
             dt.add(newFPData[i]);
         }
-
-
     }
 
 
@@ -317,21 +388,27 @@
 <script>
 
     fpList.data = getListOfFunctionalProcesses();
-    gridConfig.data = getFunctionalProcessData();
+    //gridConfig.data = getFunctionalProcessData();
+
+
+    scenarioList.data = getListOfSizingScenarios();
 
     webix.ui({
         container: "webixUItable",
-        id:"theWholeThing",
+        id: "theWholeThing",
         type: "wide",
         autoWidth: true,
-        cols: [fpList, {view: "resizer"}, gridConfig]
+        rows: [
+            {cols: [tabview, {view: "resizer"}, gridConfig]},
+            {cols: [addStepButton, addDataGroupButton]}
+        ]
+
     });
 
     webix.ui(editDataMovementForm);
     webix.ui(selectDataGroupForm);
     webix.ui(contextMenu);
     $$("ctxMenu").attachTo($$("fpGrid"));
-
 
 
 </script>
