@@ -154,11 +154,10 @@
 
 
     var selectDataGroupForm = {
-        container: "webixUIForm",
         view: "form",
         id: "selectDG",
-        hidden: "true",
         width: 300,
+        hidden:"true",
         elements: [
             {
                 view: "select",
@@ -180,7 +179,8 @@
         view: "button",
         id: "addStepButton",
         value: "AddStep",
-        inputWidth: 100,
+        autowidth:true,
+        align:"left",
         click: function (id, context) {
             webix.message("hey there");
             addStep();
@@ -193,11 +193,60 @@
         view: "button",
         id: "addDataGroupButton",
         value: "Add Data Group",
-        inputWidth: 100,
+        autowidth:true,
+        align:"left",
         click: function (id, context) {
             webix.message("hey there");
             addDataGroup();
         }
+    };
+
+    var addFunctionalProcessButton = {
+        view: "button",
+        id: "addFunctionalProcessButton",
+        value: "Add Functional Process",
+        autowidth:true,
+        align:"left",
+        click: function (id, context) {
+
+            $$("AddFPForm").show();
+        }
+    };
+
+
+    var formHeader = {
+
+        cols:[
+            {template:"Enter a new Data Group"},
+            {view:"button", label:"Close", width:70, align:"left", click:("$$('AddFPForm').hide();")}
+
+        ]
+    };
+
+    var addFunctionalProcessForm = {
+        view:"window",
+        id:"AddFPForm",
+        position:"Centre",
+        modal:true,
+        head: formHeader,
+        body:selectDataGroupForm,
+        on: {
+            onBeforeShow: function (){
+                $$("selectDG").show();
+            }
+        }
+    };
+
+
+    var toolbar = {
+        view:"toolbar",
+        id:"myToolbar",
+        paddingY:2,
+        cols:[
+            {template:"Cosmic Function Point WorkBench", width:250},
+             addStepButton ,
+             addDataGroupButton,
+             addFunctionalProcessButton]
     };
 
 
@@ -398,9 +447,11 @@
         id: "theWholeThing",
         type: "wide",
         autoWidth: true,
+        minWidth:500,
         rows: [
-            {cols: [tabview, {view: "resizer"}, gridConfig]},
-            {cols: [addStepButton, addDataGroupButton]}
+            toolbar,
+            {cols: [tabview, {view: "resizer"}, gridConfig]}
+
         ]
 
     });
@@ -408,6 +459,7 @@
     webix.ui(editDataMovementForm);
     webix.ui(selectDataGroupForm);
     webix.ui(contextMenu);
+    webix.ui(addFunctionalProcessForm);
     $$("ctxMenu").attachTo($$("fpGrid"));
 
 

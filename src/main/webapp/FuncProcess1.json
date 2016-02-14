@@ -1,0 +1,48 @@
+{
+  "name": "FuncProcess1",
+  "dataGroups": [
+    {
+      "id": "dg1",
+      "header": "Data Group 1",
+      "movedAttribs": [
+        "attrib1",
+        "attrib2",
+        "attrib3"
+      ]
+    },
+    {
+      "id": "dg2",
+      "header": "Data Group 2",
+      "movedAttribs": [
+        "attrib4",
+        "attrib5",
+        "attrib6"
+      ]
+    },
+    {
+      "id": "dg3",
+      "header": "Data Group 3",
+      "movedAttribs": [
+        "attrib7",
+        "attrib8",
+        "attrib9"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": 1,
+      "fp": "step1",
+      "dg1": "-",
+      "dg2": "E",
+      "dg3": "-"
+    },
+    {
+      "id": 2,
+      "fp": "step2",
+      "dg1": "X",
+      "dg2": "-",
+      "dg3": "W"
+    }
+  ]
+}
