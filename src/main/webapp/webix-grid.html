@@ -168,6 +168,7 @@
             {view: "text", name: "dg", label: "dg", hidden: "true"},
             {
                 view: "button", id: "SubmitButton2", inputWidth: 200, value: "Save", click: function () {
+                webix.message("here?");
                 saveDataGroupToGrid();
             }
             }]
@@ -196,8 +197,8 @@
         autowidth:true,
         align:"left",
         click: function (id, context) {
-            webix.message("hey there");
-            addDataGroup();
+
+            $$("AddDGForm").show();
         }
     };
 
@@ -214,13 +215,35 @@
     };
 
 
-    var formHeader = {
+    var FPformHeader = {
 
         cols:[
-            {template:"Enter a new Data Group"},
+            {template:"Choose a new Process"},
             {view:"button", label:"Close", width:70, align:"left", click:("$$('AddFPForm').hide();")}
 
         ]
+    };
+    var DGformHeader = {
+
+         cols:[
+             {template:"Enter a new Data Group"},
+             {view:"button", label:"Close", width:70, align:"left", click:("$$('AddDGForm').hide();")}
+
+         ]
+     };
+
+    var addDataGroupWindow = {
+        view:"window",
+        id:"AddDGForm",
+        position:"Centre",
+        modal:true,
+        head: DGformHeader,
+        body:selectDataGroupForm,
+        on: {
+            onBeforeShow: function (){
+                $$("selectDG").show();
+            }
+        }
     };
 
     var addFunctionalProcessForm = {
@@ -228,7 +251,7 @@
         id:"AddFPForm",
         position:"Centre",
         modal:true,
-        head: formHeader,
+        head: FPformHeader,
         body:selectDataGroupForm,
         on: {
             onBeforeShow: function (){
@@ -238,16 +261,32 @@
     };
 
 
+
+
+
+
+    var mainToolbar = {
+    				view:"toolbar",
+                    width:250,
+    				cols:[
+    					{ view:"button", type:"icon", icon:"code-fork", label:"Procs", align:"left" },
+    					{ view:"button", type:"icon", icon:"database", label:"Groups", align:"left"},
+    					{ view:"button", type:"icon", icon:"exchange", label:"Moves", align:"left"}
+    				]
+    			};
+
     var toolbar = {
         view:"toolbar",
         id:"myToolbar",
         paddingY:2,
         cols:[
-            {template:"Cosmic Function Point WorkBench", width:250},
+            mainToolbar,
              addStepButton ,
              addDataGroupButton,
-             addFunctionalProcessButton]
+        addFunctionalProcessButton]
     };
+
+
 
 
 </script>
@@ -270,15 +309,20 @@
         }, columns.length);
 
         form.hide();
+        $$("AddDGForm").hide();
+
+        webix.message(dt.count());
 
         //add the empty record.
-        var data = webix.toArray(dt.config.data);
-        for (var j = 0; j < data.length; j++) {
-            var dataRecord = data[j];
-            dataRecord[values.NewDataGroup] = "-";
-        }
+        dt.data.each(function(obj) {
+
+            obj[values.NewDataGroup] = "-";
+
+        });
 
         dt.refreshColumns();
+        $$("theWholeThing").resize();
+
 
     }
 
@@ -460,6 +504,7 @@
     webix.ui(selectDataGroupForm);
     webix.ui(contextMenu);
     webix.ui(addFunctionalProcessForm);
+    webix.ui(addDataGroupWindow);
     $$("ctxMenu").attachTo($$("fpGrid"));
 
 
