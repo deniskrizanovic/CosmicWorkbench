@@ -18,12 +18,12 @@
     var gridConfig = {
         view: "datatable",
         id: "fpGrid",
-        autoheight: true,
-        autowidth: true,
         select: "cell",
         multiselect: true,
         dragColumn: true,
         drag: true,
+        scroll:"xy",
+        leftSplit:1,
         tooltip: function (row, columnContainer) {
             var rowValue = row[columnContainer.column.id];
             if (rowValue != "-") {
@@ -66,6 +66,7 @@
         height: 500,
         select: true,
         template: "#name#",
+        header:"header",
         on: {
             onAfterSelect: function (listIndex, e) {
 
@@ -76,6 +77,15 @@
         }
     };
 
+
+    var fpListWithHeader = {
+        rows:[
+            {template:"<b>Functional Processes</b>", height:35 },
+                fpList
+        ]
+
+
+    };
 
     var scenarioList = {
         view: "list",
@@ -93,38 +103,16 @@
         }
     };
 
-    var accordian = {
-        view: "accordion",
-        multi: true,
-        rows: [ //or rows
-            {header: "functional Processes", body: fpList},
-            {header: "Sizing Scenarios", body: scenarioList}
-        ]
-    };
-
-    var tabview = {
-        view: "tabview",
-        width: 250,
-        cells: [
-            {
-                header: "Processes",
-                body: fpList
-            },
-            {
-                header: "Sizing Scenarios",
-                body: scenarioList
-            }
-        ]
-    };
 
 
     var contextMenu = {
         view: "contextmenu",
         id: "ctxMenu",
-        data: [{id: "newScenario", value: "New Sizing Scenario"}, {
-            id: "DGUsage",
-            value: "Where else this dataGroup is used?"
-        }],
+        data: [
+            {id: "DGUsage", value: "Where else this dataGroup is used?" },
+            {id: "removeStep", value: "Remove Step" },
+            {id: "removeDG", value: "Remove Data Group" }
+        ],
         width: 300,
         click: function (id, context) {
             var dt = $$("fpGrid");
@@ -179,8 +167,10 @@
     var addStepButton = {
         view: "button",
         id: "addStepButton",
+        type:"icon",
         value: "AddStep",
-        autowidth:true,
+        icon:"list-ol",
+        tooltip:"Add Step",
         align:"left",
         click: function (id, context) {
             webix.message("hey there");
@@ -194,8 +184,9 @@
         view: "button",
         id: "addDataGroupButton",
         value: "Add Data Group",
-        autowidth:true,
-        align:"left",
+        type:"icon",
+        icon:"files-o",
+        tooltip:"Add Data Group",
         click: function (id, context) {
 
             $$("AddDGForm").show();
@@ -207,7 +198,6 @@
         id: "addFunctionalProcessButton",
         value: "Add Functional Process",
         autowidth:true,
-        align:"left",
         click: function (id, context) {
 
             $$("AddFPForm").show();
@@ -219,15 +209,16 @@
 
         cols:[
             {template:"Choose a new Process"},
-            {view:"button", label:"Close", width:70, align:"left", click:("$$('AddFPForm').hide();")}
+            {view:"button", type:"icon", icon:"close", align:"right", click:("$$('AddFPForm').hide();")}
 
         ]
     };
     var DGformHeader = {
 
+            type:"clean",
          cols:[
              {template:"Enter a new Data Group"},
-             {view:"button", label:"Close", width:70, align:"left", click:("$$('AddDGForm').hide();")}
+             {view:"button", type:"icon", icon:"close",  width:25, align:"right", click:("$$('AddDGForm').hide();")}
 
          ]
      };
@@ -262,16 +253,26 @@
 
 
 
-
+    var contextToolBar = {
+        view:"toolbar",
+        id:"contextToolBar",
+        paddingY:2,
+        height:40,
+        cols:[
+             addStepButton ,
+             addDataGroupButton]
+    };
 
 
     var mainToolbar = {
     				view:"toolbar",
-                    width:250,
-    				cols:[
-    					{ view:"button", type:"icon", icon:"code-fork", label:"Procs", align:"left" },
-    					{ view:"button", type:"icon", icon:"database", label:"Groups", align:"left"},
-    					{ view:"button", type:"icon", icon:"exchange", label:"Moves", align:"left"}
+                    width:40,
+    				rows:[
+    					{ view:"button", type:"icon", icon:"connectdevelop", tooltip:"System Context" },
+    					{ view:"button", type:"icon", icon:"code-fork",  tooltip:"Functional Processes" },
+    					{ view:"button", type:"icon", icon:"database", tooltip:"Data Groups"},
+    					{ view:"button", type:"icon", icon:"exchange", tooltip:"Data Movements"},
+    					{ view:"button", type:"icon", icon:"photo", tooltip:"Sizing Scenarios"}
     				]
     			};
 
@@ -279,14 +280,18 @@
         view:"toolbar",
         id:"myToolbar",
         paddingY:2,
-        cols:[
-            mainToolbar,
-             addStepButton ,
-             addDataGroupButton,
-        addFunctionalProcessButton]
+        rows:[
+            mainToolbar]
     };
 
 
+
+    var dataGridBody = {
+        align:"left",
+        rows: [
+            gridConfig, contextToolBar
+        ]
+    };
 
 
 </script>
@@ -321,7 +326,7 @@
         });
 
         dt.refreshColumns();
-        $$("theWholeThing").resize();
+        //$$("theWholeThing").resize();
 
 
     }
@@ -402,26 +407,26 @@
     function getFunctionalProcessColumns() {
 
         return [
-            {id: "fp", editor: "text", header: "steps"},
+            {id: "fp", editor: "text", header: "steps", autowidth:"true"},
             {
                 id: "dg1",
                 header: "Data Group 1",
                 css: "centre",
-                autoWidth: true,
+                autowidth:"true",
                 width: 150
             },
             {
                 id: "dg2",
                 header: "Data Group 2",
                 css: "centre",
-                autoWidth: true,
+                autowidth:"true",
                 width: 150
             },
             {
                 id: "dg3",
                 header: "Data Group 3",
                 css: "centre",
-                autoWidth: true,
+                autowidth:"true",
                 width: 150
             }
         ];
@@ -490,11 +495,8 @@
         container: "webixUItable",
         id: "theWholeThing",
         type: "wide",
-        autoWidth: true,
-        minWidth:500,
         rows: [
-            toolbar,
-            {cols: [tabview, {view: "resizer"}, gridConfig]}
+            {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]}
 
         ]
 
