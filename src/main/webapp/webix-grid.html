@@ -22,8 +22,8 @@
         multiselect: true,
         dragColumn: true,
         drag: true,
-        scroll:"xy",
-        leftSplit:1,
+        scroll: "xy",
+        leftSplit: 1,
         tooltip: function (row, columnContainer) {
             var rowValue = row[columnContainer.column.id];
             if (rowValue != "-") {
@@ -48,13 +48,12 @@
                 var formData = {type: item[colName], id: item.id, dg: colName};
                 var form = $$("editDM");
                 form.setValues(formData);
-                if (form.isVisible()) {
-                    form.hide();
-                }
-                else {
-                    readAttributesFromAServer();
-                    form.show();
-                }
+
+                var formWindow = $$("editDMWindow");
+
+                readAttributesFromAServer();
+                formWindow.show();
+
             }
         }
     };
@@ -66,7 +65,7 @@
         height: 500,
         select: true,
         template: "#name#",
-        header:"header",
+        header: "header",
         on: {
             onAfterSelect: function (listIndex, e) {
 
@@ -79,9 +78,9 @@
 
 
     var fpListWithHeader = {
-        rows:[
-            {template:"<b>Functional Processes</b>", height:35 },
-                fpList
+        rows: [
+            {template: "<b>Functional Processes</b>", height: 35},
+            fpList
         ]
 
 
@@ -104,14 +103,13 @@
     };
 
 
-
     var contextMenu = {
         view: "contextmenu",
         id: "ctxMenu",
         data: [
-            {id: "DGUsage", value: "Where else this dataGroup is used?" },
-            {id: "removeStep", value: "Remove Step" },
-            {id: "removeDG", value: "Remove Data Group" }
+            {id: "DGUsage", value: "Where else this dataGroup is used?"},
+            {id: "removeStep", value: "Remove Step"},
+            {id: "removeDG", value: "Remove Data Group"}
         ],
         width: 300,
         click: function (id, context) {
@@ -135,6 +133,7 @@
             {
                 view: "button", id: "SubmitButton", inputWidth: 200, value: "Save", click: function () {
                 saveDataToGrid()
+                $$('editDMWindow').hide();
             }
             }]
 
@@ -145,7 +144,7 @@
         view: "form",
         id: "selectDG",
         width: 300,
-        hidden:"true",
+        hidden: "true",
         elements: [
             {
                 view: "select",
@@ -156,7 +155,6 @@
             {view: "text", name: "dg", label: "dg", hidden: "true"},
             {
                 view: "button", id: "SubmitButton2", inputWidth: 200, value: "Save", click: function () {
-                webix.message("here?");
                 saveDataGroupToGrid();
             }
             }]
@@ -167,29 +165,27 @@
     var addStepButton = {
         view: "button",
         id: "addStepButton",
-        type:"icon",
+        type: "icon",
         value: "AddStep",
-        icon:"list-ol",
-        tooltip:"Add Step",
-        align:"left",
+        icon: "list-ol",
+        tooltip: "Add Step",
+        align: "left",
         click: function (id, context) {
-            webix.message("hey there");
             addStep();
         }
     };
-
 
 
     var addDataGroupButton = {
         view: "button",
         id: "addDataGroupButton",
         value: "Add Data Group",
-        type:"icon",
-        icon:"files-o",
-        tooltip:"Add Data Group",
+        type: "icon",
+        icon: "files-o",
+        align: "left",
+        tooltip: "Add Data Group",
         click: function (id, context) {
-
-            $$("AddDGForm").show();
+            $$("AddDGWindow").show();
         }
     };
 
@@ -197,97 +193,121 @@
         view: "button",
         id: "addFunctionalProcessButton",
         value: "Add Functional Process",
-        autowidth:true,
+        autowidth: true,
         click: function (id, context) {
-
-            $$("AddFPForm").show();
+            $$("AddFPWindow").show();
         }
     };
 
 
     var FPformHeader = {
 
-        cols:[
-            {template:"Choose a new Process"},
-            {view:"button", type:"icon", icon:"close", align:"right", click:("$$('AddFPForm').hide();")}
+        cols: [
+            {template: "Choose a new Process"},
+            {view: "button", type: "icon", icon: "close", align: "right", click: ("$$('AddFPForm').hide();")}
 
         ]
     };
     var DGformHeader = {
 
-            type:"clean",
-         cols:[
-             {template:"Enter a new Data Group"},
-             {view:"button", type:"icon", icon:"close",  width:25, align:"right", click:("$$('AddDGForm').hide();")}
+        type: "clean",
+        cols: [
+            {template: "Enter a new Data Group"},
+            {view: "button", type: "icon", icon: "close", width: 25, align: "right", click: ("$$('AddDGForm').hide();")}
+        ]
+    };
 
-         ]
-     };
+    var editDGformHeader = {
+
+        type: "clean",
+        cols: [
+            {template: "Edit the Data Group Attributes"},
+            {view: "button", type: "icon", icon: "close", width: 25, align: "right", click: ("$$('editDMWindow').hide();")}
+        ]
+    };
+
 
     var addDataGroupWindow = {
-        view:"window",
-        id:"AddDGForm",
-        position:"Centre",
-        modal:true,
+        view: "window",
+        id: "AddDGWindow",
+        position: "Centre",
+        modal: true,
         head: DGformHeader,
-        body:selectDataGroupForm,
+        body: selectDataGroupForm,
         on: {
-            onBeforeShow: function (){
+            onBeforeShow: function () {
                 $$("selectDG").show();
             }
         }
     };
 
-    var addFunctionalProcessForm = {
-        view:"window",
-        id:"AddFPForm",
-        position:"Centre",
-        modal:true,
+
+    var editDataAttributesWindow = {
+        view: "window",
+        id: "editDMWindow",
+        position: "Centre",
+        modal: true,
+        head: editDGformHeader,
+        body: editDataMovementForm,
+        on: {
+            onBeforeShow: function () {
+                webix.message("do i get here?");
+                $$("editDM").show();
+            }
+        }
+    };
+
+
+    var addFunctionalProcessWindow = {
+        view: "window",
+        id: "AddFPWindow",
+        position: "Centre",
+        modal: true,
         head: FPformHeader,
-        body:selectDataGroupForm,
+        body: selectDataGroupForm,
         on: {
-            onBeforeShow: function (){
+            onBeforeShow: function () {
                 $$("selectDG").show();
             }
         }
     };
-
 
 
     var contextToolBar = {
-        view:"toolbar",
-        id:"contextToolBar",
-        paddingY:2,
-        height:40,
-        cols:[
-             addStepButton ,
-             addDataGroupButton]
+        view: "toolbar",
+        id: "contextToolBar",
+        paddingY: 2,
+        height: 40,
+        cols: [
+            addStepButton,
+            addDataGroupButton,
+            {}]
     };
 
 
     var mainToolbar = {
-    				view:"toolbar",
-                    width:40,
-    				rows:[
-    					{ view:"button", type:"icon", icon:"connectdevelop", tooltip:"System Context" },
-    					{ view:"button", type:"icon", icon:"code-fork",  tooltip:"Functional Processes" },
-    					{ view:"button", type:"icon", icon:"database", tooltip:"Data Groups"},
-    					{ view:"button", type:"icon", icon:"exchange", tooltip:"Data Movements"},
-    					{ view:"button", type:"icon", icon:"photo", tooltip:"Sizing Scenarios"}
-    				]
-    			};
+        view: "toolbar",
+        width: 40,
+        rows: [
+            {view: "button", type: "icon", icon: "connectdevelop", tooltip: "System Context"},
+            {view: "button", type: "icon", icon: "code-fork", tooltip: "Functional Processes"},
+            {view: "button", type: "icon", icon: "database", tooltip: "Data Groups"},
+            {view: "button", type: "icon", icon: "exchange", tooltip: "Data Movements"},
+            {view: "button", type: "icon", icon: "photo", tooltip: "Sizing Scenarios"}
+        ]
+    };
 
     var toolbar = {
-        view:"toolbar",
-        id:"myToolbar",
-        paddingY:2,
-        rows:[
+        view: "toolbar",
+        id: "myToolbar",
+        paddingY: 2,
+        rows: [
             mainToolbar]
     };
 
 
-
     var dataGridBody = {
-        align:"left",
+        align: "left",
         rows: [
             gridConfig, contextToolBar
         ]
@@ -314,12 +334,12 @@
         }, columns.length);
 
         form.hide();
-        $$("AddDGForm").hide();
+        $$("AddDGWindow").hide();
 
         webix.message(dt.count());
 
         //add the empty record.
-        dt.data.each(function(obj) {
+        dt.data.each(function (obj) {
 
             obj[values.NewDataGroup] = "-";
 
@@ -407,26 +427,26 @@
     function getFunctionalProcessColumns() {
 
         return [
-            {id: "fp", editor: "text", header: "steps", autowidth:"true"},
+            {id: "fp", editor: "text", header: "steps", autowidth: "true"},
             {
                 id: "dg1",
                 header: "Data Group 1",
                 css: "centre",
-                autowidth:"true",
+                autowidth: "true",
                 width: 150
             },
             {
                 id: "dg2",
                 header: "Data Group 2",
                 css: "centre",
-                autowidth:"true",
+                autowidth: "true",
                 width: 150
             },
             {
                 id: "dg3",
                 header: "Data Group 3",
                 css: "centre",
-                autowidth:"true",
+                autowidth: "true",
                 width: 150
             }
         ];
@@ -505,8 +525,9 @@
     webix.ui(editDataMovementForm);
     webix.ui(selectDataGroupForm);
     webix.ui(contextMenu);
-    webix.ui(addFunctionalProcessForm);
+    webix.ui(addFunctionalProcessWindow);
     webix.ui(addDataGroupWindow);
+    webix.ui(editDataAttributesWindow);
     $$("ctxMenu").attachTo($$("fpGrid"));
 
 
