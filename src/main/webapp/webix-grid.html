@@ -5,13 +5,16 @@
     <link rel="stylesheet" href="resources/js/codebase/skins/terrace.css" type="text/css" charset="utf-8">
     <script src="resources/js/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="resources/css/webix-samples.css">
+    <script src="systemContext.js" type="text/javascript" charset="utf-8"></script>
+    <script src="dataGroups.js" type="text/javascript" charset="utf-8"></script>
+
 </head>
 
 <body>
 
 <div id="webixUItable" style='width:1500px; height:600px; margin:20px'></div>
 <div id="webixUIForm"></div>
-<input type='button' class="sample_button" value='show me the grid' onclick='show_grid()'>
+<!--<input type='button' class="sample_button" value='show me the grid' onclick='show_grid()'>-->
 
 <script>
 
@@ -54,6 +57,7 @@
                 readAttributesFromAServer();
                 formWindow.show();
 
+
             }
         }
     };
@@ -82,8 +86,6 @@
             {template: "<b>Functional Processes</b>", height: 35},
             fpList
         ]
-
-
     };
 
     var scenarioList = {
@@ -95,12 +97,20 @@
         on: {
             onAfterSelect: function (listIndex, e) {
 
-                var fpName = this.getItem(listIndex).name;
-                // refreshDataTableWithNewFunctionalProcess(fpName);
+                webix.message("I selected a scenario")
 
             }
         }
     };
+
+    var scenarioListWithHeader = {
+        rows: [
+            {template: "<b>Sizing Scenarios</b>", height: 35},
+            scenarioList
+        ]
+    };
+
+
 
 
     var contextMenu = {
@@ -132,7 +142,7 @@
             {view: "text", name: "dg", label: "dg", hidden: "true"},
             {
                 view: "button", id: "SubmitButton", inputWidth: 200, value: "Save", click: function () {
-                saveDataToGrid()
+                saveDataToGrid();
                 $$('editDMWindow').hide();
             }
             }]
@@ -289,11 +299,11 @@
         view: "toolbar",
         width: 40,
         rows: [
-            {view: "button", type: "icon", icon: "connectdevelop", tooltip: "System Context"},
-            {view: "button", type: "icon", icon: "code-fork", tooltip: "Functional Processes"},
-            {view: "button", type: "icon", icon: "database", tooltip: "Data Groups"},
-            {view: "button", type: "icon", icon: "exchange", tooltip: "Data Movements"},
-            {view: "button", type: "icon", icon: "photo", tooltip: "Sizing Scenarios"}
+            {view: "button", type: "icon", icon: "connectdevelop", tooltip: "System Context", click: ("navigateTo('systemContext');") },
+            {view: "button", type: "icon", icon: "code-fork", tooltip: "Functional Processes", click: ("navigateTo('movements');") },
+            {view: "button", type: "icon", icon: "database", tooltip: "Data Groups", click: ("navigateTo('dataGroups');") },
+            {view: "button", type: "icon", icon: "exchange", tooltip: "Data Movements", click: ("navigateTo('movements');") },
+            {view: "button", type: "icon", icon: "photo", tooltip: "Sizing Scenarios", click: ("navigateTo('sizingScenarios');") }
         ]
     };
 
@@ -316,6 +326,39 @@
 
 </script>
 <script>
+
+
+    function navigateTo(location) {
+
+        if(location == "systemContext")
+        {
+            //theWholeScreen.rows = [ systemContexts ];
+            webix.ui([ systemContexts ], $$("theWholeThing"));
+        }
+        if(location == "movements")
+        {
+            //theWholeScreen.rows = [ systemContexts ];
+            webix.ui([ movementsGrid ], $$("theWholeThing"));
+        }
+
+        if(location == "dataGroups")
+        {
+            //theWholeScreen.rows = [ systemContexts ];
+            webix.ui([ dataGroupList ], $$("theWholeThing"));
+        }
+
+        if(location == "sizingScenarios")
+        {
+            //theWholeScreen.rows = [ systemContexts ];
+            webix.ui([ sizingScenarios ], $$("theWholeThing"));
+        }
+
+    }
+
+
+    function showClickMessage() {
+        webix.message("I been clicked!");
+    }
 
     function saveDataGroupToGrid() {
 
@@ -501,6 +544,7 @@
     }
 
 
+
 </script>
 
 <script>
@@ -510,17 +554,23 @@
 
 
     scenarioList.data = getListOfSizingScenarios();
+    systemContextList = getListofSystemContexts();
 
-    webix.ui({
+    var movementsGrid =   {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
+    var dataGroupList =   {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGridBody]};
+
+    var sizingScenarios =   {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
+    var systemContexts =   {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, dataGridBody]};
+
+    var theWholeScreen = ({
         container: "webixUItable",
         id: "theWholeThing",
-        type: "wide",
-        rows: [
-            {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]}
-
-        ]
-
+        type: "wide"
     });
+
+    theWholeScreen.rows = [ sizingScenarios ];
+    webix.ui(theWholeScreen);
+
 
     webix.ui(editDataMovementForm);
     webix.ui(selectDataGroupForm);
@@ -529,6 +579,7 @@
     webix.ui(addDataGroupWindow);
     webix.ui(editDataAttributesWindow);
     $$("ctxMenu").attachTo($$("fpGrid"));
+
 
 
 </script>
