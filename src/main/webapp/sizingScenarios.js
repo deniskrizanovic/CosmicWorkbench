@@ -33,6 +33,6 @@ var scenarioListWithHeader = {
     ]
 };
 
-
+//var sizingScenariosWindows =   {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
 
 

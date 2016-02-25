@@ -34,4 +34,8 @@ var systemContextWithHeader = {
 
 
 
+//var systemContextsWindows =   {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, dataGridBody]};
+
+
+
 

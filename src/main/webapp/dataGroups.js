@@ -30,6 +30,8 @@ var dataGroupListWithHeader = {
     ]
 };
 
+//var dataGroupWindow =   {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGridBody]};
+
 
 
 

@@ -291,6 +291,7 @@
         {
             fpList.data = getListOfFunctionalProcesses();
             webix.ui([ movementsWindow ], $$("theWholeThing"));
+            $$("ctxMenu").attachTo($$("fpGrid"));
         }
 
         if(location == "dataGroups")
@@ -495,7 +496,7 @@
         type: "wide"
     });
 
-    theWholeScreen.rows = [ sizingScenariosWindows ];
+    theWholeScreen.rows = [ movementsWindow ];
     webix.ui(theWholeScreen);
 
 

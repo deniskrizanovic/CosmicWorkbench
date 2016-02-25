@@ -1,4 +1,5 @@
 
+
 function getListOfFunctionalProcesses() {
 
     return [
@@ -10,6 +11,8 @@ function getListOfFunctionalProcesses() {
     ];
 
 }
+
+
 
 
 var fpList = {
@@ -38,4 +41,14 @@ var fpListWithHeader = {
 
 
 
+
+
+
+
+
+
+
+
+
+//var movementsWindow =   {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
 
