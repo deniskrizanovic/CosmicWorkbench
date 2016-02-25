@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="resources/css/webix-samples.css">
     <script src="systemContext.js" type="text/javascript" charset="utf-8"></script>
     <script src="dataGroups.js" type="text/javascript" charset="utf-8"></script>
+    <script src="sizingScenarios.js" type="text/javascript" charset="utf-8"></script>
+    <script src="functionalProcesses.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
 
@@ -61,56 +63,6 @@
             }
         }
     };
-
-
-    var fpList = {
-        view: "list",
-        width: 320,
-        height: 500,
-        select: true,
-        template: "#name#",
-        header: "header",
-        on: {
-            onAfterSelect: function (listIndex, e) {
-
-                var fpName = this.getItem(listIndex).name;
-                refreshDataTableWithNewFunctionalProcess(fpName);
-
-            }
-        }
-    };
-
-
-    var fpListWithHeader = {
-        rows: [
-            {template: "<b>Functional Processes</b>", height: 35},
-            fpList
-        ]
-    };
-
-    var scenarioList = {
-        view: "list",
-        width: 320,
-        height: 500,
-        select: true,
-        template: "#name#",
-        on: {
-            onAfterSelect: function (listIndex, e) {
-
-                webix.message("I selected a scenario")
-
-            }
-        }
-    };
-
-    var scenarioListWithHeader = {
-        rows: [
-            {template: "<b>Sizing Scenarios</b>", height: 35},
-            scenarioList
-        ]
-    };
-
-
 
 
     var contextMenu = {
@@ -332,25 +284,25 @@
 
         if(location == "systemContext")
         {
-            //theWholeScreen.rows = [ systemContexts ];
-            webix.ui([ systemContexts ], $$("theWholeThing"));
+            systemContextList.data = getListofSystemContexts();
+            webix.ui([ systemContextsWindows ], $$("theWholeThing"));
         }
         if(location == "movements")
         {
-            //theWholeScreen.rows = [ systemContexts ];
-            webix.ui([ movementsGrid ], $$("theWholeThing"));
+            fpList.data = getListOfFunctionalProcesses();
+            webix.ui([ movementsWindow ], $$("theWholeThing"));
         }
 
         if(location == "dataGroups")
         {
-            //theWholeScreen.rows = [ systemContexts ];
-            webix.ui([ dataGroupList ], $$("theWholeThing"));
+            dataGroupList.data = getListofDataGroups();
+            webix.ui([ dataGroupWindow ], $$("theWholeThing"));
         }
 
         if(location == "sizingScenarios")
         {
-            //theWholeScreen.rows = [ systemContexts ];
-            webix.ui([ sizingScenarios ], $$("theWholeThing"));
+            scenarioList.data = getListOfSizingScenarios();
+            webix.ui([ sizingScenariosWindows ], $$("theWholeThing"));
         }
 
     }
@@ -496,29 +448,6 @@
 
     }
 
-    function getListOfFunctionalProcesses() {
-
-        return [
-            {id: 1, name: "1FuncProce10"},
-            {id: 2, name: "2FuncProce20"},
-            {id: 3, name: "3FuncProce30"},
-            {id: 4, name: "4FuncProce40"},
-            {id: 5, name: "5FuncProce50"}
-        ];
-
-    }
-
-    function getListOfSizingScenarios() {
-
-        return [
-            {id: 1, name: "RS-2845"},
-            {id: 2, name: "RS-1234"},
-            {id: 3, name: "RS-7483"},
-            {id: 4, name: "RS-7823"},
-            {id: 5, name: "RS-5790"}
-        ];
-
-    }
 
     function getFunctionalProcessData() {
 
@@ -549,18 +478,16 @@
 
 <script>
 
-    fpList.data = getListOfFunctionalProcesses();
-    //gridConfig.data = getFunctionalProcessData();
-
 
     scenarioList.data = getListOfSizingScenarios();
-    systemContextList = getListofSystemContexts();
 
-    var movementsGrid =   {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
-    var dataGroupList =   {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGridBody]};
 
-    var sizingScenarios =   {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
-    var systemContexts =   {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, dataGridBody]};
+
+    var movementsWindow =   {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
+    var dataGroupWindow =   {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGridBody]};
+
+    var sizingScenariosWindows =   {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
+    var systemContextsWindows =   {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, dataGridBody]};
 
     var theWholeScreen = ({
         container: "webixUItable",
@@ -568,7 +495,7 @@
         type: "wide"
     });
 
-    theWholeScreen.rows = [ sizingScenarios ];
+    theWholeScreen.rows = [ sizingScenariosWindows ];
     webix.ui(theWholeScreen);
 
 
