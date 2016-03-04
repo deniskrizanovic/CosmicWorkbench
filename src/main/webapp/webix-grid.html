@@ -20,7 +20,7 @@
 
 <script>
 
-    var gridConfig = {
+    var processGridConfig = {
         view: "datatable",
         id: "fpGrid",
         select: "cell",
@@ -268,10 +268,21 @@
     };
 
 
+    var dataGroupAttributes = [
+        {view: "text", value: 'dummy@email.com', label: "Email"},
+        {view: "text", type: 'password', value: '123pass', label: "Password"},
+        {
+            margin: 5, cols: [
+            {view: "button", value: "Login", type: "form"},
+            {view: "button", value: "Cancel"}
+        ]
+        }
+    ];
+
     var dataGridBody = {
         align: "left",
         rows: [
-            gridConfig, contextToolBar
+            dataGroupAttributes
         ]
     };
 
@@ -496,7 +507,7 @@
         type: "wide"
     });
 
-    theWholeScreen.rows = [ movementsWindow ];
+    theWholeScreen.rows = [ sizingScenariosWindows ];
     webix.ui(theWholeScreen);
 
 
@@ -506,7 +517,6 @@
     webix.ui(addFunctionalProcessWindow);
     webix.ui(addDataGroupWindow);
     webix.ui(editDataAttributesWindow);
-    $$("ctxMenu").attachTo($$("fpGrid"));
 
 
 
