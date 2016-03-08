@@ -20,7 +20,7 @@
 
 <script>
 
-    var processGridConfig = {
+    var gridConfig = {
         view: "datatable",
         id: "fpGrid",
         select: "cell",
@@ -268,21 +268,10 @@
     };
 
 
-    var dataGroupAttributes = [
-        {view: "text", value: 'dummy@email.com', label: "Email"},
-        {view: "text", type: 'password', value: '123pass', label: "Password"},
-        {
-            margin: 5, cols: [
-            {view: "button", value: "Login", type: "form"},
-            {view: "button", value: "Cancel"}
-        ]
-        }
-    ];
-
     var dataGridBody = {
         align: "left",
         rows: [
-            dataGroupAttributes
+            gridConfig, contextToolBar
         ]
     };
 
@@ -404,7 +393,7 @@
 
     function readAttributesFromAServer() {
 
-        var raw = webix.ajax().sync().get("/CosmicWorkBench/dg3.json");
+        var raw = webix.ajax().sync().get("/CosmicWorkBench/src/main/webapp/dg3.json");
         var dg3 = JSON.parse(raw.response);
         var attribs = dg3["attributes"];
 
@@ -507,7 +496,7 @@
         type: "wide"
     });
 
-    theWholeScreen.rows = [ sizingScenariosWindows ];
+    theWholeScreen.rows = [ movementsWindow ];
     webix.ui(theWholeScreen);
 
 
@@ -517,6 +506,7 @@
     webix.ui(addFunctionalProcessWindow);
     webix.ui(addDataGroupWindow);
     webix.ui(editDataAttributesWindow);
+    $$("ctxMenu").attachTo($$("fpGrid"));
 
 
 

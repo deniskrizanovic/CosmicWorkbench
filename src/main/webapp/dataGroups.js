@@ -1,3 +1,4 @@
+
 function getListofDataGroups() {
 
     return [
@@ -30,8 +31,6 @@ var dataGroupListWithHeader = {
 };
 
 //var dataGroupWindow =   {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGridBody]};
-
-
 
 
 
