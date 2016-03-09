@@ -9,7 +9,7 @@ function getListofSystemContexts() {
     ];
 
 
-}
+};
 
 
 var systemContextList = {
@@ -32,10 +32,52 @@ var systemContextWithHeader = {
     ]
 };
 
+var systemContextDetails = {
+    id: "systemContextDetailsForm",
+    view: "form",
+    elements: [
+        {view: "text", label: "Name"},
+        {view: "text", label: "Description"},
+        {
+            margin: 5, cols: [
+            {view: "button", value: "Save", type: "form"},
+            {view: "button", value: "Cancel"}
+        ]
+        }
+    ]
+
+};
+
+var activityList = {
+    id: "activityList",
+    view: "list",
+    width: 320,
+    height: 500,
+    select: true,
+    template: "#title#",
+    data: [
+        {id: 1, title: "Item 1"},
+        {id: 2, title: "Item 2"},
+        {id: 3, title: "Item 3"}
+    ]
 
 
-//var systemContextsWindows =   {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, dataGridBody]};
+};
 
+var systemContextBody = {
+    view: "tabview",
+    cells: [
+        {
+            header: "Details",
+            body: systemContextDetails
+
+        },
+        {
+            header: "Activity",
+            body: activityList
+        }
+    ]
+};
 
 
 
