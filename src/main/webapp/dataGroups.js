@@ -1,4 +1,3 @@
-
 function getListofDataGroups() {
 
     return [
@@ -10,10 +9,40 @@ function getListofDataGroups() {
     ];
 }
 
-function refreshFormWithNewData(name){
+function getDataGroup() {
+    var raw = webix.ajax().sync().get("/CosmicWorkBench/src/main/webapp/dg3.json");
+    var dg3 = JSON.parse(raw.response);
+    return dg3;
+}
 
-    //go and get the dataGroup definition data from the database
-    //apply a handlebars template.
+function getDataGroupWebixTemplate() {
+
+    var template = "[ " +
+        "{{#each attributes}}" +
+        '{"view": "label", "label":"{{this}}"} ' +
+        "{{#unless @last}} " +
+        "," +
+        "{{/unless}} " +
+        "{{/each}} " +
+        "]";
+
+    return template;
+
+}
+
+function refreshFormWithNewData(id) {
+
+    var template = getDataGroupWebixTemplate();
+    var templateScript = Handlebars.compile(template);
+    var context = getDataGroup();
+    var formElements = templateScript(context);
+    formElements = JSON.parse(formElements);
+
+    dataGroupBody.elements = formElements;
+    dataGroupBody.elements.push(commonFormControls);
+
+    webix.ui([dataGroupWindow], $$("theWholeThing"));
+
 
 }
 var dataGroupList = {
@@ -37,24 +66,20 @@ var dataGroupListWithHeader = {
     ]
 };
 
+var commonFormControls = {
+    margin: 5, cols: [
+        {view: "button", value: "Save", type: "form"},
+        {view: "button", value: "Cancel"}
+    ]
+};
+
 var dataGroupBody = {
     view: "form",
+    id: "dataGroupBodyForm",
     elements: [
-        {view: "label", label: "Name"},
-        {view: "label", label: "Description"},
-        {view: "label", label: "Attribute 1"},
-        {view: "label", label: "Attribute 1"},
-        {view: "label", label: "Attribute 2"},
-        {view: "label", label: "Attribute 3"},
-        {view: "label", label: "Attribute 4"},
-        {view: "label", label: "Description"},
 
-        {
-            margin: 5, cols: [
-            {view: "button", value: "Save", type: "form"},
-            {view: "button", value: "Cancel"}
-        ]
-        }
+
+
     ]
 
 };

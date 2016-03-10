@@ -304,10 +304,9 @@ function saveDataToGrid() {
     $$("editDM").hide();
 }
 
-function readAttributesFromAServer() {
 
-    var raw = webix.ajax().sync().get("/CosmicWorkBench/src/main/webapp/dg3.json");
-    var dg3 = JSON.parse(raw.response);
+function readAttributesFromAServer() {
+    var dg3 = getDataGroup();
     var attribs = dg3["attributes"];
 
     var form2 = $$("editDM");
