@@ -275,13 +275,15 @@ function addDataGroup() {
 function addStep() {
     var dt = $$("fpGrid");
 
-    var rows = dt.count();
-    dt.add({
-        fp: "step3",
-        dg1: "-",
-        dg2: "-",
-        dg3: "-"
-    });
+    var columns = dt.config.columns;
+
+    var newRow = {};
+    for (i = 0; i < columns.length; i++) {
+        var current = columns[i];
+        newRow[current.id] = "-";
+    }
+    newRow["fp"] = "New Step";
+    dt.add(newRow);
 
 }
 
