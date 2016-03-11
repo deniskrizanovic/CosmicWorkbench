@@ -30,15 +30,21 @@ function getDataGroupWebixTemplate() {
 
 }
 
+function getFormHeader(dataGroup) {
+
+    return JSON.parse('{"view":"label", "label":"' + dataGroup.name + '"}');
+}
 function refreshFormWithNewData(id) {
 
     var template = getDataGroupWebixTemplate();
     var templateScript = Handlebars.compile(template);
-    var context = getDataGroup();
-    var formElements = templateScript(context);
+    var dataGroup = getDataGroup();
+    var formElements = templateScript(dataGroup);
     formElements = JSON.parse(formElements);
 
-    dataGroupBody.elements = formElements;
+    dataGroupBody.elements.length = 0;
+    dataGroupBody.elements.push(getFormHeader(dataGroup));
+    dataGroupBody.elements = dataGroupBody.elements.concat(formElements);
     dataGroupBody.elements.push(commonFormControls);
 
     webix.ui([dataGroupWindow], $$("theWholeThing"));
@@ -77,11 +83,7 @@ var dataGroupBody = {
     view: "form",
     id: "dataGroupBodyForm",
     elements: [
-
-
-
     ]
-
 };
 
 

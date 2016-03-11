@@ -1,83 +1,146 @@
 {
   "name": "functionalprocessName",
   "id": 77878,
+  "dataGroups": [
+    {
+      "id": "45",
+      "name": "ODS Client"
+    },
+    {
+      "id": "55",
+      "name": "ODS Client Address"
+    },
+    {
+      "id": "56",
+      "name": "ODS contact"
+    }
+  ],
   "movements": [
-    [
-      {
-        "45": "ODS Client"
+    {
+      "step": {
+        "id": "12",
+        "desc": "trigger"
       },
-      {
-        "55": "ODS Client Address"
+      "dataGroups": [
+        {
+          "dataGroupId": "45",
+          "type": "-",
+          "attributes": [
+          ]
+        },
+        {
+          "dataGroupId": "55",
+          "type": "-",
+          "attributes": [
+          ]
+        },
+        {
+          "dataGroupId": "56",
+          "type": "-",
+          "attributes": [
+          ]
+        }
+      ]
+    },
+    {
+      "step": {
+        "id": "27",
+        "desc": "read from db"
       },
-      {
-        "56": "ODS contact"
-      }
-    ],
-    [
-      {
-        "12": "trigger"
+      "dataGroups": [
+        {
+          "dataGroupId": "45",
+          "type": "R",
+          "attributes": [
+            {
+              "attributeid": "6776",
+              "name": "attrib1"
+            },
+            {
+              "attributeid": "7878",
+              "name": "attrib2"
+            },
+            {
+              "attributeid": "8954",
+              "name": "attrib3"
+            }
+          ]
+        },
+        {
+          "dataGroupId": "55",
+          "type": "R",
+          "attributes": [
+            {
+              "attributeid": "5784",
+              "name": "attrib4"
+            },
+            {
+              "attributeid": "57894",
+              "name": "attrib5"
+            },
+            {
+              "attributeid": "5784",
+              "name": "attrib6"
+            }
+          ]
+        },
+        {
+          "dataGroupId": "56",
+          "type": "R",
+          "attributes": [
+            {
+              "attributeid": "7584",
+              "name": "attrib7"
+            },
+            {
+              "attributeid": "57",
+              "name": "attrib8"
+            },
+            {
+              "attributeid": "7584",
+              "name": "attrib9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "step": {
+        "id": "77",
+        "desc": "exit to screen"
       },
-      "-",
-      "-",
-      "-"
-    ],
-    [
-      {
-        "27": "read from db"
-      },
-      {
-        "r": [
-          {
-            "6776": "attrib1"
-          },
-          {
-            "7878": "attrib2"
-          },
-          {
-            "8954": "attrib3"
-          }
-        ]
-      },
-      {
-        "r": [
-          {
-            "5784": "attrib4"
-          },
-          {
-            "57894": "attrib5"
-          },
-          {
-            "5784": "attrib6"
-          }
-        ]
-      },
-      {
-        "r": [
-          {
-            "7584": "attrib7"
-          },
-          {
-            "57": "attrib8"
-          },
-          {
-            "7584": "attrib9"
-          }
-        ]
-      }
-    ],
-    [
-      {
-        "77": "exit to screen"
-      },
-      {
-        "x": [
-          "attrib1",
-          "attrib4",
-          "attrib7"
-        ]
-      },
-      "-",
-      "-"
-    ]
+      "dataGroups": [
+        {
+          "dataGroupId": "45",
+          "type": "X",
+          "attributes": [
+            {
+              "attributeid": "776776",
+              "name": "attrib1"
+            },
+            {
+              "attributeid": "777878",
+              "name": "attrib4"
+            },
+            {
+              "attributeid": "778954",
+              "name": "attrib7"
+            }
+          ]
+        },
+        {
+          "dataGroupId": "55",
+          "type": "-",
+          "attributes": [
+          ]
+        },
+        {
+          "dataGroupId": "56",
+          "type": "-",
+          "attributes": [
+          ]
+        }
+      ]
+    }
   ]
 }

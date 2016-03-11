@@ -1,0 +1,42 @@
+{
+  "step": {
+    "id": "77",
+    "desc": "exit to screen"
+  },
+  "dataGroups": [
+    {
+      "dataGroupId": "45",
+      "type": "X",
+      "attributes": [
+        {
+          "attributeid": "776776",
+          "name": "attrib1"
+        },
+        {
+          "attributeid": "777878",
+          "name": "attrib4"
+        },
+        {
+          "attributeid": "778954",
+          "name": "attrib7"
+        }
+      ]
+    },
+    {
+      "dataGroupId": "55",
+      "type": "-",
+      "attributes": [
+      ]
+    },
+    {
+      "dataGroupId": "56",
+      "type": "-",
+      "attributes": [
+      ]
+    }
+  ]
+}
+
+
+
+

@@ -1,5 +1,3 @@
-
-
 function getListOfFunctionalProcesses() {
 
     return [
@@ -44,9 +42,9 @@ var gridConfig = {
             //we need to send id to form to know what item to edit
             var formData = {type: item[colName], id: item.id, dg: colName};
             var form = $$("editDM");
-            form.setValues(formData);
-
             var formWindow = $$("editDMWindow");
+
+            form.setValues(formData);
 
             readAttributesFromAServer();
             formWindow.show();
@@ -120,6 +118,7 @@ var addStepButton = {
     icon: "list-ol",
     tooltip: "Add Step",
     align: "left",
+    width: 20,
     click: function (id, context) {
         addStep();
     }
@@ -332,41 +331,76 @@ function readAttributesFromAServer() {
 }
 
 
-function getFunctionalProcessColumns() {
-
-    return [
-        {id: "fp", editor: "text", header: "steps", autowidth: "true"},
-        {
-            id: "dg1",
-            header: "Data Group 1",
-            css: "centre",
-            autowidth: "true",
-            width: 150
-        },
-        {
-            id: "dg2",
-            header: "Data Group 2",
-            css: "centre",
-            autowidth: "true",
-            width: 150
-        },
-        {
-            id: "dg3",
-            header: "Data Group 3",
-            css: "centre",
-            autowidth: "true",
-            width: 150
-        }
-    ];
+function getFunctionalProcess() {
+    var raw = webix.ajax().sync().get("/CosmicWorkBench/src/main/webapp/FunctionalProcess.json");
+    var fp = JSON.parse(raw.response);
+    return fp;
 
 }
 
 
+function getHeaderTemplate() {
+
+    //there must be a way I can read all these template in from a .hb file or something!
+    var template = ' [ {{#each datagroups}}' +
+        '{ "id": "{{id}}", ' +
+        '"header": "{{name}}", ' +
+        '"css": {"text-align": "center"}, ' +
+        '"autowidth": "true", ' +
+        '"autoheight": "true" }' +
+        "{{#unless @last}} " +
+        "," +
+        "{{/unless}} " +
+        '{{/each}} ]';
+
+    return template;
+}
+
+function getFunctionalProcessColumns() {
+
+    var fp = getFunctionalProcess();
+
+    var templateScript = Handlebars.compile(getHeaderTemplate());
+    var dgHeaders = templateScript({"datagroups": fp.dataGroups});
+    dgHeaders = JSON.parse(dgHeaders);
+
+    var stepHeader = {id: "fp", editor: "text", header: "", autowidth: "true", autoheight: "true"};
+
+    var columns = [];
+    columns.push(stepHeader);
+    columns = columns.concat(dgHeaders);
+
+    return columns;
+}
+
+
+function getFunctionalProcessRowTemplate() {
+
+    return '  [  {{#each movements}}' +
+        ' { ' +
+        ' {{#each dataGroups}} ' +
+        '  "{{dataGroupId}}":"{{type}}", ' +
+        ' {{/each}} ' +
+        '  "id":"{{step.id}}", ' +
+        '  "fp":"{{step.desc}}" ' +
+        '  }' +
+        "{{#unless @last}} " +
+        "," +
+        "{{/unless}} " +
+        '{{/each}} ]'
+}
+
 function getFunctionalProcessData() {
-    return [
-        {id: 1, fp: "step1", dg1: "-", dg2: "E", dg3: "-"},
-        {id: 2, fp: "step2", dg1: "E", dg2: "-", dg3: "-"}
-    ];
+
+
+    var fp = getFunctionalProcess();
+
+    var templateScript = Handlebars.compile(getFunctionalProcessRowTemplate());
+    var dgHeaders = templateScript(fp);
+    dgHeaders = JSON.parse(dgHeaders);
+
+
+    return dgHeaders;
 
 }
 
@@ -374,7 +408,7 @@ function getFunctionalProcessData() {
 function refreshDataTableWithNewFunctionalProcess(fpName) {
 
     var newFPData = getFunctionalProcessData();
-    newFPData.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"})
+    newFPData.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"});
 
     var dt = $$("fpGrid");
     dt.config.columns = getFunctionalProcessColumns();

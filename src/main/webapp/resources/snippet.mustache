@@ -1,0 +1,29 @@
+<body>
+<div class="columnHeader">
+    {{#each datagroups}}
+        { "id": "{{id}}",
+        "header": "{{name}}",
+        "css": {"text-align": "center"},
+        "autowidth": "true",
+        "autoheight": "true" }
+        {{#unless @last}}
+            ,
+        {{/unless}}
+    {{/each}}
+</div>
+<div class="datatable-rows">
+    {{#each movements}}
+        {
+        {{#each datagroups}}
+            "{{dataGroupId}}":"{{type}}",
+        {{/each}}
+        "id":"{{step.id}}",
+        "fp":"{{step.desc}}"
+        }
+    {{/each}}
+
+
+</div>
+
+</body>
+

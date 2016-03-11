@@ -6,7 +6,8 @@
 
     <link rel="stylesheet" href="resources/js/codebase/skins/terrace.css" type="text/css" charset="utf-8">
     <script src="resources/js/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
-    <link rel="stylesheet" type="text/css" href="resources/css/webix-samples.css">
+
+
     <script src="systemContext.js" type="text/javascript" charset="utf-8"></script>
     <script src="dataGroups.js" type="text/javascript" charset="utf-8"></script>
     <script src="sizingScenarios.js" type="text/javascript" charset="utf-8"></script>
@@ -15,6 +16,13 @@
 
 </head>
 
+<style>
+    /* this is here because the header don't wrap properly. It's not a real solution either. */
+    .webix_hcell{
+        white-space:nowrap;
+    }
+</style>
+
 <body>
 
 <div id="webixUItable" style='width:1500px; height:600px; margin:20px'></div>
@@ -22,8 +30,7 @@
 <script>
 
 
-
-//not sure what this does.
+    //not sure what this does.
     var addFunctionalProcessButton = {
         view: "button",
         id: "addFunctionalProcessButton",
@@ -60,18 +67,45 @@
     };
 
 
-
-
-
     var mainToolbar = {
         view: "toolbar",
         width: 40,
         rows: [
-            {view: "button", type: "icon", icon: "connectdevelop", tooltip: "System Context", click: ("navigateTo('systemContext');") },
-            {view: "button", type: "icon", icon: "code-fork", tooltip: "Functional Processes", click: ("navigateTo('movements');") },
-            {view: "button", type: "icon", icon: "database", tooltip: "Data Groups", click: ("navigateTo('dataGroups');") },
-            {view: "button", type: "icon", icon: "exchange", tooltip: "Data Movements", click: ("navigateTo('movements');") },
-            {view: "button", type: "icon", icon: "photo", tooltip: "Sizing Scenarios", click: ("navigateTo('sizingScenarios');") }
+            {
+                view: "button",
+                type: "icon",
+                icon: "connectdevelop",
+                tooltip: "System Context",
+                click: ("navigateTo('systemContext');")
+            },
+            {
+                view: "button",
+                type: "icon",
+                icon: "code-fork",
+                tooltip: "Functional Processes",
+                click: ("navigateTo('movements');")
+            },
+            {
+                view: "button",
+                type: "icon",
+                icon: "database",
+                tooltip: "Data Groups",
+                click: ("navigateTo('dataGroups');")
+            },
+            {
+                view: "button",
+                type: "icon",
+                icon: "exchange",
+                tooltip: "Data Movements",
+                click: ("navigateTo('movements');")
+            },
+            {
+                view: "button",
+                type: "icon",
+                icon: "photo",
+                tooltip: "Sizing Scenarios",
+                click: ("navigateTo('sizingScenarios');")
+            }
         ]
     };
 
@@ -84,6 +118,11 @@
     };
 
 
+    var openingScreenBody = {
+
+        view: "template",
+        template: "Welcome to the Cosmic WorkBench"
+    }
 
 
 </script>
@@ -92,28 +131,24 @@
 
     function navigateTo(location) {
 
-        if(location == "systemContext")
-        {
+        if (location == "systemContext") {
             systemContextList.data = getListofSystemContexts();
-            webix.ui([ systemContextsWindows ], $$("theWholeThing"));
+            webix.ui([systemContextsWindows], $$("theWholeThing"));
         }
-        if(location == "movements")
-        {
+        if (location == "movements") {
             fpList.data = getListOfFunctionalProcesses();
-            webix.ui([ movementsWindow ], $$("theWholeThing"));
+            webix.ui([movementsWindow], $$("theWholeThing"));
             $$("ctxMenu").attachTo($$("fpGrid"));
         }
 
-        if(location == "dataGroups")
-        {
+        if (location == "dataGroups") {
             dataGroupList.data = getListofDataGroups();
-            webix.ui([ dataGroupWindow ], $$("theWholeThing"));
+            webix.ui([dataGroupWindow], $$("theWholeThing"));
         }
 
-        if(location == "sizingScenarios")
-        {
+        if (location == "sizingScenarios") {
             scenarioList.data = getListOfSizingScenarios();
-            webix.ui([ sizingScenariosWindows ], $$("theWholeThing"));
+            webix.ui([sizingScenariosWindows], $$("theWholeThing"));
         }
 
     }
@@ -121,6 +156,10 @@
 
     function showClickMessage() {
         webix.message("I been clicked!");
+    }
+
+    function getWebixObject(name) {
+        return $$(name);
     }
 
 </script>
@@ -131,12 +170,12 @@
     scenarioList.data = getListOfSizingScenarios();
 
 
+    var movementsWindow = {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
+    var dataGroupWindow = {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGroupBody]};
 
-    var movementsWindow =   {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
-    var dataGroupWindow =   {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGroupBody]};
-
-    var sizingScenariosWindows =   {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
-    var systemContextsWindows =   {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, systemContextBody]};
+    var sizingScenariosWindows = {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
+    var systemContextsWindows = {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, systemContextBody]};
+    var openingScreen = {cols: [toolbar, openingScreenBody]};
 
     var theWholeScreen = ({
         container: "webixUItable",
@@ -144,7 +183,7 @@
         type: "wide"
     });
 
-    theWholeScreen.rows = [ movementsWindow ];
+    theWholeScreen.rows = [openingScreen];
     webix.ui(theWholeScreen);
 
 
@@ -155,7 +194,6 @@
     webix.ui(addDataGroupWindow);
     webix.ui(editDataAttributesWindow);
     $$("ctxMenu").attachTo($$("fpGrid"));
-
 
 
 </script>
