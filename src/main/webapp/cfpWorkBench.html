@@ -5,7 +5,7 @@
     <script src="handlebars.min-latest.js" type="text/javascript" charset="utf-8"></script>
 
     <link rel="stylesheet" href="resources/js/codebase/skins/terrace.css" type="text/css" charset="utf-8">
-    <script src="resources/js/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+    <script src="resources/js/codebase/webix_debug.js" type="text/javascript" charset="utf-8"></script>
 
 
     <script src="systemContext.js" type="text/javascript" charset="utf-8"></script>
@@ -166,6 +166,8 @@
 
 <script>
 
+    webix.debug = true;
+    webix_debug_proto = true;
 
     scenarioList.data = getListOfSizingScenarios();
 
@@ -173,7 +175,7 @@
     var movementsWindow = {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
     var dataGroupWindow = {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGroupBody]};
 
-    var sizingScenariosWindows = {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
+   // var sizingScenariosWindows = {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
     var systemContextsWindows = {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, systemContextBody]};
     var openingScreen = {cols: [toolbar, openingScreenBody]};
 
@@ -187,8 +189,6 @@
     webix.ui(theWholeScreen);
 
 
-    webix.ui(editDataMovementForm);
-    webix.ui(selectDataGroupForm);
     webix.ui(contextMenu);
     webix.ui(addFunctionalProcessWindow);
     webix.ui(addDataGroupWindow);

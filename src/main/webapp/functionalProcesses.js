@@ -3,13 +3,41 @@ function getListOfFunctionalProcesses() {
     return [
         {id: 1, name: "1FuncProce10"},
         {id: 2, name: "2FuncProce20"},
-        {id: 3, name: "3FuncProce30"},
+        {id: 77878, name: "3FuncProce30"},
         {id: 4, name: "4FuncProce40"},
         {id: 5, name: "5FuncProce50"}
     ];
 
 }
 
+function getAttributesForDataGroup(row, columnContainer) {
+
+    var selectedFP = $$("fpList").getSelectedId();
+    var fp = getFunctionalProcess(selectedFP);
+
+    var attributeNames = [];
+
+    //this is probably as nested as it gets. Otherwise, we could do some better queries or something.
+    for (var i = 0; i < fp.movements.length; i++) {
+        var movement = fp.movements[i];
+        if (movement.step.id == row.id) {
+            for (var j = 0; j < movement.dataGroups.length; j++) {
+                var dg = movement.dataGroups[j];
+                if (dg.dataGroupId == columnContainer.column.id) {
+                    var attribs = dg.attributes;
+                    for (var k = 0; k < attribs.length; k++) {
+                        var attrib = attribs[k];
+                        attributeNames.push(attrib.name);
+
+                    }
+                }
+            }
+        }
+    }
+
+    return attributeNames.toString().replace("/,/g", ",<p>");
+    //for the minute I don't mind that this doesnt seem to work. Maybe a quick html template might help here.
+}
 var gridConfig = {
     view: "datatable",
     id: "fpGrid",
@@ -22,7 +50,7 @@ var gridConfig = {
     tooltip: function (row, columnContainer) {
         var rowValue = row[columnContainer.column.id];
         if (rowValue != "-") {
-            return "<i>" + " display attributes here for cell:: " + row.id + ":" + columnContainer.column.id + "</i>";
+            return getAttributesForDataGroup(row, columnContainer);
         }
         else {
             return "<i>" + rowValue + "</i>";
@@ -58,9 +86,10 @@ var contextMenu = {
     view: "contextmenu",
     id: "ctxMenu",
     data: [
-        {id: "DGUsage", value: "Where else this dataGroup is used?"},
         {id: "removeStep", value: "Remove Step"},
-        {id: "removeDG", value: "Remove Data Group"}
+        {id: "removeDG", value: "Remove Data Group"},
+        {id: "existingSizing", value: "Add this to an existing Sizing Scenario"},
+        {id: "newSizing", value: "Add this to an new Sizing Scenario"}
     ],
     width: 300,
     click: function (id, context) {
@@ -99,7 +128,7 @@ var selectDataGroupForm = {
             view: "select",
             name: "NewDataGroup",
             label: "Choose a Data Group",
-            options: ["get my DG's from the db", "DataGroup4", "DataGroup56666", "DataGroup6"]
+            options: ["DataGroup 99", "DataGroup4", "DataGroup56666", "DataGroup6"]
         },
         {view: "text", name: "dg", label: "dg", hidden: "true"},
         {
@@ -124,6 +153,20 @@ var addStepButton = {
     }
 };
 
+var saveButton = {
+    view: "button",
+    id: "saveButton",
+    type: "icon",
+    value: "Save",
+    icon: "save",
+    tooltip: "Save",
+    align: "left",
+    width: 30,
+    click: function (id, context) {
+        saveMatrix();
+    }
+};
+
 
 var addDataGroupButton = {
     view: "button",
@@ -132,6 +175,7 @@ var addDataGroupButton = {
     type: "icon",
     icon: "files-o",
     align: "left",
+    width: 30,
     tooltip: "Add Data Group",
     click: function (id, context) {
         $$("AddDGWindow").show();
@@ -195,6 +239,7 @@ var contextToolBar = {
     cols: [
         addStepButton,
         addDataGroupButton,
+        saveButton,
         {}]
 };
 
@@ -207,6 +252,7 @@ var dataGridBody = {
 
 
 var fpList = {
+    id: "fpList",
     view: "list",
     width: 320,
     height: 500,
@@ -230,6 +276,15 @@ var fpListWithHeader = {
     ]
 };
 
+
+function saveMatrix() {
+
+    var dt = $$("fpGrid");
+    var columns = webix.toArray(dt.config.columns);
+    var data = dt.data;
+    webix.message("what do I want to save?");
+
+}
 
 function saveDataGroupToGrid() {
 
@@ -273,17 +328,47 @@ function addDataGroup() {
 }
 
 function addStep() {
-    var dt = $$("fpGrid");
+    //var dt = $$("fpGrid");
+    //
+    //var columns = dt.config.columns;
+    //
+    //var newRow = {};
+    //for (i = 0; i < columns.length; i++) {
+    //    var current = columns[i];
+    //    newRow[current.id] = "-";
+    //}
+    //newRow["fp"] = "New Step";
+    //dt.add(newRow);
 
-    var columns = dt.config.columns;
 
-    var newRow = {};
-    for (i = 0; i < columns.length; i++) {
-        var current = columns[i];
-        newRow[current.id] = "-";
+    var newStep = {
+        "step": {
+            "id": "",
+            "desc": "New Step"
+        },
+        "dataGroups": []
+    };
+
+    newStep.step.id = "newStep" + Math.floor((Math.random() * 1000000) + 1);
+
+    for (var i = 0; i < model.dataGroups.length; i++) {
+        var dg = model.dataGroups[i];
+
+        var newMapping = {
+            "dataGroupId": dg.id,
+            "type": "-",
+            "attributes": []
+        };
+        newStep.dataGroups.push(newMapping);
+
     }
-    newRow["fp"] = "New Step";
-    dt.add(newRow);
+
+    window.model.movements.push(newStep);
+
+    webix.message(newStep.toString());
+
+    refreshDataTableWithNewFunctionalProcess();
+
 
 }
 
@@ -334,9 +419,12 @@ function readAttributesFromAServer() {
 
 
 function getFunctionalProcess() {
-    var raw = webix.ajax().sync().get("/CosmicWorkBench/src/main/webapp/FunctionalProcess.json");
-    var fp = JSON.parse(raw.response);
-    return fp;
+
+    if (window.model == null) {
+        var raw = webix.ajax().sync().get("/CosmicWorkBench/src/main/webapp/FunctionalProcess.json");
+        window.model = JSON.parse(raw.response);
+    }
+    return model;
 
 }
 
@@ -394,30 +482,35 @@ function getFunctionalProcessRowTemplate() {
 
 function getFunctionalProcessData() {
 
-
-    var fp = getFunctionalProcess();
+    //yes yes I know global variables and all, I do expect this to get fixed in the future.
+    if (window.model == null) {
+        model = getFunctionalProcess();
+    }
 
     var templateScript = Handlebars.compile(getFunctionalProcessRowTemplate());
-    var dgHeaders = templateScript(fp);
-    dgHeaders = JSON.parse(dgHeaders);
+    var row = templateScript(model);
+    row = JSON.parse(row);
 
 
-    return dgHeaders;
+    return row;
 
 }
 
 
 function refreshDataTableWithNewFunctionalProcess(fpName) {
 
-    var newFPData = getFunctionalProcessData();
-    newFPData.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"});
+    //this function is broken because it doesn't calculate the actual columns, but shows how to move data from the list to the child control
+    var rows = getFunctionalProcessData();
+    if (fpName) {
+        rows.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"});
+    }
 
     var dt = $$("fpGrid");
     dt.config.columns = getFunctionalProcessColumns();
 
     dt.clearAll();
-    for (var i in newFPData) {
-        dt.add(newFPData[i]);
+    for (var i in rows) {
+        dt.add(rows[i]);
     }
 }
 
