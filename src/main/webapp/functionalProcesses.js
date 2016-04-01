@@ -118,6 +118,55 @@ var editDataMovementForm = {
 
 };
 
+function getDataGroupsFromTheServer(contextId) {
+
+    var dataGroupsFromTheServer = [
+        {id: 11, name: "DataGroupXX99"},
+        {id: 22, name: "DataGroup4"},
+        {id: 33, name: "DataGroup56666"},
+        {id: 44, name: "DataGroup6"}];
+
+    return dataGroupsFromTheServer;
+}
+
+function getDataGroupsNotInMatrix() {
+
+    var dt = $$("fpGrid");
+    var columns = webix.toArray(dt.config.columns);
+
+    var dataGroupsFromTheServer = getDataGroupsFromTheServer();
+
+    for (var i = 0; i < columns.length; i++) {
+        var col = columns[i];
+
+        for (var j = 0; j < dataGroupsFromTheServer.length; j++) {
+            var dg = dataGroupsFromTheServer[j];
+            if (col.id == dg.id) {
+                dataGroupsFromTheServer.splice(j, 1);
+                break;
+            }
+        }
+    }
+
+    return dataGroupsFromTheServer;
+
+}
+
+
+function transformDataGroupsIntoOptions(dgNotinMatrix) {
+
+    var options = [];
+
+    for (var i = 0; i < dgNotinMatrix.length; i++) {
+        var dg = dgNotinMatrix[i];
+        var newOption = {};
+        newOption.id = dg.id;
+        newOption.value = dg.name;
+        options.push(newOption);
+    }
+
+    return options;
+}
 var selectDataGroupForm = {
     view: "form",
     id: "selectDG",
@@ -126,17 +175,25 @@ var selectDataGroupForm = {
     elements: [
         {
             view: "select",
+            id: "selectDataGroup",
             name: "NewDataGroup",
-            label: "Choose a Data Group",
-            options: ["DataGroup 99", "DataGroup4", "DataGroup56666", "DataGroup6"]
+            label: "Add a Data Group",
+            options: [],
+            on: {
+                onBeforeRender: function (data) {
+                    var dgNotinMatrix = getDataGroupsNotInMatrix();
+                    var options = transformDataGroupsIntoOptions(dgNotinMatrix);;;
+                    webix.message("onBeforeRender!");
+                    $$("selectDG").elements.NewDataGroup.config.options = options;
+
+                }
+            }
         },
-        {view: "text", name: "dg", label: "dg", hidden: "true"},
         {
             view: "button", id: "SubmitButton2", inputWidth: 200, value: "Save", click: function () {
             saveDataGroupToGrid();
         }
         }]
-
 };
 
 var addStepButton = {
@@ -210,6 +267,16 @@ var addDataGroupWindow = {
     body: selectDataGroupForm,
     on: {
         onBeforeShow: function () {
+
+            //need to refresh the select box so that I can invoke the onBeforeRender event in the select
+            var children = $$("selectDG").getChildViews();
+            for (var i = 0; i < children.length; i++) {
+                var obj = children[i];
+                if (obj.config.id == "selectDataGroup") {
+                    obj.refresh();
+                }
+            }
+
             $$("selectDG").show();
         }
     }
@@ -282,40 +349,89 @@ function saveMatrix() {
     var dt = $$("fpGrid");
     var columns = webix.toArray(dt.config.columns);
     var data = dt.data;
+    var names = [];
+
+    //row = Object {45: "E", 55: "-", 56: "-", id: "12", fp: "trigger", expire: 4000, type: "info"}
+    if (data.each) {
+        data.each(function (row) {
+            names.push(row.id);
+            webix.message(row);
+
+        });
+    }
+
+
     webix.message("what do I want to save?");
 
 }
 
+function getNameOfDataGroup(addedDataGroupId) {
+
+    var dataGroups = getDataGroupsFromTheServer();
+
+    //maybe one day this should be a map!
+    for (var i = 0; i < dataGroups.length; i++) {
+        var dg = dataGroups[i];
+        if (addedDataGroupId == dg.id) {
+            return dg.name;
+        }
+    }
+
+
+}
+function addNewDataGroupToModel(addedDataGroupId) {
+
+    var nameOfDataGroup = getNameOfDataGroup(addedDataGroupId);
+    var dataGroup = {};
+    dataGroup.id = addedDataGroupId;
+    dataGroup.name = nameOfDataGroup;
+    model.dataGroups.push(dataGroup);
+
+    for (var i = 0; i < model.movements.length; i++) {
+        var movement = model.movements[i];
+        var newMapping = {};
+        newMapping.dataGroupId = dataGroup.id;
+        newMapping.type = '-';
+        newMapping.attributes = [];
+
+        movement.dataGroups.push(newMapping);
+
+    }
+
+    webix.message("did my model make it changed.")
+
+
+}
 function saveDataGroupToGrid() {
 
     var form = $$("selectDG");
     var dt = $$("fpGrid");
 
-    var values = form.getValues();
+    var addedDataGroupId = form.getValues()["NewDataGroup"];
+    var nameOfDataGroup = getNameOfDataGroup(addedDataGroupId);
 
     var columns = webix.toArray(dt.config.columns);
 
     columns.insertAt({
-        id: values.NewDataGroup.replace(" ", ""),
-        header: values.NewDataGroup,
+        id: addedDataGroupId,
+        header: nameOfDataGroup,
         css: "centre",
         width: 200
     }, columns.length);
 
+
     form.hide();
     $$("AddDGWindow").hide();
 
-    webix.message(dt.count());
-
-    //add the empty record.
+    //add the empty record to each step of the functional process.
     dt.data.each(function (obj) {
 
-        obj[values.NewDataGroup] = "-";
+        obj[addedDataGroupId] = "-";
 
     });
 
+    addNewDataGroupToModel(addedDataGroupId);
     dt.refreshColumns();
-    //$$("theWholeThing").resize();
 
 
 }
@@ -328,18 +444,6 @@ function addDataGroup() {
 }
 
 function addStep() {
-    //var dt = $$("fpGrid");
-    //
-    //var columns = dt.config.columns;
-    //
-    //var newRow = {};
-    //for (i = 0; i < columns.length; i++) {
-    //    var current = columns[i];
-    //    newRow[current.id] = "-";
-    //}
-    //newRow["fp"] = "New Step";
-    //dt.add(newRow);
-
 
     var newStep = {
         "step": {
@@ -365,7 +469,6 @@ function addStep() {
 
     window.model.movements.push(newStep);
 
-    webix.message(newStep.toString());
 
     refreshDataTableWithNewFunctionalProcess();
 
