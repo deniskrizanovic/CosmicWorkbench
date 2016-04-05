@@ -1,9 +1,18 @@
 {
   "name": "dg3",
   "attributes": [
-    "attrib1",
-    "attrin2",
-    "attrib3"
+    {
+      "id": "63",
+      "name": "attrib1"
+    },
+    {
+      "id": "8989",
+      "name": "attrib2"
+    },
+    {
+      "id": "5784",
+      "name": "attrib3"
+    }
   ]
 
 

@@ -38,6 +38,22 @@ function getAttributesForDataGroup(row, columnContainer) {
     return attributeNames.toString().replace("/,/g", ",<p>");
     //for the minute I don't mind that this doesnt seem to work. Maybe a quick html template might help here.
 }
+function deleteOldStateFromForm() {
+
+    var children = $$("editDM").getChildViews();
+    var i = children.length;
+    while (i--) {
+        var obj = children[i];
+        if (obj.config.id.startsWith("attrib:")) {
+            $$("editDM").removeView(obj.config.id);
+        }
+    }
+
+}
+function checkTheAlreadySavedAttributes() {
+
+    
+}
 var gridConfig = {
     view: "datatable",
     id: "fpGrid",
@@ -60,21 +76,22 @@ var gridConfig = {
     on: {
         onItemDblClick: function (id, e) {
 
+            deleteOldStateFromForm();
+
+
             var gridCoOrds = this.getSelectedId(true, true);
-            var rowNum = gridCoOrds[0].slice(0, gridCoOrds[0].indexOf("_"));
-            var colName = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_") + 1, gridCoOrds[0].length);
+            var column = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_") + 1, gridCoOrds[0].length);
+            var row = this.getItem(id);
 
-            var item = this.getItem(id);
-            webix.message(item[colName]);
-
-            //we need to send id to form to know what item to edit
-            var formData = {type: item[colName], id: item.id, dg: colName};
+            //we need to send id to form to know what row to edit
+            var formData = {type: row[column], id: row.id, dg: column};
             var form = $$("editDM");
-            var formWindow = $$("editDMWindow");
-
             form.setValues(formData);
 
-            readAttributesFromAServer();
+            readAttributesFromAServerAndSetThemIntoTheForm();
+            checkTheAlreadySavedAttributes();
+
+            var formWindow = $$("editDMWindow");
             formWindow.show();
 
 
@@ -111,11 +128,10 @@ var editDataMovementForm = {
         {view: "text", name: "dg", label: "dg", hidden: "true"},
         {
             view: "button", id: "SubmitButton", inputWidth: 200, value: "Save", click: function () {
-            saveDataToGrid();
+            saveAttributesToModelAndGrid();
             $$('editDMWindow').hide();
         }
         }]
-
 };
 
 function getDataGroupsFromTheServer(contextId) {
@@ -182,7 +198,7 @@ var selectDataGroupForm = {
             on: {
                 onBeforeRender: function (data) {
                     var dgNotinMatrix = getDataGroupsNotInMatrix();
-                    var options = transformDataGroupsIntoOptions(dgNotinMatrix);;;
+                    var options = transformDataGroupsIntoOptions(dgNotinMatrix);
                     webix.message("onBeforeRender!");
                     $$("selectDG").elements.NewDataGroup.config.options = options;
 
@@ -292,7 +308,6 @@ var editDataAttributesWindow = {
     body: editDataMovementForm,
     on: {
         onBeforeShow: function () {
-            webix.message("do i get here?");
             $$("editDM").show();
         }
     }
@@ -433,15 +448,8 @@ function saveDataGroupToGrid() {
     addNewDataGroupToModel(addedDataGroupId);
     dt.refreshColumns();
 
-
 }
 
-
-function addDataGroup() {
-
-    var form = $$("selectDG");
-    form.show();
-}
 
 function addStep() {
 
@@ -475,26 +483,57 @@ function addStep() {
 
 }
 
-function saveDataToGrid() {
+function addAttributeToMovement(stepId, dataGroupId, attribute) {
+
+    for (var i = 0; i < model.movements.length; i++) {
+
+        var movement = model.movements[i];
+        if (movement.step.id == stepId) {
+
+            for (var j = 0; j < movement.dataGroups.length; j++) {
+
+                var dataGroup = movement.dataGroups[j];
+                if (dataGroup.dataGroupId == dataGroupId) {
+                    dataGroup.attributes.push(attribute);
+                }
+
+            }
+        }
+    }
+}
+
+
+function saveAttributesToModelAndGrid() {
 
     var values = $$("editDM").getValues();
-    webix.message(JSON.stringify(values));
 
     if (values.id) {
-        var item = $$("fpGrid").getItem(values.id);
+        var row = $$("fpGrid").getItem(values.id);
+        var dataGroupId = $$("editDM").getValues()["dg"];
 
-        var column = $$("editDM").getValues()["dg"];
-
-        item[column] = values.type;
-        $$("fpGrid").updateItem(item.id, item);
-        //do something to save attr1 and attr2
+        row[dataGroupId] = values.type;
+        $$("fpGrid").updateItem(row.id, row);
     }
+
+    for (property in values) {
+        if (property.startsWith("attrib:")) {
+            var value = values[property];
+            if (value != 0) {
+                var newAttribute = {};
+                newAttribute.attributeid = property.substring(property.indexOf(":") + 1, property.length);
+                newAttribute.name = ""; //gonna have to lookup the attribute name on the server. Although I already have it!
+                addAttributeToMovement(row.id, dataGroupId, newAttribute);
+            }
+
+        }
+    }
+
 
     $$("editDM").hide();
 }
 
 
-function readAttributesFromAServer() {
+function readAttributesFromAServerAndSetThemIntoTheForm() {
     var dg3 = getDataGroup();
     var attribs = dg3["attributes"];
 
@@ -508,10 +547,10 @@ function readAttributesFromAServer() {
         var attrib = attribs[i];
 
         form2.addView({
-            id: "myID" + attrib,
+            id: "attrib:" + attrib.id,
             view: "checkbox",
-            name: attrib,
-            label: attrib
+            name: "attrib:" + attrib.id,
+            label: attrib.name
         }, pos);
     }
 
