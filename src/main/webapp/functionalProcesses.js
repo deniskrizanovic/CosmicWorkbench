@@ -50,10 +50,7 @@ function deleteOldStateFromForm() {
     }
 
 }
-function checkTheAlreadySavedAttributes(stepId, dataGroupId) {
 
-
-}
 var gridConfig = {
     view: "datatable",
     id: "fpGrid",
@@ -361,20 +358,6 @@ var fpListWithHeader = {
 
 function saveMatrix() {
 
-    var dt = $$("fpGrid");
-    var columns = webix.toArray(dt.config.columns);
-    var data = dt.data;
-    var names = [];
-
-    //row = Object {45: "E", 55: "-", 56: "-", id: "12", fp: "trigger", expire: 4000, type: "info"}
-    if (data.each) {
-        data.each(function (row) {
-            names.push(row.id);
-            webix.message(row);
-
-        });
-    }
-
 
     webix.message("what do I want to save?");
 
@@ -494,7 +477,6 @@ function updateMovement(stepId, dataGroupId, attributes, type) {
 
                 var dataGroup = movement.dataGroups[j];
                 if (dataGroup.dataGroupId == dataGroupId) {
-                    //need to find if the attribute already exists.
                     dataGroup.attributes = attributes;
                     dataGroup.type = type;
                 }
