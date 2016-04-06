@@ -72,15 +72,15 @@
           "attributes": [
             {
               "attributeid": "5784",
-              "name": "attrib4"
+              "name": "attrib3"
             },
             {
-              "attributeid": "57894",
-              "name": "attrib5"
+              "attributeid": "63",
+              "name": "attrib1"
             },
             {
-              "attributeid": "5784",
-              "name": "attrib6"
+              "attributeid": "8989",
+              "name": "attrib2"
             }
           ]
         },
@@ -97,7 +97,7 @@
               "name": "attrib8"
             },
             {
-              "attributeid": "7584",
+              "attributeid": "7589",
               "name": "attrib9"
             }
           ]

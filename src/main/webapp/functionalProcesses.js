@@ -50,9 +50,9 @@ function deleteOldStateFromForm() {
     }
 
 }
-function checkTheAlreadySavedAttributes() {
+function checkTheAlreadySavedAttributes(stepId, dataGroupId) {
 
-    
+
 }
 var gridConfig = {
     view: "datatable",
@@ -88,8 +88,8 @@ var gridConfig = {
             var form = $$("editDM");
             form.setValues(formData);
 
-            readAttributesFromAServerAndSetThemIntoTheForm();
-            checkTheAlreadySavedAttributes();
+            readAttributesFromAServerAndSetThemIntoTheForm(row.id, column);
+
 
             var formWindow = $$("editDMWindow");
             formWindow.show();
@@ -483,7 +483,7 @@ function addStep() {
 
 }
 
-function addAttributeToMovement(stepId, dataGroupId, attribute) {
+function updateMovement(stepId, dataGroupId, attributes, type) {
 
     for (var i = 0; i < model.movements.length; i++) {
 
@@ -494,9 +494,10 @@ function addAttributeToMovement(stepId, dataGroupId, attribute) {
 
                 var dataGroup = movement.dataGroups[j];
                 if (dataGroup.dataGroupId == dataGroupId) {
-                    dataGroup.attributes.push(attribute);
+                    //need to find if the attribute already exists.
+                    dataGroup.attributes = attributes;
+                    dataGroup.type = type;
                 }
-
             }
         }
     }
@@ -510,11 +511,13 @@ function saveAttributesToModelAndGrid() {
     if (values.id) {
         var row = $$("fpGrid").getItem(values.id);
         var dataGroupId = $$("editDM").getValues()["dg"];
+        var movementType = $$("editDM").getValues()["type"];
 
         row[dataGroupId] = values.type;
         $$("fpGrid").updateItem(row.id, row);
     }
 
+    var attributes = [];
     for (property in values) {
         if (property.startsWith("attrib:")) {
             var value = values[property];
@@ -522,18 +525,46 @@ function saveAttributesToModelAndGrid() {
                 var newAttribute = {};
                 newAttribute.attributeid = property.substring(property.indexOf(":") + 1, property.length);
                 newAttribute.name = ""; //gonna have to lookup the attribute name on the server. Although I already have it!
-                addAttributeToMovement(row.id, dataGroupId, newAttribute);
+                attributes.push(newAttribute);
             }
 
         }
     }
 
+    updateMovement(row.id, dataGroupId, attributes, movementType);
 
     $$("editDM").hide();
 }
 
 
-function readAttributesFromAServerAndSetThemIntoTheForm() {
+function attributeAlreadyUsedInFunctionalProcess(stepId, dataGroupdId, attributeId) {
+
+    for (var i = 0; i < model.movements.length; i++) {
+
+        var movement = model.movements[i];
+        if (movement.step.id == stepId) {
+
+            for (var j = 0; j < movement.dataGroups.length; j++) {
+                var dataGroup = movement.dataGroups[j];
+
+                if (dataGroupdId == dataGroup.dataGroupId) {
+
+                    for (var k = 0; k < dataGroup.attributes.length; k++) {
+                        var attribute = dataGroup.attributes[k];
+                        if (attribute.attributeid == attributeId) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+}
+
+
+function readAttributesFromAServerAndSetThemIntoTheForm(stepId, dataGroupdId) {
     var dg3 = getDataGroup();
     var attribs = dg3["attributes"];
 
@@ -546,11 +577,14 @@ function readAttributesFromAServerAndSetThemIntoTheForm() {
 
         var attrib = attribs[i];
 
+        var attribInUse = attributeAlreadyUsedInFunctionalProcess(stepId, dataGroupdId, attrib.id);
+
         form2.addView({
             id: "attrib:" + attrib.id,
             view: "checkbox",
             name: "attrib:" + attrib.id,
-            label: attrib.name
+            label: attrib.name,
+            value: attribInUse
         }, pos);
     }
 
