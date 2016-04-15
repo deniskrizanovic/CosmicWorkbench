@@ -28,7 +28,6 @@ function getAttributesForDataGroup(row, columnContainer) {
                     for (var k = 0; k < attribs.length; k++) {
                         var attrib = attribs[k];
                         attributeNames.push(attrib.name);
-
                     }
                 }
             }
@@ -75,7 +74,6 @@ var gridConfig = {
 
             deleteOldStateFromForm();
 
-
             var gridCoOrds = this.getSelectedId(true, true);
             var column = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_") + 1, gridCoOrds[0].length);
             var row = this.getItem(id);
@@ -87,7 +85,6 @@ var gridConfig = {
 
             readAttributesFromAServerAndSetThemIntoTheForm(row.id, column);
 
-
             var formWindow = $$("editDMWindow");
             formWindow.show();
 
@@ -96,9 +93,9 @@ var gridConfig = {
     }
 };
 
-var contextMenu = {
+var contextMenuForMatrix = {
     view: "contextmenu",
-    id: "ctxMenu",
+    id: "ctxMenuForMatrix",
     data: [
         {id: "removeStep", value: "Remove Step"},
         {id: "removeDG", value: "Remove Data Group"},
@@ -114,8 +111,24 @@ var contextMenu = {
     }
 };
 
+
+var contextMenuForFPList = {
+    view: "contextmenu",
+    id: "ctxMenuForFPList",
+    data: [
+        {id: "newFunctionalProcess", value: "add new functional process"},
+        {id: "deleteFunctionalProcess", value: "Remove Functional Process"}
+    ],
+    width: 300,
+    click: function (id, context) {
+        var dt = $$("fpGrid");
+        webix.message(id + " on row " + this.getContext().id);
+        var text = dt.getSelectedId(true, true);
+        webix.message(JSON.stringify(text));
+    }
+};
+
 var editDataMovementForm = {
-    container: "webixUIForm",
     view: "form",
     id: "editDM",
     hidden: "true",
@@ -300,6 +313,7 @@ var editDataAttributesWindow = {
     view: "window",
     id: "editDMWindow",
     position: "Centre",
+
     modal: true,
     head: editDGformHeader,
     body: editDataMovementForm,
@@ -309,6 +323,104 @@ var editDataAttributesWindow = {
         }
     }
 };
+
+//------------------------------------------
+// functional process list
+//------------------------------------------
+
+function saveFunctionalProcessNameChangeToModel() {
+
+    var values = $$("editFPNameForm").getValues();
+    webix.message("why am I unchanged?");
+
+}
+
+
+var editFPNameHeader = {
+
+    type: "clean",
+    cols: [
+        {template: "Edit the Name of the Functional Process"},
+        {view: "button", type: "icon", icon: "close", width: 25, align: "right", click: ("$$('editFPNameWindow').hide();")}
+    ]
+};
+
+
+var editFPNameForm = {
+    view: "form",
+    id: "editFPNameForm",
+    width: 300,
+    hidden: "true",
+    elements: [
+        {view: "text", name: "fpName", label: "Name"},
+        {
+            view: "button", id: "saveFPEdit", inputWidth: 200, value: "Save", click: function () {
+            var values = $$("editFPNameForm").getValues();
+            values.name = values.fpName;
+            $$("fpList").updateItem(values.id, values);
+            $$("editFPNameWindow").hide();
+
+        }
+        }]
+};
+
+
+var editFunctionalProcessNameWindow = {
+    view: "window",
+    id: "editFPNameWindow",
+    position: "Centre",
+    modal: true,
+    head: editFPNameHeader,
+    body: editFPNameForm,
+    on: {
+        onBeforeShow: function () {
+            $$("editFPNameForm").show();
+        }
+    }
+};
+
+var fpList = {
+    id: "fpList",
+    view: "list",
+    width: 320,
+    height: 500,
+    select: true,
+    template: "#name#",
+    header: "header",
+    on: {
+        onAfterSelect: function (listIndex, e) {
+
+            var fpName = this.getItem(listIndex).name;
+            refreshDataTableWithNewFunctionalProcess(fpName);
+        },
+        onItemDblClick: function (listIndex, e) {
+            var fpName = this.getItem(listIndex).name;
+            var fpId = this.getItem(listIndex).id;
+
+            $$("editFPNameForm").setValues({
+                fpName: fpName,
+                id: fpId
+            });
+
+            $$("editFPNameForm").refresh();
+            $$("editFPNameWindow").show();
+        }
+    },
+    onContext: {}
+};
+
+var fpListWithHeader = {
+    rows: [
+        {template: "<b>Functional Processes</b>", height: 35},
+        fpList
+    ]
+};
+
+
+//------------------------------------------
+// matrix tools
+//------------------------------------------
+
 
 var contextToolBar = {
     view: "toolbar",
@@ -326,32 +438,6 @@ var dataGridBody = {
     align: "left",
     rows: [
         gridConfig, contextToolBar
-    ]
-};
-
-
-var fpList = {
-    id: "fpList",
-    view: "list",
-    width: 320,
-    height: 500,
-    select: true,
-    template: "#name#",
-    header: "header",
-    on: {
-        onAfterSelect: function (listIndex, e) {
-
-            var fpName = this.getItem(listIndex).name;
-            refreshDataTableWithNewFunctionalProcess(fpName);
-
-        }
-    }
-};
-
-var fpListWithHeader = {
-    rows: [
-        {template: "<b>Functional Processes</b>", height: 35},
-        fpList
     ]
 };
 
@@ -393,7 +479,6 @@ function addNewDataGroupToModel(addedDataGroupId) {
         newMapping.attributes = [];
 
         movement.dataGroups.push(newMapping);
-
     }
 
     webix.message("did my model make it changed.")
@@ -659,9 +744,9 @@ function refreshDataTableWithNewFunctionalProcess(fpName) {
 
     //this function is broken because it doesn't calculate the actual columns, but shows how to move data from the list to the child control
     var rows = getFunctionalProcessData();
-    if (fpName) {
-        rows.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"});
-    }
+    // if (fpName) {
+    //     rows.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"});
+    // }
 
     var dt = $$("fpGrid");
     dt.config.columns = getFunctionalProcessColumns();

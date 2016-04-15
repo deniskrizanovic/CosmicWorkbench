@@ -5,8 +5,8 @@
     <script src="handlebars.min-latest.js" type="text/javascript" charset="utf-8"></script>
 
     <link rel="stylesheet" href="resources/js/codebase/skins/terrace.css" type="text/css" charset="utf-8">
-    <!--<script src="resources/js/codebase/webix_debug.js" type="text/javascript" charset="utf-8"></script>-->
-    <script src="resources/js/codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+    <script src="resources/js/codebase/webix_debug.js" type="text/javascript" charset="utf-8"></script>
+    <!--<script src="resources/js/codebase/webix.js" type="text/javascript" charset="utf-8"></script>-->
 
 
     <script src="systemContext.js" type="text/javascript" charset="utf-8"></script>
@@ -29,43 +29,6 @@
 <div id="webixUItable" style='width:1500px; height:600px; margin:20px'></div>
 
 <script>
-
-
-    //not sure what this does.
-    var addFunctionalProcessButton = {
-        view: "button",
-        id: "addFunctionalProcessButton",
-        value: "Add Functional Process",
-        autowidth: true,
-        click: function (id, context) {
-            $$("AddFPWindow").show();
-        }
-    };
-
-
-    var FPformHeader = {
-
-        cols: [
-            {template: "Choose a new Process"},
-            {view: "button", type: "icon", icon: "close", align: "right", click: ("$$('AddFPForm').hide();")}
-
-        ]
-    };
-
-
-    var addFunctionalProcessWindow = {
-        view: "window",
-        id: "AddFPWindow",
-        position: "Centre",
-        modal: true,
-        head: FPformHeader,
-        body: selectDataGroupForm,
-        on: {
-            onBeforeShow: function () {
-                $$("selectDG").show();
-            }
-        }
-    };
 
 
     var mainToolbar = {
@@ -139,7 +102,8 @@
         if (location == "movements") {
             fpList.data = getListOfFunctionalProcesses();
             webix.ui([movementsWindow], $$("theWholeThing"));
-            $$("ctxMenu").attachTo($$("fpGrid"));
+            $$("ctxMenuForMatrix").attachTo($$("fpGrid"));
+            $$("ctxMenuForFPList").attachTo($$("fpList"));
         }
 
         if (location == "dataGroups") {
@@ -176,7 +140,6 @@
     var movementsWindow = {cols: [toolbar, fpListWithHeader, {view: "resizer"}, dataGridBody]};
     var dataGroupWindow = {cols: [toolbar, dataGroupListWithHeader, {view: "resizer"}, dataGroupBody]};
 
-   // var sizingScenariosWindows = {cols: [toolbar, scenarioListWithHeader, {view: "resizer"}, dataGridBody]};
     var systemContextsWindows = {cols: [toolbar, systemContextWithHeader, {view: "resizer"}, systemContextBody]};
     var openingScreen = {cols: [toolbar, openingScreenBody]};
 
@@ -190,11 +153,11 @@
     webix.ui(theWholeScreen);
 
 
-    webix.ui(contextMenu);
-    webix.ui(addFunctionalProcessWindow);
+    webix.ui(contextMenuForMatrix);
+    webix.ui(contextMenuForFPList);
+    webix.ui(editFunctionalProcessNameWindow);
     webix.ui(addDataGroupWindow);
     webix.ui(editDataAttributesWindow);
-    $$("ctxMenu").attachTo($$("fpGrid"));
 
 
 </script>
