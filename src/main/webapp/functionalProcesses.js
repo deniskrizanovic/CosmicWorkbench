@@ -328,11 +328,26 @@ var editDataAttributesWindow = {
 // functional process list
 //------------------------------------------
 
+function saveFunctionalProcess(fp) {
+
+    //this is where we post the data somewhere!
+    webix.message("I just saved something");
+
+
+}
 function saveFunctionalProcessNameChangeToModel() {
 
     var values = $$("editFPNameForm").getValues();
-    webix.message("why am I unchanged?");
-
+    values.name = values.fpName;
+    $$("fpList").updateItem(values.id, values);
+    var fp = getFunctionalProcess(values.id);
+    fp.name = values.fpName;
+    saveFunctionalProcess(fp);
+    var listOfFp = getListOfFunctionalProcesses();;
+    $$("fpList").data = listOfFp;
+    // seems like I should be able to refresh only part of the screen,
+    // but I can only get it to work with the full screen.
+    refreshMovementsWindow();
 }
 
 
@@ -355,9 +370,7 @@ var editFPNameForm = {
         {view: "text", name: "fpName", label: "Name"},
         {
             view: "button", id: "saveFPEdit", inputWidth: 200, value: "Save", click: function () {
-            var values = $$("editFPNameForm").getValues();
-            values.name = values.fpName;
-            $$("fpList").updateItem(values.id, values);
+            saveFunctionalProcessNameChangeToModel();
             $$("editFPNameWindow").hide();
 
         }
@@ -410,6 +423,7 @@ var fpList = {
 };
 
 var fpListWithHeader = {
+    id: "fpListWithHeader",
     rows: [
         {template: "<b>Functional Processes</b>", height: 35},
         fpList

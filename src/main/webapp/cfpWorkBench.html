@@ -93,6 +93,11 @@
 <script>
 
 
+    function refreshMovementsWindow() {
+        webix.ui([movementsWindow], $$("theWholeThing"));
+        $$("ctxMenuForMatrix").attachTo($$("fpGrid"));
+        $$("ctxMenuForFPList").attachTo($$("fpList"));
+    }
     function navigateTo(location) {
 
         if (location == "systemContext") {
@@ -101,9 +106,7 @@
         }
         if (location == "movements") {
             fpList.data = getListOfFunctionalProcesses();
-            webix.ui([movementsWindow], $$("theWholeThing"));
-            $$("ctxMenuForMatrix").attachTo($$("fpGrid"));
-            $$("ctxMenuForFPList").attachTo($$("fpList"));
+            refreshMovementsWindow();
         }
 
         if (location == "dataGroups") {
