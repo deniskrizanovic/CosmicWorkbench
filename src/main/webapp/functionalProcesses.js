@@ -112,6 +112,60 @@ var contextMenuForMatrix = {
 };
 
 
+function refreshFunctionalProcessList() {
+
+
+}
+function addNewFunctionalProcess() {
+
+    webix.message("addingNewFunctionalProcess");
+
+    var newId = Math.floor((Math.random() * 100000) + 1);
+
+    var templateMovement = {
+        step: {
+            desc: "triggering event ",
+            id: newId
+        },
+        dataGroups: [{
+            dataGroupId: "4545",
+            type: "E",
+            attributes: []
+        }
+        ]
+    };
+
+
+    newId = Math.floor((Math.random() * 100000) + 1);
+
+    var templateFP = {
+        name: "the name I collected",
+        id: newId,
+        movements: [templateMovement],
+        dataGroups: [{
+            id: "4545",
+            name: "Status Message"
+        }]
+    };
+
+    templateFP.name = $$("editFPNameForm").getValues().fpName;
+
+    var savedFP = saveFunctionalProcess(templateFP);
+    model = savedFP;
+    webix.message(JSON.stringify(model));
+    refreshDataTableWithNewFunctionalProcess();
+
+    $$("fpList").add(savedFP);
+
+
+}
+
+
+function deleteFunctionalProcess() {
+
+}
+
+
 var contextMenuForFPList = {
     view: "contextmenu",
     id: "ctxMenuForFPList",
@@ -120,11 +174,25 @@ var contextMenuForFPList = {
         {id: "deleteFunctionalProcess", value: "Remove Functional Process"}
     ],
     width: 300,
-    click: function (id, context) {
-        var dt = $$("fpGrid");
-        webix.message(id + " on row " + this.getContext().id);
-        var text = dt.getSelectedId(true, true);
-        webix.message(JSON.stringify(text));
+    on: {
+        onItemClick: function (id) {
+            if (this.getItem(id).id == "newFunctionalProcess") {
+
+                $$("editFPNameForm").setValues({
+                    fpName: "enter the name here",
+                    id: "addFP"
+                });
+
+                $$("editFPNameWindow").show();
+
+            }
+            else if (this.getItem(id).id == "deleteFunctionalProcess") {
+                deleteFunctionalProcess();
+            }
+            else {
+                webix.message("I'm falling through to the else clause")
+            }
+        }
     }
 };
 
@@ -333,6 +401,7 @@ function saveFunctionalProcess(fp) {
     //this is where we post the data somewhere!
     webix.message("I just saved something");
 
+    return fp;
 
 }
 function saveFunctionalProcessNameChangeToModel() {
@@ -343,8 +412,9 @@ function saveFunctionalProcessNameChangeToModel() {
     var fp = getFunctionalProcess(values.id);
     fp.name = values.fpName;
     saveFunctionalProcess(fp);
-    var listOfFp = getListOfFunctionalProcesses();;
+    var listOfFp = getListOfFunctionalProcesses();
     $$("fpList").data = listOfFp;
+
     // seems like I should be able to refresh only part of the screen,
     // but I can only get it to work with the full screen.
     refreshMovementsWindow();
@@ -370,9 +440,15 @@ var editFPNameForm = {
         {view: "text", name: "fpName", label: "Name"},
         {
             view: "button", id: "saveFPEdit", inputWidth: 200, value: "Save", click: function () {
-            saveFunctionalProcessNameChangeToModel();
-            $$("editFPNameWindow").hide();
 
+
+            if ($$("editFPNameForm").getValues().id == "addFP")
+                addNewFunctionalProcess();
+
+            else {
+                saveFunctionalProcessNameChangeToModel();
+            }
+            $$("editFPNameWindow").hide();
         }
         }]
 };
