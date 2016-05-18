@@ -26,9 +26,9 @@ webix.i18n.locales["ru-RU"]={
 
     controls:{
     	select:"Выбрать"
-	},
-	dataExport: {
-		page: "Страница",
-		of: "из"
+    },
+    dataExport:{
+		page:"Страница",
+		of:"из"
     }
 };

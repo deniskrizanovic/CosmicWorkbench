@@ -27,8 +27,8 @@ webix.i18n.locales["fr-FR"]={
 	controls:{
 		select:"Sélectionner"
 	},
-	dataExport: {
-		page: "Page",
-		of: "sur"
-	}
+	dataExport:{
+		page:"Page",
+		of:"sur"
+    }
 };

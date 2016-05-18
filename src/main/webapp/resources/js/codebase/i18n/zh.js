@@ -31,10 +31,10 @@ webix.i18n.locales["zh-CN"] = {
 
     controls:{
     	select:"选择"
-	},
-	dataExport: {
-		page: "页",
-		of: "从"
+    },
+    dataExport:{
+		page:"页",
+		of:"从"
     }
 
 };

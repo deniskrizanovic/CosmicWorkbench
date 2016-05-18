@@ -32,8 +32,8 @@ webix.i18n.locales["ja-JP"]={
 	controls:{
 		select:"選択する"
 	},
-	dataExport: {
-		page: "ページ",
-		of: "から"
-	}
+	dataExport:{
+		page:"ページ",
+		of:"から"
+    }
 };

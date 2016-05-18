@@ -31,9 +31,9 @@
 
 	controls:{
     	select:"Выбраць"
-	},
-		dataExport: {
-			page: "Старонка",
-			of: "з"
+    },
+    dataExport:{
+		page:"Старонка",
+		of:"з"
     }
 };

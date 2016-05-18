@@ -626,7 +626,6 @@ x\:ui {
   border-bottom: 1px solid #dedede;
   text-align: left;
 }
-
 .webix_list_item.webix_invalid {
   background-color: #ffeeee;
 }
@@ -1495,7 +1494,6 @@ div.webix_modal_cover {
   border-top: 8px solid #f44;
   border-left: 8px solid transparent;
 }
-
 /*selection*/
 .webix_column > div.webix_cell_select,
 .webix_column > div.webix_column_select,
@@ -1503,7 +1501,6 @@ div.webix_modal_cover {
   color: #000000;
   background: #f1f1f1;
 }
-
 /*extra borders, for selection in cell mode*/
 .webix_column > div.webix_cell_select {
   border-bottom: 1px solid #e7e7e7;
@@ -1512,25 +1509,21 @@ div.webix_modal_cover {
   padding-top: 0px;
   padding-left: 9px;
 }
-
 .webix_ss_right .webix_column.webix_first > div.webix_cell_select {
   padding-left: 10px;
 }
-
 /*extra borders, for selection in row mode*/
 .webix_column > div.webix_row_select,
 .webix_column > div.webix_invalid.webix_row_select:nth-child(even) {
   border-bottom: 1px solid #e7e7e7;
   padding-top: 0px;
 }
-
 /*extra borders for selection in column mode*/
 .webix_column > div.webix_column_select {
   border-left: 1px solid #e7e7e7;
   border-right: 1px solid #e7e7e7;
   padding-left: 9px;
 }
-
 .webix_column > .webix_cell.webix_invalid.webix_cell_select:nth-child(even) {
   color: #000000;
   background: #f1f1f1;
@@ -2601,7 +2594,6 @@ input.webixtype_next {
 .webix_pressed .webixtype_base {
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
-
 .webix_control .webix_disabled_box .webixtype_base,
 .webix_control .webix_disabled_box .webixtype_prev,
 .webix_control .webix_disabled_box .webixtype_next,
@@ -2613,16 +2605,13 @@ input.webixtype_next {
   border: 1px solid #e6e6e6 !important;
   text-shadow: none !important;
 }
-
 .webix_control .webix_disabled_box .webix_img_btn_text {
   color: #aaaaaa;
 }
-
 .webix_disabled_view.webix_control .webix_icon_btn,
 .webix_disabled_view.webix_control .webix_icon {
   color: #aaaaaa;
 }
-
 .webix_layout_toolbar.webix_toolbar .webix_disabled_view.webix_control .webix_icon,
 .webix_layout_toolbar.webix_toolbar .webix_disabled_view.webix_control .webix_disabled_box .webix_img_btn_text,
 .webix_layout_toolbar.webix_toolbar .webix_disabled_view.webix_control .webix_icon_btn {
@@ -6883,23 +6872,19 @@ div.webix_inp_static {
 .webix_skin_mark {
   height: 190px;
 }
-
 .webix_sparklines {
   padding: 1px 0;
   box-sizing: border-box;
 }
-
 .webix_sparklines svg {
   box-sizing: border-box;
 }
-
 .webix_sparklines_line {
   stroke: #3498db;
   stroke-width: 1;
   fill: transparent;
   stroke-linecap: round;
 }
-
 .webix_sparklines_item {
   fill: #3498db;
   stroke-width: 1;

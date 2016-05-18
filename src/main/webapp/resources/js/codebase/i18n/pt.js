@@ -30,11 +30,11 @@ webix.i18n.locales["pt-BR"] = {
 		clear: "Limpar",
 		today: "Hoje"
    },
-	controls: {
+	controls:{
 		select:"Selecionar"
 	},
-	dataExport: {
-		page: "Página",
-		of: "de"
-	}
+	dataExport:{
+		page:"Página",
+		of:"de"
+    }
 };
