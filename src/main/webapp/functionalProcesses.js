@@ -50,6 +50,16 @@ function deleteOldStateFromForm() {
 
 }
 
+function renameStep(row) {
+
+
+
+
+
+}
+
+
+
 var gridConfig = {
     view: "datatable",
     id: "fpGrid",
@@ -72,7 +82,6 @@ var gridConfig = {
     on: {
         onItemDblClick: function (id, e) {
 
-            deleteOldStateFromForm();
 
             var gridCoOrds = this.getSelectedId(true, true);
             var column = gridCoOrds[0].slice(gridCoOrds[0].indexOf("_") + 1, gridCoOrds[0].length);
@@ -80,12 +89,23 @@ var gridConfig = {
 
             //we need to send id to form to know what row to edit
             var formData = {type: row[column], id: row.id, dg: column};
-            var form = $$("editDM");
-            form.setValues(formData);
 
-            readAttributesFromAServerAndSetThemIntoTheForm(row.id, column);
 
-            var formWindow = $$("editDMWindow");
+            if(column == "fp") {
+                renameStep(row, column);
+                form = $$("editStepNameForm");
+                form.setValues(formData);
+                formWindow = $$("editStepNameWindow");
+            }
+            else {
+
+                deleteOldStateFromForm();
+                form = $$("editDM");
+                form.setValues(formData);
+                readAttributesFromAServerAndSetThemIntoTheForm(row.id, column);
+                formWindow = $$("editDMWindow");
+            }
+
             formWindow.show();
 
 
@@ -115,7 +135,11 @@ var contextMenuForMatrix = {
 function refreshFunctionalProcessList() {
 
 
+
+
 }
+
+
 function addNewFunctionalProcess() {
 
     webix.message("addingNewFunctionalProcess");
@@ -421,6 +445,59 @@ function saveFunctionalProcessNameChangeToModel() {
 }
 
 
+
+//===========================================================================
+//  Edit Step Name Name
+//===========================================================================
+var editStepNameHeader = {
+
+    type: "clean",
+    cols: [
+        {template: "Edit the Name of the Step"},
+        {view: "button", type: "icon", icon: "close", width: 25, align: "right", click: ("$$('editStepNameWindow').hide();")}
+    ]
+};
+
+
+var editStepNameForm = {
+    view: "form",
+    id: "editStepNameForm",
+    width: 300,
+    hidden: "true",
+    elements: [
+        {view: "text", name: "stepName", label: "Name"},
+        {
+            view: "button", id: "saveStepNameEdit", inputWidth: 200, value: "Save", click: function () {
+
+
+
+            $$("editStepNameWindow").hide();
+        }
+        }]
+};
+
+
+var editStepNameWindow = {
+    view: "window",
+    id: "editStepNameWindow",
+    position: "Centre",
+    modal: true,
+    head: editStepNameHeader,
+    body: editStepNameForm,
+    on: {
+        onBeforeShow: function () {
+            $$("editStepNameForm").show();
+        }
+    }
+};
+
+
+
+
+
+//===========================================================================
+//  Edit Functional Process Name
+//===========================================================================
 var editFPNameHeader = {
 
     type: "clean",
@@ -588,7 +665,7 @@ function saveDataGroupToGrid() {
     columns.insertAt({
         id: addedDataGroupId,
         header: nameOfDataGroup,
-        css: "centre",
+        css: "center",
         width: 200
     }, columns.length);
 
@@ -838,13 +915,17 @@ function refreshDataTableWithNewFunctionalProcess(fpName) {
     //     rows.push({id: 3, fp: "step" + fpName, dg1: "-", dg2: "-", dg3: "W"});
     // }
 
+    //we need to refresh everything, because the dataGrid gets locked up.
+    refreshMovementsWindow();
     var dt = $$("fpGrid");
-    dt.config.columns = getFunctionalProcessColumns();
-
     dt.clearAll();
+
+    dt.config.columns = getFunctionalProcessColumns();
     for (var i in rows) {
         dt.add(rows[i]);
     }
+
+
 }
 
 
