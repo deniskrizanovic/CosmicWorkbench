@@ -1,6 +1,8 @@
 package com.fp.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -10,12 +12,17 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Process extends Persisted {
 
     String name;
     String description;
     String notes;
+
+    @JsonIgnore
     List<SubProcess> steps = new ArrayList<>();
+
+    @JsonIgnore
     private SizingContext parent;
 
     public String getName() {

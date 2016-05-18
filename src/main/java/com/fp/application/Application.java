@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("com.fp")
+@ComponentScan({"com.fp", "com.cfp"})
 public class Application {
 
 	public static void main(String[] args) throws Throwable {
