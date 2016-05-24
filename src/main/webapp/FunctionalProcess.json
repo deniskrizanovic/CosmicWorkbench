@@ -1,6 +1,7 @@
 {
   "name": "functionalprocessName",
   "id": 77878,
+  "SystemContext": "should this be a guid?",
   "dataGroups": [
     {
       "id": "45",

@@ -1,9 +1,13 @@
 package com.fp.web;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import java.util.List;
 
 @Configuration
 public class MvcConfig extends WebMvcConfigurerAdapter {
@@ -39,5 +43,29 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
+
+
+
+
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new StringHttpMessageConverter());
+//        System.out.println("I am converted?");
+//        super.configureMessageConverters(converters);
+
+    }
+
+//    @Bean
+//    public StringHttpMessageConverter stringConverter() {
+//        final StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(Charset.forName(UTF_8));
+//        stringConverter.setSupportedMediaTypes(Arrays.asList(
+//                MediaType.TEXT_PLAIN,
+//                MediaType.TEXT_HTML,
+//                MediaType.APPLICATION_JSON));
+//        return stringConverter;
+//    }
+
+
 
 }
