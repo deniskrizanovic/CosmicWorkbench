@@ -12,3 +12,5 @@ The general use case is that developers use this tool to size software based on 
 5. To understand the working state of the project, you need to look in the schema file and see which sql's are currently enabled, to tell you how much of the application works. 
 
 Does this still work in 2018?
+
+please conflict
