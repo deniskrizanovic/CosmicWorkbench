@@ -13,4 +13,6 @@ The general use case is that developers use this tool to size software based on 
 
 Does this still work in 2018?
 
-conflicting change
+
+please conflict + conflicting change
+
